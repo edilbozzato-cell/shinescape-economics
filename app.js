@@ -121,7 +121,11 @@ function renderBookings(bookings) {
       Acconto: ${euro(b.deposit)}<br>
       Appartamento: ${b.apartment || "-"}<br>
       Provenienza: ${b.source || "-"}<br>
-      ${b.notes ? `<small>${b.notes}</small>` : ""}
+      ${b.notes ? `<small>${b.notes}</small><br>` : ""}
+
+<button onclick="deleteBooking('${b.id}')" style="margin-top:12px;padding:10px 14px;border:0;border-radius:12px;background:#ff3b30;color:white;font-weight:700;">
+  Elimina
+</button>
     </div>
   `).join("");
 }
@@ -147,3 +151,20 @@ async function saveBooking(event) {
   form.style.display = "none";
   await loadBookings();
 }
+
+window.deleteBooking = async function(id) {
+  const confirmed = confirm("Vuoi eliminare questa prenotazione?");
+  if (!confirmed) return;
+
+  const { error } = await supabase
+    .from("bookings")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    alert("Errore eliminazione: " + error.message);
+    return;
+  }
+
+  await loadBookings();
+};
