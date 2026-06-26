@@ -1,8 +1,9 @@
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
 const SUPABASE_URL = "https://prpvhnwedpnnwpdvrttz.supabase.co";
 const SUPABASE_KEY = "sb_publishable_8L3WUiCoHM9ut9Pur_xyww_guaDeVFj";
 
-console.log("ShinEscape Manager online");
-console.log("Supabase URL:", SUPABASE_URL);
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 document.addEventListener("DOMContentLoaded", () => {
   document.body.innerHTML = `
@@ -10,15 +11,38 @@ document.addEventListener("DOMContentLoaded", () => {
       <h1>ShinEscape Manager</h1>
       <h2>Economics</h2>
 
-      <div style="margin-top:24px;padding:20px;border-radius:20px;background:#1c1c1e;">
-        <h3>Database collegato</h3>
-        <p>Project URL:</p>
-        <code>${SUPABASE_URL}</code>
-      </div>
-
-      <button style="margin-top:24px;padding:14px 20px;border:0;border-radius:14px;background:#0a84ff;color:white;font-size:16px;">
-        + Nuova prenotazione
+      <button id="addBooking" style="margin-top:24px;padding:14px 20px;border:0;border-radius:14px;background:#0a84ff;color:white;font-size:16px;">
+        + Nuova prenotazione test
       </button>
+
+      <pre id="result" style="margin-top:24px;white-space:pre-wrap;"></pre>
     </main>
   `;
+
+  document.getElementById("addBooking").addEventListener("click", addTestBooking);
 });
+
+async function addTestBooking() {
+  const { data, error } = await supabase
+    .from("bookings")
+    .insert([
+      {
+        name: "Test Cliente",
+        amount: 1000,
+        account_type: "Black",
+        status: "Da saldare",
+        deposit: 250,
+        source: "Diretto"
+      }
+    ])
+    .select();
+
+  const result = document.getElementById("result");
+
+  if (error) {
+    result.textContent = "ERRORE:\n" + JSON.stringify(error, null, 2);
+    return;
+  }
+
+  result.textContent = "Prenotazione inserita:\n" + JSON.stringify(data, null, 2);
+}
