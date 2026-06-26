@@ -58,6 +58,8 @@ function renderApp() {
 
   document.getElementById("openForm").onclick = () => {
     const form = document.getElementById("bookingForm");
+    form.reset();
+    delete form.dataset.editId;
     form.style.display = form.style.display === "none" ? "block" : "none";
   };
 
@@ -115,7 +117,7 @@ function renderDashboard(bookings) {
 
 function renderBookings(bookings) {
   document.getElementById("bookingList").innerHTML = bookings.map(b => `
-    <div style="background:#1c1c1e;margin-bottom:10px;padding:14px;border-radius:16px;">
+    <div onclick='editBooking(${JSON.stringify(b)})' style="background:#1c1c1e;margin-bottom:10px;padding:14px;border-radius:16px;cursor:pointer;">
       <b>${b.name}</b><br>
       ${euro(b.amount)} · ${b.account_type} · ${b.status}<br>
       Acconto: ${euro(b.deposit)}<br>
@@ -123,7 +125,7 @@ function renderBookings(bookings) {
       Provenienza: ${b.source || "-"}<br>
       ${b.notes ? `<small>${b.notes}</small><br>` : ""}
 
-<button onclick="deleteBooking('${b.id}')" style="margin-top:12px;padding:10px 14px;border:0;border-radius:12px;background:#ff3b30;color:white;font-weight:700;">
+<button onclick="event.stopPropagation(); deleteBooking('${b.id}')" style="margin-top:12px;padding:10px 14px;border:0;border-radius:12px;background:#ff3b30;color:white;font-weight:700;">
   Elimina
 </button>
     </div>
@@ -140,7 +142,22 @@ async function saveBooking(event) {
   booking.deposit = Number(booking.deposit || 0);
   booking.apartment = booking.apartment ? Number(booking.apartment) : null;
 
-  const { error } = await supabase.from("bookings").insert([booking]);
+  let error;
+
+  if (form.dataset.editId) {
+    const response = await supabase
+      .from("bookings")
+      .update(booking)
+      .eq("id", form.dataset.editId);
+
+    error = response.error;
+  } else {
+    const response = await supabase
+      .from("bookings")
+      .insert([booking]);
+
+    error = response.error;
+  }
 
   if (error) {
     alert("Errore salvataggio: " + error.message);
@@ -148,6 +165,7 @@ async function saveBooking(event) {
   }
 
   form.reset();
+  delete form.dataset.editId;
   form.style.display = "none";
   await loadBookings();
 }
@@ -167,4 +185,22 @@ window.deleteBooking = async function(id) {
   }
 
   await loadBookings();
+};
+
+window.editBooking = function(b) {
+  const form = document.getElementById("bookingForm");
+
+  form.dataset.editId = b.id;
+
+  form.name.value = b.name || "";
+  form.amount.value = b.amount || "";
+  form.account_type.value = b.account_type || "Black";
+  form.status.value = b.status || "Da saldare";
+  form.deposit.value = b.deposit || 0;
+  form.apartment.value = b.apartment || "";
+  form.source.value = b.source || "";
+  form.notes.value = b.notes || "";
+
+  form.style.display = "block";
+  window.scrollTo({ top: 0, behavior: "smooth" });
 };
