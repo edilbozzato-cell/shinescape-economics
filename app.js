@@ -23,7 +23,11 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function addTestBooking() {
-  const { data, error } = await supabase
+
+  console.log("Supabase URL:", SUPABASE_URL);
+  console.log("Supabase Key:", SUPABASE_KEY.substring(0,25));
+
+  const response = await supabase
     .from("bookings")
     .insert([
       {
@@ -37,12 +41,14 @@ async function addTestBooking() {
     ])
     .select();
 
+  console.log(response);
+
   const result = document.getElementById("result");
 
-  if (error) {
-    result.textContent = "ERRORE:\n" + JSON.stringify(error, null, 2);
-    return;
+  if(response.error){
+      result.textContent = JSON.stringify(response.error,null,2);
+      return;
   }
 
-  result.textContent = "Prenotazione inserita:\n" + JSON.stringify(data, null, 2);
+  result.textContent = JSON.stringify(response.data,null,2);
 }
