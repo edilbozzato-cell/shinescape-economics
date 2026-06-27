@@ -78,8 +78,8 @@ function renderLogin() {
 
         <div style="width:100%;background:rgba(28,28,30,.86);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);padding:30px 22px 22px;border-radius:30px;box-shadow:0 28px 80px rgba(0,0,0,.58);box-sizing:border-box;border:1px solid rgba(255,255,255,.06);">
           <div style="text-align:center;margin-bottom:26px;">
-            <div style="font-size:clamp(30px,8vw,42px);font-weight:950;margin-bottom:4px;color:${THEME.colors.textPrimary};line-height:1.02;letter-spacing:-.055em;">ShinEscape Manager</div>
-            <div style="font-size:clamp(17px,4.5vw,22px);color:${THEME.colors.textSecondary};font-weight:800;">Login</div>
+            <div style="font-size:clamp(30px,8vw,42px);font-weight:950;margin-bottom:2px;color:${THEME.colors.textPrimary};line-height:1.02;letter-spacing:-.055em;">ShinEscape</div>
+            <div style="margin-top:2px;font-size:clamp(17px,4.5vw,22px);font-weight:800;letter-spacing:.34em;text-transform:uppercase;background:linear-gradient(180deg,#d7b17a,#a66b2c);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#b88746;">Budoni</div>
           </div>
           <div style="display:flex;flex-direction:column;gap:14px;">
             <input id="loginEmail" type="email" autocomplete="username" placeholder="Email" style="width:100%;box-sizing:border-box;padding:16px 16px;font-size:18px;border-radius:18px;border:1px solid rgba(255,255,255,.04);background:rgba(58,58,60,.72);color:${THEME.colors.textPrimary};outline:none;">
