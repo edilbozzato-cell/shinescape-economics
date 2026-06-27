@@ -60,16 +60,16 @@ async function checkAuth() {
 
 function renderLogin() {
   document.body.innerHTML = `
-    <main style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:${THEME.colors.pageBackground};">
-      <div style="background:${THEME.colors.cardBackground};padding:38px 32px 32px 32px;border-radius:${THEME.radius.card}px;box-shadow:0 8px 40px rgba(0,0,0,.3);min-width:340px;max-width:96vw;">
+    <main style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:${THEME.colors.pageBackground};padding:20px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+      <div style="width:100%;max-width:380px;background:${THEME.colors.cardBackground};padding:26px 22px 22px;border-radius:${THEME.radius.card}px;box-shadow:0 8px 40px rgba(0,0,0,.3);box-sizing:border-box;">
         <div style="text-align:center;margin-bottom:24px;">
-          <div style="font-size:${THEME.font.pageTitle}px;font-weight:900;margin-bottom:2px;color:${THEME.colors.textPrimary};">ShinEscape Manager</div>
-          <div style="font-size:${THEME.font.pageSubtitle}px;color:${THEME.colors.textSecondary};font-weight:700;">Login</div>
+          <div style="font-size:clamp(24px,7vw,${THEME.font.pageTitle}px);font-weight:900;margin-bottom:2px;color:${THEME.colors.textPrimary};line-height:1.08;">ShinEscape Manager</div>
+          <div style="font-size:clamp(15px,4vw,${THEME.font.pageSubtitle}px);color:${THEME.colors.textSecondary};font-weight:700;">Login</div>
         </div>
         <div style="display:flex;flex-direction:column;gap:13px;">
-          <input id="loginEmail" type="email" autocomplete="username" placeholder="Email" style="padding:13px;font-size:${THEME.font.formText}px;border-radius:${THEME.radius.input}px;border:1px solid ${THEME.colors.cardSecondary};background:${THEME.colors.cardSecondary};color:${THEME.colors.textPrimary};outline:none;">
-          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password" style="padding:13px;font-size:${THEME.font.formText}px;border-radius:${THEME.radius.input}px;border:1px solid ${THEME.colors.cardSecondary};background:${THEME.colors.cardSecondary};color:${THEME.colors.textPrimary};outline:none;">
-          <button id="loginButton" style="margin-top:10px;padding:13px;font-size:${THEME.font.button}px;font-weight:700;border:0;border-radius:${THEME.radius.button}px;background:${THEME.colors.blue};color:${THEME.colors.textPrimary};cursor:pointer;">Accedi</button>
+          <input id="loginEmail" type="email" autocomplete="username" placeholder="Email" style="width:100%;box-sizing:border-box;padding:12px 13px;font-size:${THEME.font.formText}px;border-radius:${THEME.radius.input}px;border:1px solid ${THEME.colors.cardSecondary};background:${THEME.colors.cardSecondary};color:${THEME.colors.textPrimary};outline:none;">
+          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password" style="width:100%;box-sizing:border-box;padding:12px 13px;font-size:${THEME.font.formText}px;border-radius:${THEME.radius.input}px;border:1px solid ${THEME.colors.cardSecondary};background:${THEME.colors.cardSecondary};color:${THEME.colors.textPrimary};outline:none;">
+          <button id="loginButton" style="width:100%;box-sizing:border-box;margin-top:10px;padding:13px;font-size:${THEME.font.button}px;font-weight:700;border:0;border-radius:${THEME.radius.button}px;background:${THEME.colors.blue};color:${THEME.colors.textPrimary};cursor:pointer;">Accedi</button>
         </div>
       </div>
     </main>
