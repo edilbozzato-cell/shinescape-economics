@@ -4,8 +4,8 @@ const SUPABASE_URL = "https://prpvhnwedpnnwpdvrttz.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBycHZobndlZHBubndwZHZydHR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MjAwMjcsImV4cCI6MjA5Nzk5NjAyN30.jnrGO7j0ptDfnKScitE3vU79SM6tvMevtfM6_Tv7iBE";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-const TARGET_BLACK = 17000;
-const TARGET_WHITE = 10004;
+const TARGET_BLACK = 40432;
+const TARGET_WHITE = 28000;
 
 document.addEventListener("DOMContentLoaded", async () => {
   renderApp();
