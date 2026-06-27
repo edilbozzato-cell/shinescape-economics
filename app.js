@@ -51,7 +51,52 @@ const THEME = {
   }
 };
 
+// --- Auth helpers ---
+async function checkAuth() {
+  const { data, error } = await supabase.auth.getSession();
+  if (error) return null;
+  return data.session;
+}
+
+function renderLogin() {
+  document.body.innerHTML = `
+    <main style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:${THEME.colors.pageBackground};">
+      <div style="background:${THEME.colors.cardBackground};padding:38px 32px 32px 32px;border-radius:${THEME.radius.card}px;box-shadow:0 8px 40px rgba(0,0,0,.3);min-width:340px;max-width:96vw;">
+        <div style="text-align:center;margin-bottom:24px;">
+          <div style="font-size:${THEME.font.pageTitle}px;font-weight:900;margin-bottom:2px;color:${THEME.colors.textPrimary};">ShinEscape Manager</div>
+          <div style="font-size:${THEME.font.pageSubtitle}px;color:${THEME.colors.textSecondary};font-weight:700;">Login</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:13px;">
+          <input id="loginEmail" type="email" autocomplete="username" placeholder="Email" style="padding:13px;font-size:${THEME.font.formText}px;border-radius:${THEME.radius.input}px;border:1px solid ${THEME.colors.cardSecondary};background:${THEME.colors.cardSecondary};color:${THEME.colors.textPrimary};outline:none;">
+          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password" style="padding:13px;font-size:${THEME.font.formText}px;border-radius:${THEME.radius.input}px;border:1px solid ${THEME.colors.cardSecondary};background:${THEME.colors.cardSecondary};color:${THEME.colors.textPrimary};outline:none;">
+          <button id="loginButton" style="margin-top:10px;padding:13px;font-size:${THEME.font.button}px;font-weight:700;border:0;border-radius:${THEME.radius.button}px;background:${THEME.colors.blue};color:${THEME.colors.textPrimary};cursor:pointer;">Accedi</button>
+        </div>
+      </div>
+    </main>
+  `;
+  document.getElementById("loginButton").onclick = async () => {
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    if (!email || !password) {
+      alert("Inserisci email e password");
+      return;
+    }
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      alert(error.message);
+      return;
+    }
+    renderApp();
+    await loadBookings();
+  };
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
+  const session = await checkAuth();
+  if (!session) {
+    renderLogin();
+    return;
+  }
   renderApp();
   await loadBookings();
 });
@@ -67,7 +112,7 @@ function euro(value) {
 function renderApp() {
   document.body.innerHTML = `
     <main style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${THEME.colors.pageBackground};color:${THEME.colors.textPrimary};min-height:100vh;padding:${THEME.spacing.page}px;">
-      <header style="display:flex;align-items:center;gap:18px;margin-bottom:22px;padding:18px;border-radius:${THEME.radius.card}px;background:linear-gradient(135deg,#0b1118,#111820);border:1px solid ${THEME.colors.cardBorder};box-shadow:0 18px 50px rgba(0,0,0,.35);">
+      <header style="display:flex;align-items:center;gap:18px;margin-bottom:22px;padding:18px;border-radius:${THEME.radius.card}px;background:linear-gradient(135deg,#0b1118,#111820);border:1px solid ${THEME.colors.cardBorder};box-shadow:0 18px 50px rgba(0,0,0,.35);position:relative;">
         <div style="width:88px;height:88px;border-radius:22px;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid rgba(255,255,255,.08);">
           <img src="assets/logo.png" alt="ShinEscape Logo" style="width:100%;height:100%;object-fit:contain;display:block;">
         </div>
@@ -79,6 +124,9 @@ function renderApp() {
             Economics Dashboard
           </div>
         </div>
+        <button id="logoutButton" style="position:absolute;right:18px;top:18px;padding:7px 14px;font-size:13px;font-weight:700;border:0;border-radius:999px;background:${THEME.colors.cardSecondary};color:${THEME.colors.textSecondary};cursor:pointer;transition:background .15s;">
+          Logout
+        </button>
       </header>
 
       <section id="dashboard" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:20px 0;"></section>
@@ -121,6 +169,12 @@ function renderApp() {
   };
 
   document.getElementById("bookingForm").onsubmit = saveBooking;
+
+  // Logout handler
+  document.getElementById("logoutButton").onclick = async () => {
+    await supabase.auth.signOut();
+    renderLogin();
+  };
 }
 
 async function loadBookings() {
