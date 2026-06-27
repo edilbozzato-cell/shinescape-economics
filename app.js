@@ -7,6 +7,47 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const TARGET_BLACK = 40000;
 const TARGET_WHITE = 28000;
 
+const THEME = {
+  colors: {
+    pageBackground: "#111",
+    cardBackground: "#1c1c1e",
+    cardSecondary: "#2c2c2e",
+    textPrimary: "#ffffff",
+    textSecondary: "#8e8e93",
+    green: "#30d158",
+    blue: "#0a84ff",
+    red: "#ff3b30",
+    blackLabel: "#30d158",
+    whiteLabel: "#ffffff"
+  },
+  font: {
+    pageTitle: 32,
+    pageSubtitle: 18,
+    sectionTitle: 22,
+    label: 12,
+    helper: 13,
+    normal: 14,
+    formText: 16,
+    button: 17,
+    targetAmount: 30,
+    dashboardAmount: 24,
+    totalAmount: 25,
+    bookingName: 18,
+    bookingAmount: 20
+  },
+  radius: {
+    input: 12,
+    button: 14,
+    card: 22,
+    form: 20
+  },
+  spacing: {
+    page: 20,
+    card: 16,
+    form: 18
+  }
+};
+
 document.addEventListener("DOMContentLoaded", async () => {
   renderApp();
   await loadBookings();
@@ -22,38 +63,38 @@ function euro(value) {
 
 function renderApp() {
   document.body.innerHTML = `
-    <main style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#111;color:white;min-height:100vh;padding:20px;">
+    <main style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${THEME.colors.pageBackground};color:${THEME.colors.textPrimary};min-height:100vh;padding:${THEME.spacing.page}px;">
       <h1>ShinEscape Manager</h1>
       <h2>Economics</h2>
 
       <section id="dashboard" style="display:grid;gap:12px;margin:20px 0;"></section>
 
-      <button id="openForm" style="width:100%;padding:16px;border:0;border-radius:16px;background:#0a84ff;color:white;font-size:17px;font-weight:700;">
+      <button id="openForm" style="width:100%;padding:16px;border:0;border-radius:${THEME.radius.button}px;background:${THEME.colors.blue};color:${THEME.colors.textPrimary};font-size:${THEME.font.button}px;font-weight:700;">
         + Nuova prenotazione
       </button>
 
-      <form id="bookingForm" style="display:none;margin-top:20px;background:#1c1c1e;padding:18px;border-radius:20px;">
-        <input name="name" placeholder="Nome" required style="width:100%;margin-bottom:10px;padding:12px;border-radius:12px;border:0;">
-        <input name="amount" type="number" placeholder="Importo" required style="width:100%;margin-bottom:10px;padding:12px;border-radius:12px;border:0;">
-        <select name="account_type" style="width:100%;margin-bottom:10px;padding:12px;border-radius:12px;">
+      <form id="bookingForm" style="display:none;margin-top:20px;background:${THEME.colors.cardBackground};padding:${THEME.spacing.form}px;border-radius:${THEME.radius.form}px;">
+        <input name="name" placeholder="Nome" required style="width:100%;margin-bottom:10px;padding:12px;border-radius:${THEME.radius.input}px;border:0;font-size:${THEME.font.formText}px;">
+        <input name="amount" type="number" placeholder="Importo" required style="width:100%;margin-bottom:10px;padding:12px;border-radius:${THEME.radius.input}px;border:0;font-size:${THEME.font.formText}px;">
+        <select name="account_type" style="width:100%;margin-bottom:10px;padding:12px;border-radius:${THEME.radius.input}px;font-size:${THEME.font.formText}px;">
           <option>Black</option>
           <option>White</option>
         </select>
-        <select name="status" style="width:100%;margin-bottom:10px;padding:12px;border-radius:12px;">
+        <select name="status" style="width:100%;margin-bottom:10px;padding:12px;border-radius:${THEME.radius.input}px;font-size:${THEME.font.formText}px;">
           <option>Da saldare</option>
           <option>Saldato</option>
         </select>
-        <input name="deposit" type="number" placeholder="Acconto" value="0" style="width:100%;margin-bottom:10px;padding:12px;border-radius:12px;border:0;">
-        <input name="apartment" type="number" placeholder="Appartamento" style="width:100%;margin-bottom:10px;padding:12px;border-radius:12px;border:0;">
-        <input name="source" placeholder="Provenienza: Booking / Airbnb / Diretto" style="width:100%;margin-bottom:10px;padding:12px;border-radius:12px;border:0;">
-        <textarea name="notes" placeholder="Note" style="width:100%;margin-bottom:10px;padding:12px;border-radius:12px;border:0;"></textarea>
+        <input name="deposit" type="number" placeholder="Acconto" value="0" style="width:100%;margin-bottom:10px;padding:12px;border-radius:${THEME.radius.input}px;border:0;font-size:${THEME.font.formText}px;">
+        <input name="apartment" type="number" placeholder="Appartamento" style="width:100%;margin-bottom:10px;padding:12px;border-radius:${THEME.radius.input}px;border:0;font-size:${THEME.font.formText}px;">
+        <input name="source" placeholder="Provenienza: Booking / Airbnb / Diretto" style="width:100%;margin-bottom:10px;padding:12px;border-radius:${THEME.radius.input}px;border:0;font-size:${THEME.font.formText}px;">
+        <textarea name="notes" placeholder="Note" style="width:100%;margin-bottom:10px;padding:12px;border-radius:${THEME.radius.input}px;border:0;font-size:${THEME.font.formText}px;"></textarea>
 
-        <button type="submit" style="width:100%;padding:14px;border:0;border-radius:14px;background:#30d158;color:#000;font-size:16px;font-weight:700;">
+        <button type="submit" style="width:100%;padding:14px;border:0;border-radius:${THEME.radius.button}px;background:${THEME.colors.green};color:#000;font-size:${THEME.font.formText}px;font-weight:700;">
           Salva
         </button>
       </form>
 
-      <h3 style="margin-top:28px;">Prenotazioni</h3>
+      <h3 style="margin-top:28px;font-size:${THEME.font.sectionTitle}px;">Prenotazioni</h3>
       <section id="bookingList"></section>
     </main>
   `;
@@ -104,48 +145,48 @@ function renderDashboard(bookings) {
   const whiteProgress = Math.min((w.complessivo / TARGET_WHITE) * 100, 100);
 
   document.getElementById("dashboard").innerHTML = `
-    <div style="grid-column:1 / -1;background:#1c1c1e;padding:16px;border-radius:22px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
-      <div style="font-size:12px;color:#8e8e93;font-weight:900;letter-spacing:.08em;">TARGET RESIDUO BLACK 💰</div>
-      <div style="margin-top:8px;font-size:30px;font-weight:950;line-height:1;">${euro(blackResidual)} 🔥</div>
-      <div style="margin-top:12px;height:10px;background:#2c2c2e;border-radius:999px;overflow:hidden;">
-        <div style="height:100%;width:${blackProgress}%;background:#30d158;border-radius:999px;"></div>
+    <div style="grid-column:1 / -1;background:${THEME.colors.cardBackground};padding:${THEME.spacing.card}px;border-radius:${THEME.radius.card}px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
+      <div style="font-size:${THEME.font.label}px;color:${THEME.colors.textSecondary};font-weight:900;letter-spacing:.08em;">TARGET RESIDUO BLACK 💰</div>
+      <div style="margin-top:8px;font-size:${THEME.font.targetAmount}px;font-weight:950;line-height:1;">${euro(blackResidual)} 🔥</div>
+      <div style="margin-top:12px;height:10px;background:${THEME.colors.cardSecondary};border-radius:999px;overflow:hidden;">
+        <div style="height:100%;width:${blackProgress}%;background:${THEME.colors.green};border-radius:999px;"></div>
       </div>
-      <div style="margin-top:8px;color:#8e8e93;font-size:13px;">Raggiunto: ${euro(b.complessivo)} su ${euro(TARGET_BLACK)}</div>
+      <div style="margin-top:8px;color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;">Raggiunto: ${euro(b.complessivo)} su ${euro(TARGET_BLACK)}</div>
     </div>
 
-    <div style="grid-column:1 / -1;background:#1c1c1e;padding:16px;border-radius:22px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
-      <div style="font-size:12px;color:#8e8e93;font-weight:900;letter-spacing:.08em;">TARGET RESIDUO WHITE</div>
-      <div style="margin-top:8px;font-size:30px;font-weight:950;line-height:1;">${euro(whiteResidual)} 👎🏼</div>
-      <div style="margin-top:12px;height:10px;background:#2c2c2e;border-radius:999px;overflow:hidden;">
-        <div style="height:100%;width:${whiteProgress}%;background:#ffffff;border-radius:999px;"></div>
+    <div style="grid-column:1 / -1;background:${THEME.colors.cardBackground};padding:${THEME.spacing.card}px;border-radius:${THEME.radius.card}px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
+      <div style="font-size:${THEME.font.label}px;color:${THEME.colors.textSecondary};font-weight:900;letter-spacing:.08em;">TARGET RESIDUO WHITE</div>
+      <div style="margin-top:8px;font-size:${THEME.font.targetAmount}px;font-weight:950;line-height:1;">${euro(whiteResidual)} 👎🏼</div>
+      <div style="margin-top:12px;height:10px;background:${THEME.colors.cardSecondary};border-radius:999px;overflow:hidden;">
+        <div style="height:100%;width:${whiteProgress}%;background:${THEME.colors.whiteLabel};border-radius:999px;"></div>
       </div>
-      <div style="margin-top:8px;color:#8e8e93;font-size:13px;">Raggiunto: ${euro(w.complessivo)} su ${euro(TARGET_WHITE)}</div>
+      <div style="margin-top:8px;color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;">Raggiunto: ${euro(w.complessivo)} su ${euro(TARGET_WHITE)}</div>
     </div>
 
-    <div style="background:#1c1c1e;padding:16px;border-radius:22px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
-      <div style="font-size:12px;color:#30d158;font-weight:900;letter-spacing:.08em;">BLACK</div>
-      <div style="margin-top:10px;color:#8e8e93;font-size:13px;">Incassato</div>
-      <div style="font-size:24px;font-weight:900;line-height:1.15;">${euro(b.saldato)}</div>
-      <div style="margin-top:10px;color:#8e8e93;font-size:13px;">Complessivo</div>
+    <div style="background:${THEME.colors.cardBackground};padding:${THEME.spacing.card}px;border-radius:${THEME.radius.card}px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
+      <div style="font-size:${THEME.font.label}px;color:${THEME.colors.blackLabel};font-weight:900;letter-spacing:.08em;">BLACK</div>
+      <div style="margin-top:10px;color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;">Incassato</div>
+      <div style="font-size:${THEME.font.dashboardAmount}px;font-weight:900;line-height:1.15;">${euro(b.saldato)}</div>
+      <div style="margin-top:10px;color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;">Complessivo</div>
       <div style="font-size:17px;font-weight:700;">${euro(b.complessivo)}</div>
     </div>
-    <div style="background:#1c1c1e;padding:16px;border-radius:22px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
-      <div style="font-size:12px;color:#ffffff;font-weight:900;letter-spacing:.08em;">WHITE</div>
-      <div style="margin-top:10px;color:#8e8e93;font-size:13px;">Incassato</div>
-      <div style="font-size:24px;font-weight:900;line-height:1.15;">${euro(w.saldato)}</div>
-      <div style="margin-top:10px;color:#8e8e93;font-size:13px;">Complessivo</div>
+    <div style="background:${THEME.colors.cardBackground};padding:${THEME.spacing.card}px;border-radius:${THEME.radius.card}px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
+      <div style="font-size:${THEME.font.label}px;color:${THEME.colors.whiteLabel};font-weight:900;letter-spacing:.08em;">WHITE</div>
+      <div style="margin-top:10px;color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;">Incassato</div>
+      <div style="font-size:${THEME.font.dashboardAmount}px;font-weight:900;line-height:1.15;">${euro(w.saldato)}</div>
+      <div style="margin-top:10px;color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;">Complessivo</div>
       <div style="font-size:17px;font-weight:700;">${euro(w.complessivo)}</div>
     </div>
-    <div style="grid-column:1 / -1;background:#1c1c1e;padding:16px;border-radius:22px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
-      <div style="font-size:12px;color:#8e8e93;font-weight:900;letter-spacing:.08em;">TOTALE</div>
+    <div style="grid-column:1 / -1;background:${THEME.colors.cardBackground};padding:${THEME.spacing.card}px;border-radius:${THEME.radius.card}px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
+      <div style="font-size:${THEME.font.label}px;color:${THEME.colors.textSecondary};font-weight:900;letter-spacing:.08em;">TOTALE</div>
       <div style="display:flex;justify-content:space-between;gap:18px;margin-top:12px;">
         <div>
-          <div style="color:#8e8e93;font-size:13px;">Incassato</div>
-          <div style="font-size:25px;font-weight:900;">${euro(b.saldato + w.saldato)}</div>
+          <div style="color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;">Incassato</div>
+          <div style="font-size:${THEME.font.totalAmount}px;font-weight:900;">${euro(b.saldato + w.saldato)}</div>
         </div>
         <div style="text-align:right;">
-          <div style="color:#8e8e93;font-size:13px;">Complessivo</div>
-          <div style="font-size:25px;font-weight:900;">${euro(b.complessivo + w.complessivo)}</div>
+          <div style="color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;">Complessivo</div>
+          <div style="font-size:${THEME.font.totalAmount}px;font-weight:900;">${euro(b.complessivo + w.complessivo)}</div>
         </div>
       </div>
     </div>
@@ -154,7 +195,7 @@ function renderDashboard(bookings) {
 
 function renderBookings(bookings) {
   document.getElementById("bookingList").innerHTML = bookings.map(b => `
-    <div onclick='editBooking(${JSON.stringify(b)})' style="background:#1c1c1e;margin-bottom:10px;padding:14px;border-radius:16px;cursor:pointer;">
+    <div onclick='editBooking(${JSON.stringify(b)})' style="background:${THEME.colors.cardBackground};margin-bottom:10px;padding:14px;border-radius:${THEME.radius.button}px;cursor:pointer;">
       <b>${b.name}</b><br>
       ${euro(b.amount)} · ${b.account_type} · ${b.status}<br>
       Acconto: ${euro(b.deposit)}<br>
@@ -162,7 +203,7 @@ function renderBookings(bookings) {
       Provenienza: ${b.source || "-"}<br>
       ${b.notes ? `<small>${b.notes}</small><br>` : ""}
 
-<button onclick="event.stopPropagation(); deleteBooking('${b.id}')" style="margin-top:12px;padding:10px 14px;border:0;border-radius:12px;background:#ff3b30;color:white;font-weight:700;">
+<button onclick="event.stopPropagation(); deleteBooking('${b.id}')" style="margin-top:12px;padding:10px 14px;border:0;border-radius:${THEME.radius.input}px;background:${THEME.colors.red};color:${THEME.colors.textPrimary};font-weight:700;">
   Elimina
 </button>
     </div>
