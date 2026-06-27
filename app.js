@@ -59,19 +59,35 @@ async function checkAuth() {
 }
 
 function renderLogin() {
+  document.documentElement.style.margin = "0";
+  document.documentElement.style.padding = "0";
+  document.documentElement.style.background = "#050506";
+  document.body.style.margin = "0";
+  document.body.style.padding = "0";
+  document.body.style.background = "#050506";
+
   document.body.innerHTML = `
-    <main style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:${THEME.colors.pageBackground};padding:20px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-      <div style="width:100%;max-width:380px;background:${THEME.colors.cardBackground};padding:26px 22px 22px;border-radius:${THEME.radius.card}px;box-shadow:0 8px 40px rgba(0,0,0,.3);box-sizing:border-box;">
-        <div style="text-align:center;margin-bottom:24px;">
-          <div style="font-size:clamp(24px,7vw,${THEME.font.pageTitle}px);font-weight:900;margin-bottom:2px;color:${THEME.colors.textPrimary};line-height:1.08;">ShinEscape Manager</div>
-          <div style="font-size:clamp(15px,4vw,${THEME.font.pageSubtitle}px);color:${THEME.colors.textSecondary};font-weight:700;">Login</div>
+    <main style="min-height:100vh;min-height:100dvh;width:100vw;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 18%,rgba(255,255,255,.055),transparent 28%),linear-gradient(180deg,#0b0c0e 0%,#050506 100%);padding:calc(26px + env(safe-area-inset-top)) 20px calc(26px + env(safe-area-inset-bottom));box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden;">
+      <section style="width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:34px;">
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;">
+          <div style="width:112px;height:112px;border-radius:28px;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:0 18px 55px rgba(0,0,0,.55);">
+            <img src="assets/logo.png" alt="ShinEscape Logo" style="width:100%;height:100%;object-fit:contain;display:block;">
+          </div>
+          <div style="font-size:18px;letter-spacing:.34em;color:#ffffff;font-weight:500;text-transform:uppercase;opacity:.92;">ShinEscape</div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:13px;">
-          <input id="loginEmail" type="email" autocomplete="username" placeholder="Email" style="width:100%;box-sizing:border-box;padding:12px 13px;font-size:${THEME.font.formText}px;border-radius:${THEME.radius.input}px;border:1px solid ${THEME.colors.cardSecondary};background:${THEME.colors.cardSecondary};color:${THEME.colors.textPrimary};outline:none;">
-          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password" style="width:100%;box-sizing:border-box;padding:12px 13px;font-size:${THEME.font.formText}px;border-radius:${THEME.radius.input}px;border:1px solid ${THEME.colors.cardSecondary};background:${THEME.colors.cardSecondary};color:${THEME.colors.textPrimary};outline:none;">
-          <button id="loginButton" style="width:100%;box-sizing:border-box;margin-top:10px;padding:13px;font-size:${THEME.font.button}px;font-weight:700;border:0;border-radius:${THEME.radius.button}px;background:${THEME.colors.blue};color:${THEME.colors.textPrimary};cursor:pointer;">Accedi</button>
+
+        <div style="width:100%;background:rgba(28,28,30,.86);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);padding:30px 22px 22px;border-radius:30px;box-shadow:0 28px 80px rgba(0,0,0,.58);box-sizing:border-box;border:1px solid rgba(255,255,255,.06);">
+          <div style="text-align:center;margin-bottom:26px;">
+            <div style="font-size:clamp(30px,8vw,42px);font-weight:950;margin-bottom:4px;color:${THEME.colors.textPrimary};line-height:1.02;letter-spacing:-.055em;">ShinEscape Manager</div>
+            <div style="font-size:clamp(17px,4.5vw,22px);color:${THEME.colors.textSecondary};font-weight:800;">Login</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <input id="loginEmail" type="email" autocomplete="username" placeholder="Email" style="width:100%;box-sizing:border-box;padding:16px 16px;font-size:18px;border-radius:18px;border:1px solid rgba(255,255,255,.04);background:rgba(58,58,60,.72);color:${THEME.colors.textPrimary};outline:none;">
+            <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password" style="width:100%;box-sizing:border-box;padding:16px 16px;font-size:18px;border-radius:18px;border:1px solid rgba(255,255,255,.04);background:rgba(58,58,60,.72);color:${THEME.colors.textPrimary};outline:none;">
+            <button id="loginButton" style="width:100%;box-sizing:border-box;margin-top:18px;padding:17px;font-size:20px;font-weight:850;border:0;border-radius:20px;background:${THEME.colors.blue};color:${THEME.colors.textPrimary};cursor:pointer;box-shadow:0 16px 34px rgba(10,132,255,.28);">Accedi</button>
+          </div>
         </div>
-      </div>
+      </section>
     </main>
   `;
   document.getElementById("loginButton").onclick = async () => {
@@ -111,7 +127,7 @@ function euro(value) {
 
 function renderApp() {
   document.body.innerHTML = `
-    <main style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${THEME.colors.pageBackground};color:${THEME.colors.textPrimary};min-height:100vh;padding:${THEME.spacing.page}px;">
+    <main style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${THEME.colors.pageBackground};color:${THEME.colors.textPrimary};min-height:100vh;min-height:100dvh;padding:${THEME.spacing.page}px;padding-top:calc(${THEME.spacing.page}px + env(safe-area-inset-top));padding-bottom:calc(${THEME.spacing.page}px + env(safe-area-inset-bottom));box-sizing:border-box;">
       <header style="display:flex;align-items:center;gap:18px;margin-bottom:22px;padding:18px;border-radius:${THEME.radius.card}px;background:linear-gradient(135deg,#0b1118,#111820);border:1px solid ${THEME.colors.cardBorder};box-shadow:0 18px 50px rgba(0,0,0,.35);position:relative;">
         <div style="width:88px;height:88px;border-radius:22px;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid rgba(255,255,255,.08);">
           <img src="assets/logo.png" alt="ShinEscape Logo" style="width:100%;height:100%;object-fit:contain;display:block;">
