@@ -320,7 +320,7 @@ function renderDashboard(bookings) {
 
 function renderBookings(bookings) {
   document.getElementById("bookingList").innerHTML = bookings.map(b => `
-    <div onclick='editBooking(${JSON.stringify(b)})' style="background:${b.status === 'Saldato' ? '#143d22' : THEME.colors.cardBackground};margin-bottom:10px;padding:14px;border-radius:${THEME.radius.button}px;cursor:pointer;border:${b.status === 'Saldato' ? '1px solid #30d158' : '1px solid transparent'};">
+    <div onclick='editBooking(${JSON.stringify(b)})' style="background:${b.status === 'Saldato' ? '#143d22' : THEME.colors.cardBackground};margin-bottom:10px;padding:14px;border-radius:${THEME.radius.button}px;cursor:pointer;border:${b.name === 'SumWhite' ? '1px solid #ffffff' : (b.status === 'Saldato' ? '1px solid #30d158' : '1px solid transparent')};">
       <b>${b.name}${b.status === 'Saldato' ? ' ✅' : ''}</b><br>
       ${euro(b.amount)} · ${b.account_type} · ${b.status}<br>
       Acconto: ${euro(b.deposit)}<br>
