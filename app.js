@@ -4,6 +4,8 @@ const SUPABASE_URL = "https://prpvhnwedpnnwpdvrttz.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBycHZobndlZHBubndwZHZydHR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MjAwMjcsImV4cCI6MjA5Nzk5NjAyN30.jnrGO7j0ptDfnKScitE3vU79SM6tvMevtfM6_Tv7iBE";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const TARGET_BLACK = 17000;
+const TARGET_WHITE = 10004;
 
 document.addEventListener("DOMContentLoaded", async () => {
   renderApp();
@@ -96,21 +98,56 @@ function renderDashboard(bookings) {
   const b = calc(black);
   const w = calc(white);
 
+  const blackResidual = Math.max(TARGET_BLACK - b.complessivo, 0);
+  const whiteResidual = Math.max(TARGET_WHITE - w.complessivo, 0);
+  const blackProgress = Math.min((b.complessivo / TARGET_BLACK) * 100, 100);
+  const whiteProgress = Math.min((w.complessivo / TARGET_WHITE) * 100, 100);
+
   document.getElementById("dashboard").innerHTML = `
-    <div style="background:#1c1c1e;padding:16px;border-radius:18px;">
-      <b style="color:#30d158;">BLACK</b><br>
-      Incassato: ${euro(b.saldato)}<br>
-      Complessivo: ${euro(b.complessivo)}
+    <div style="grid-column:1 / -1;background:#1c1c1e;padding:16px;border-radius:22px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
+      <div style="font-size:12px;color:#8e8e93;font-weight:900;letter-spacing:.08em;">TARGET RESIDUO BLACK 💰</div>
+      <div style="margin-top:8px;font-size:30px;font-weight:950;line-height:1;">${euro(blackResidual)} 🔥</div>
+      <div style="margin-top:12px;height:10px;background:#2c2c2e;border-radius:999px;overflow:hidden;">
+        <div style="height:100%;width:${blackProgress}%;background:#30d158;border-radius:999px;"></div>
+      </div>
+      <div style="margin-top:8px;color:#8e8e93;font-size:13px;">Raggiunto: ${euro(b.complessivo)} su ${euro(TARGET_BLACK)}</div>
     </div>
-    <div style="background:#1c1c1e;padding:16px;border-radius:18px;">
-      <b style="color:#ff3b30;">WHITE</b><br>
-      Incassato: ${euro(w.saldato)}<br>
-      Complessivo: ${euro(w.complessivo)}
+
+    <div style="grid-column:1 / -1;background:#1c1c1e;padding:16px;border-radius:22px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
+      <div style="font-size:12px;color:#8e8e93;font-weight:900;letter-spacing:.08em;">TARGET RESIDUO WHITE</div>
+      <div style="margin-top:8px;font-size:30px;font-weight:950;line-height:1;">${euro(whiteResidual)} 👎🏼</div>
+      <div style="margin-top:12px;height:10px;background:#2c2c2e;border-radius:999px;overflow:hidden;">
+        <div style="height:100%;width:${whiteProgress}%;background:#ffffff;border-radius:999px;"></div>
+      </div>
+      <div style="margin-top:8px;color:#8e8e93;font-size:13px;">Raggiunto: ${euro(w.complessivo)} su ${euro(TARGET_WHITE)}</div>
     </div>
-    <div style="background:#1c1c1e;padding:16px;border-radius:18px;">
-      <b>TOTALE</b><br>
-      Incassato: ${euro(b.saldato + w.saldato)}<br>
-      Complessivo: ${euro(b.complessivo + w.complessivo)}
+
+    <div style="background:#1c1c1e;padding:16px;border-radius:22px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
+      <div style="font-size:12px;color:#30d158;font-weight:900;letter-spacing:.08em;">BLACK</div>
+      <div style="margin-top:10px;color:#8e8e93;font-size:13px;">Incassato</div>
+      <div style="font-size:24px;font-weight:900;line-height:1.15;">${euro(b.saldato)}</div>
+      <div style="margin-top:10px;color:#8e8e93;font-size:13px;">Complessivo</div>
+      <div style="font-size:17px;font-weight:700;">${euro(b.complessivo)}</div>
+    </div>
+    <div style="background:#1c1c1e;padding:16px;border-radius:22px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
+      <div style="font-size:12px;color:#ffffff;font-weight:900;letter-spacing:.08em;">WHITE</div>
+      <div style="margin-top:10px;color:#8e8e93;font-size:13px;">Incassato</div>
+      <div style="font-size:24px;font-weight:900;line-height:1.15;">${euro(w.saldato)}</div>
+      <div style="margin-top:10px;color:#8e8e93;font-size:13px;">Complessivo</div>
+      <div style="font-size:17px;font-weight:700;">${euro(w.complessivo)}</div>
+    </div>
+    <div style="grid-column:1 / -1;background:#1c1c1e;padding:16px;border-radius:22px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
+      <div style="font-size:12px;color:#8e8e93;font-weight:900;letter-spacing:.08em;">TOTALE</div>
+      <div style="display:flex;justify-content:space-between;gap:18px;margin-top:12px;">
+        <div>
+          <div style="color:#8e8e93;font-size:13px;">Incassato</div>
+          <div style="font-size:25px;font-weight:900;">${euro(b.saldato + w.saldato)}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="color:#8e8e93;font-size:13px;">Complessivo</div>
+          <div style="font-size:25px;font-weight:900;">${euro(b.complessivo + w.complessivo)}</div>
+        </div>
+      </div>
     </div>
   `;
 }
