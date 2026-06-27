@@ -6,6 +6,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const TARGET_BLACK = 40000;
 const TARGET_WHITE = 28000;
+const TARGET_TOTAL = 70000;
 
 const THEME = {
   colors: {
@@ -25,6 +26,7 @@ const THEME = {
     pageSubtitle: 18,
     sectionTitle: 22,
     label: 12,
+    summaryTitle: 24,
     helper: 13,
     normal: 14,
     formText: 16,
@@ -144,6 +146,10 @@ function renderDashboard(bookings) {
   const blackProgress = Math.min((b.complessivo / TARGET_BLACK) * 100, 100);
   const whiteProgress = Math.min((w.complessivo / TARGET_WHITE) * 100, 100);
 
+  const totalComplessivo = b.complessivo + w.complessivo;
+  const totalResidual = Math.max(TARGET_TOTAL - totalComplessivo, 0);
+  const totalProgress = Math.min((totalComplessivo / TARGET_TOTAL) * 100, 100);
+
   document.getElementById("dashboard").innerHTML = `
     <div style="grid-column:1 / -1;background:${THEME.colors.cardBackground};padding:${THEME.spacing.card}px;border-radius:${THEME.radius.card}px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
       <div style="font-size:${THEME.font.label}px;color:${THEME.colors.textSecondary};font-weight:900;letter-spacing:.08em;">TARGET RESIDUO BLACK 💰</div>
@@ -163,15 +169,24 @@ function renderDashboard(bookings) {
       <div style="margin-top:8px;color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;">Raggiunto: ${euro(w.complessivo)} su ${euro(TARGET_WHITE)}</div>
     </div>
 
+    <div style="grid-column:1 / -1;background:${THEME.colors.cardBackground};padding:${THEME.spacing.card}px;border-radius:${THEME.radius.card}px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
+      <div style="font-size:${THEME.font.label}px;color:${THEME.colors.textSecondary};font-weight:900;letter-spacing:.08em;">TARGET RESIDUO TOTALE</div>
+      <div style="margin-top:8px;font-size:${THEME.font.targetAmount}px;font-weight:950;line-height:1;">${euro(totalResidual)} 🚀</div>
+      <div style="margin-top:12px;height:10px;background:${THEME.colors.cardSecondary};border-radius:999px;overflow:hidden;">
+        <div style="height:100%;width:${totalProgress}%;background:${THEME.colors.blue};border-radius:999px;"></div>
+      </div>
+      <div style="margin-top:8px;color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;">Raggiunto: ${euro(totalComplessivo)} su ${euro(TARGET_TOTAL)}</div>
+    </div>
+
     <div style="background:${THEME.colors.cardBackground};padding:${THEME.spacing.card}px;border-radius:${THEME.radius.card}px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
-      <div style="font-size:${THEME.font.label}px;color:${THEME.colors.blackLabel};font-weight:900;letter-spacing:.08em;">BLACK</div>
+      <div style="font-size:${THEME.font.summaryTitle}px;color:${THEME.colors.blackLabel};font-weight:900;letter-spacing:.08em;">BLACK</div>
       <div style="margin-top:10px;color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;">Incassato</div>
       <div style="font-size:${THEME.font.dashboardAmount}px;font-weight:900;line-height:1.15;">${euro(b.saldato)}</div>
       <div style="margin-top:10px;color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;">Complessivo</div>
       <div style="font-size:17px;font-weight:700;">${euro(b.complessivo)}</div>
     </div>
     <div style="background:${THEME.colors.cardBackground};padding:${THEME.spacing.card}px;border-radius:${THEME.radius.card}px;box-shadow:0 12px 34px rgba(0,0,0,.22);">
-      <div style="font-size:${THEME.font.label}px;color:${THEME.colors.whiteLabel};font-weight:900;letter-spacing:.08em;">WHITE</div>
+      <div style="font-size:${THEME.font.summaryTitle}px;color:${THEME.colors.whiteLabel};font-weight:900;letter-spacing:.08em;">WHITE</div>
       <div style="margin-top:10px;color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;">Incassato</div>
       <div style="font-size:${THEME.font.dashboardAmount}px;font-weight:900;line-height:1.15;">${euro(w.saldato)}</div>
       <div style="margin-top:10px;color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;">Complessivo</div>
