@@ -151,11 +151,40 @@ function formatDateTimeIT(value) {
   });
 }
 
+
 function formatSyncNote(notes) {
   const text = String(notes || "");
   const match = text.match(/Lodgify sync · (\d{4}-\d{2}-\d{2}) → (\d{4}-\d{2}-\d{2})/);
   if (!match) return text;
   return `Lodgify sync · ${formatDateIT(match[1])} → ${formatDateIT(match[2])}`;
+}
+
+function applyAutomaticPaidStatus(bookings) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return bookings.map(booking => {
+    const isOta = booking.synced_from === "Lodgify" || ["Airbnb", "Booking"].includes(String(booking.source || ""));
+    if (!isOta) return booking;
+
+    let checkout = booking.departure_date || null;
+
+    if (!checkout && booking.notes) {
+      const match = String(booking.notes).match(/→\s*(\d{4}-\d{2}-\d{2})/);
+      checkout = match ? match[1] : null;
+    }
+
+    if (!checkout) return booking;
+
+    const checkoutDate = new Date(`${checkout}T00:00:00`);
+    if (Number.isNaN(checkoutDate.getTime())) return booking;
+
+    if (checkoutDate >= today) {
+      return { ...booking, status: "Saldato", departure_date: checkout };
+    }
+
+    return booking;
+  });
 }
 
 function getSyncStats(bookings) {
@@ -430,9 +459,11 @@ async function loadBookings() {
     return;
   }
 
-  renderDashboard(data);
-  renderSyncSummary(data);
-  renderBookings(data);
+  const normalizedData = applyAutomaticPaidStatus(data || []);
+
+  renderDashboard(normalizedData);
+  renderSyncSummary(normalizedData);
+  renderBookings(normalizedData);
 }
 
 function renderSyncSummary(bookings) {
@@ -488,7 +519,7 @@ function renderDashboard(bookings) {
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:18px;align-items:start;">
         <div>
           <div style="font-size:${THEME.font.helper}px;color:${THEME.colors.blue};font-weight:900;letter-spacing:.04em;">TARGET RESIDUO BLACK</div>
-          <div style="margin-top:8px;font-size:clamp(24px,7vw,${THEME.font.targetAmount}px);font-weight:950;line-height:1.08;white-space:nowrap;">${euro(blackResidual)}</div>
+          <div style="margin-top:8px;font-size:clamp(21px,5.8vw,26px);font-weight:950;line-height:1.12;white-space:nowrap;">${euro(blackResidual)}</div>
         </div>
         <div>
           <div style="color:#c7c7cc;font-size:${THEME.font.helper}px;">Incassato</div>
@@ -515,7 +546,7 @@ function renderDashboard(bookings) {
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:18px;align-items:start;">
         <div>
           <div style="font-size:${THEME.font.helper}px;color:${THEME.colors.whiteLabel};font-weight:900;letter-spacing:.04em;">TARGET RESIDUO WHITE</div>
-          <div style="margin-top:8px;font-size:clamp(24px,7vw,${THEME.font.targetAmount}px);font-weight:950;line-height:1.08;white-space:nowrap;">${euro(whiteResidual)}</div>
+          <div style="margin-top:8px;font-size:clamp(21px,5.8vw,26px);font-weight:950;line-height:1.12;white-space:nowrap;">${euro(whiteResidual)}</div>
         </div>
         <div>
           <div style="color:#c7c7cc;font-size:${THEME.font.helper}px;">Incassato</div>
@@ -561,7 +592,7 @@ function renderDashboard(bookings) {
         <div style="min-width:0;width:100%;">
           <div style="font-size:${THEME.font.summaryTitle}px;color:${THEME.colors.blue};font-weight:950;letter-spacing:.04em;">TOTALE</div>
           <div style="margin-top:22px;color:#c7c7cc;font-size:${THEME.font.formText}px;">Actual Black + White</div>
-          <div style="margin-top:8px;font-size:clamp(26px,4vw,${THEME.font.targetAmount}px);font-weight:950;">${euro(totalComplessivo)}</div>
+          <div style="margin-top:8px;font-size:clamp(22px,5.5vw,26px);font-weight:950;line-height:1.12;white-space:nowrap;">${euro(totalComplessivo)}</div>
           <div style="margin-top:18px;">
             <div style="display:flex;justify-content:space-between;gap:18px;align-items:flex-end;margin-bottom:8px;">
               <div style="text-align:center;flex:1;">
@@ -585,14 +616,14 @@ function renderDashboard(bookings) {
         </div>
         <div style="border-left:1px solid #344150;padding-left:22px;min-width:0;">
           <div style="color:#c7c7cc;font-size:${THEME.font.formText}px;">Totale incassato</div>
-          <div style="margin-top:8px;color:${THEME.colors.green};font-size:clamp(24px,6vw,${THEME.font.targetAmount}px);font-weight:950;line-height:1.08;white-space:nowrap;">${euro(b.saldato + w.saldato)}</div>
+          <div style="margin-top:8px;color:${THEME.colors.green};font-size:clamp(21px,5.8vw,26px);font-weight:950;line-height:1.12;white-space:nowrap;">${euro(b.saldato + w.saldato)}</div>
         </div>
       </div>
 
       <div style="height:1px;background:#344150;margin:24px 0;"></div>
 
       <div style="color:#c7c7cc;font-size:${THEME.font.formText}px;">Cifra da raggiungere</div>
-      <div style="margin-top:8px;color:${THEME.colors.blue};font-size:clamp(26px,4vw,${THEME.font.targetAmount}px);font-weight:950;">${euro(TARGET_TOTAL)}</div>
+      <div style="margin-top:8px;color:${THEME.colors.blue};font-size:clamp(22px,5.5vw,26px);font-weight:950;line-height:1.12;white-space:nowrap;">${euro(TARGET_TOTAL)}</div>
       <div style="margin-top:14px;height:12px;background:${THEME.colors.cardSecondary};border-radius:999px;overflow:hidden;">
         <div style="height:100%;width:${totalProgress}%;background:linear-gradient(90deg,#0a84ff,#2f8cff);border-radius:999px;"></div>
       </div>
