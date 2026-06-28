@@ -152,11 +152,20 @@ function formatDateTimeIT(value) {
 }
 
 
+
 function formatSyncNote(notes) {
   const text = String(notes || "");
   const match = text.match(/Lodgify sync · (\d{4}-\d{2}-\d{2}) → (\d{4}-\d{2}-\d{2})/);
   if (!match) return text;
   return `Lodgify sync · ${formatDateIT(match[1])} → ${formatDateIT(match[2])}`;
+}
+
+function getBookingDateLine(booking) {
+  if (booking.notes) return formatSyncNote(booking.notes);
+  if (booking.arrival_date || booking.departure_date) {
+    return `Stay · ${formatDateIT(booking.arrival_date)} → ${formatDateIT(booking.departure_date)}`;
+  }
+  return "";
 }
 
 function applyAutomaticPaidStatus(bookings) {
@@ -649,6 +658,7 @@ function renderBookings(bookings) {
     const isPaid = b.status === "Saldato";
     const isSumWhite = b.name === "SumWhite";
     const initials = getInitials(b.name);
+    const dateLine = getBookingDateLine(b);
     const cardBorder = isSumWhite ? "#ffffff" : (isPaid ? THEME.colors.green : "rgba(255,255,255,.06)");
     const cardBackground = isPaid
       ? "linear-gradient(135deg,rgba(20,61,34,.96),rgba(10,18,13,.96))"
@@ -699,7 +709,7 @@ function renderBookings(bookings) {
           </button>
         </div>
 
-        ${b.notes ? `<div style="margin-top:12px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.045);color:#c7c7cc;font-size:${THEME.font.helper}px;line-height:1.35;">${formatSyncNote(b.notes)}</div>` : ""}
+        ${dateLine ? `<div style="margin-top:12px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.045);color:#c7c7cc;font-size:${THEME.font.helper}px;line-height:1.35;">${dateLine}</div>` : ""}
       </div>
     `;
   }).join("");
