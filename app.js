@@ -650,13 +650,18 @@ async function importLodgifyById() {
   if (result.action === "imported_or_updated") {
     alert(`Prenotazione importata: ${result.booking?.name || bookingId} · ${euro(result.booking?.amount || 0)}`);
     input.value = "";
-  } else if (result.action === "skipped_or_removed") {
-    alert(`Prenotazione non importata: stato ${result.reason?.status || "non valido"}, sorgente ${result.reason?.source || "non OTA"}.`);
-  } else {
-    alert("Operazione Lodgify completata.");
+    await loadBookings();
+    return;
   }
 
-  await loadBookings();
+  if (result.action === "skipped_or_removed") {
+    alert(`Prenotazione non importata: stato ${result.reason?.status || "non valido"}, sorgente ${result.reason?.source || "non OTA"}.`);
+    await loadBookings();
+    return;
+  }
+
+  alert("Risposta Lodgify non valida per import. Controlla che la Edge Function sia quella definitiva, non una diagnostica.");
+  console.log(result);
 }
 
 async function saveBooking(event) {
