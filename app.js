@@ -598,7 +598,7 @@ async function syncLodgify() {
       return;
     }
 
-    alert(`Sync completata: ${result.filteredAirbnbBooking || result.imported_or_updated || 0} prenotazioni OTA elaborate.`);
+    alert(`Sync completata: ${result.imported_or_updated || result.filteredAirbnbBooking || 0} prenotazioni OTA elaborate.`);
     await loadBookings();
   } catch (error) {
     alert(`Errore sync Lodgify: ${error.message}`);
