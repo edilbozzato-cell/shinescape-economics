@@ -231,6 +231,8 @@ function renderDashboard(bookings) {
   const totalComplessivo = b.complessivo + w.complessivo;
   const totalResidual = Math.max(TARGET_TOTAL - totalComplessivo, 0);
   const totalProgress = Math.min((totalComplessivo / TARGET_TOTAL) * 100, 100);
+  const blackShare = totalComplessivo > 0 ? (b.complessivo / totalComplessivo) * 100 : 0;
+  const whiteShare = totalComplessivo > 0 ? (w.complessivo / totalComplessivo) * 100 : 0;
 
   document.getElementById("dashboard").innerHTML = `
     <div style="grid-column:1 / -1;background:linear-gradient(135deg,#111820,#0b0f14);padding:${THEME.spacing.card}px;border-radius:${THEME.radius.card}px;border:1px solid ${THEME.colors.cardBorder};box-shadow:0 18px 50px rgba(0,0,0,.35);">
@@ -311,6 +313,16 @@ function renderDashboard(bookings) {
           <div style="font-size:${THEME.font.summaryTitle}px;color:${THEME.colors.blue};font-weight:950;letter-spacing:.04em;">TOTALE</div>
           <div style="margin-top:22px;color:#c7c7cc;font-size:${THEME.font.formText}px;">Cifra attuale (Black + White)</div>
           <div style="margin-top:8px;font-size:${THEME.font.targetAmount}px;font-weight:950;">${euro(totalComplessivo)}</div>
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px;">
+            <div style="background:rgba(10,132,255,.12);border:1px solid rgba(10,132,255,.35);border-radius:14px;padding:12px;">
+              <div style="color:#c7c7cc;font-size:${THEME.font.helper}px;">% Black su actual</div>
+              <div style="margin-top:6px;color:${THEME.colors.blue};font-size:${THEME.font.totalAmount}px;font-weight:950;">${blackShare.toFixed(1).replace('.', ',')}%</div>
+            </div>
+            <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:12px;">
+              <div style="color:#c7c7cc;font-size:${THEME.font.helper}px;">% White su actual</div>
+              <div style="margin-top:6px;color:${THEME.colors.whiteLabel};font-size:${THEME.font.totalAmount}px;font-weight:950;">${whiteShare.toFixed(1).replace('.', ',')}%</div>
+            </div>
+          </div>
         </div>
         <div style="border-left:1px solid #344150;padding-left:22px;">
           <div style="color:#c7c7cc;font-size:${THEME.font.formText}px;">Totale incassato</div>
