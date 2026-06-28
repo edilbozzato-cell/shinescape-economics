@@ -305,41 +305,41 @@ function renderApp() {
         </div>
 
         <div style="padding:20px 22px 18px;">
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px 22px;">
-            <label style="display:flex;flex-direction:column;gap:8px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0;border:1px solid rgba(255,255,255,.08);border-radius:22px;overflow:hidden;background:rgba(255,255,255,.025);">
+            <label style="min-height:138px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;border-right:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box;">
               <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">♙</span>Guest Name</span>
-              <input name="name" placeholder="Enter guest name" required style="width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
+              <input name="name" placeholder="Enter guest name" required style="margin-top:auto;width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
             </label>
 
-            <label style="display:flex;flex-direction:column;gap:8px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;">
+            <label style="min-height:138px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box;">
               <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:22px;">€</span>Total Amount (€)</span>
-              <input name="amount" type="number" placeholder="0,00" required style="width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
+              <input name="amount" type="number" placeholder="0,00" required style="margin-top:auto;width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
             </label>
 
-            <label style="display:flex;flex-direction:column;gap:8px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;">
+            <label style="min-height:138px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;border-right:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box;">
               <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">☷</span>Account Type</span>
-              <select name="account_type" style="width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
+              <select name="account_type" style="margin-top:auto;width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
                 <option>Black</option>
                 <option>White</option>
               </select>
             </label>
 
-            <label style="display:flex;flex-direction:column;gap:8px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;">
+            <label style="min-height:138px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box;">
               <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">▣</span>Payment Status</span>
-              <select name="status" style="width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
+              <select name="status" style="margin-top:auto;width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
                 <option>Da saldare</option>
                 <option>Saldato</option>
               </select>
             </label>
 
-            <label style="display:flex;flex-direction:column;gap:8px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;">
-              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">◇</span>Deposit / Security (€)</span>
-              <input name="deposit" type="number" placeholder="0,00" value="0" style="width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
+            <label style="min-height:138px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;border-right:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box;">
+              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">◇</span>Acconto (€)</span>
+              <input name="deposit" type="number" placeholder="0,00" value="0" style="margin-top:auto;width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
             </label>
 
-            <label style="display:flex;flex-direction:column;gap:8px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;">
+            <label style="min-height:138px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box;">
               <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">⌂</span>Apartment</span>
-              <select name="apartment" style="width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
+              <select name="apartment" style="margin-top:auto;width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
                 <option value="">Select apartment</option>
                 <option value="1">Apartment 1</option>
                 <option value="2">Apartment 2</option>
@@ -351,22 +351,32 @@ function renderApp() {
                 <option value="8">Apartment 8</option>
               </select>
             </label>
+
+            <label style="min-height:138px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;border-right:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box;">
+              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">▦</span>Check-in Date</span>
+              <input name="arrival_date" type="date" style="margin-top:auto;width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
+            </label>
+
+            <label style="min-height:138px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box;">
+              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">▦</span>Check-out Date</span>
+              <input name="departure_date" type="date" style="margin-top:auto;width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
+            </label>
+
+            <label style="grid-column:1 / -1;min-height:126px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box;">
+              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">◎</span>Source</span>
+              <select name="source" style="margin-top:auto;width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
+                <option value="">Select source</option>
+                <option>Diretto</option>
+                <option>Booking</option>
+                <option>Airbnb</option>
+              </select>
+            </label>
+
+            <label style="grid-column:1 / -1;min-height:154px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;box-sizing:border-box;">
+              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">▤</span>Notes</span>
+              <textarea name="notes" placeholder="Add any additional notes..." style="margin-top:auto;width:100%;min-height:78px;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;resize:vertical;"></textarea>
+            </label>
           </div>
-
-          <label style="margin-top:18px;display:flex;flex-direction:column;gap:8px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;">
-            <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">◎</span>Source</span>
-            <select name="source" style="width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
-              <option value="">Select source</option>
-              <option>Diretto</option>
-              <option>Booking</option>
-              <option>Airbnb</option>
-            </select>
-          </label>
-
-          <label style="margin-top:18px;display:flex;flex-direction:column;gap:8px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;">
-            <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">▤</span>Notes</span>
-            <textarea name="notes" placeholder="Add any additional notes..." style="width:100%;min-height:92px;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;resize:vertical;"></textarea>
-          </label>
         </div>
 
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;padding:16px 22px 22px;border-top:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.025);">
@@ -748,6 +758,8 @@ async function saveBooking(event) {
   booking.amount = Number(booking.amount);
   booking.deposit = Number(booking.deposit || 0);
   booking.apartment = booking.apartment ? Number(booking.apartment) : null;
+  booking.arrival_date = booking.arrival_date || null;
+  booking.departure_date = booking.departure_date || null;
 
   let error;
 
@@ -805,6 +817,8 @@ window.editBooking = function(b) {
   form.status.value = b.status || "Da saldare";
   form.deposit.value = b.deposit || 0;
   form.apartment.value = b.apartment || "";
+  form.arrival_date.value = b.arrival_date || "";
+  form.departure_date.value = b.departure_date || "";
   form.source.value = b.source || "";
   form.notes.value = b.notes || "";
 
