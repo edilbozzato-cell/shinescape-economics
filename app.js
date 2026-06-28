@@ -629,8 +629,10 @@ async function syncLodgify() {
   const result = await callLodgifyFunction({}, button, "Sincronizzazione...");
   if (!result) return;
 
-  const count = result.imported_or_updated || result.filteredAirbnbBooking || result.booking ? 1 : 0;
-  alert(`Sync completata: ${count} prenotazioni OTA elaborate.`);
+  const count = Number(result.imported_or_updated || result.imported || result.updated || 0);
+  const skipped = Number(result.skipped || 0);
+  const removed = Number(result.removed || 0);
+  alert(`Sync completata: ${count} importate/aggiornate · ${skipped} ignorate · ${removed} rimosse.`);
   await loadBookings();
 }
 
