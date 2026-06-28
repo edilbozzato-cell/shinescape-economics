@@ -291,25 +291,87 @@ function renderApp() {
 
       <section id="syncSummary"></section>
 
-      <form id="bookingForm" style="display:none;margin-top:20px;background:${THEME.colors.cardBackground};padding:${THEME.spacing.form}px;border-radius:${THEME.radius.form}px;">
-        <input name="name" placeholder="Nome" required style="width:100%;margin-bottom:10px;padding:12px;border-radius:${THEME.radius.input}px;border:0;font-size:${THEME.font.formText}px;">
-        <input name="amount" type="number" placeholder="Importo" required style="width:100%;margin-bottom:10px;padding:12px;border-radius:${THEME.radius.input}px;border:0;font-size:${THEME.font.formText}px;">
-        <select name="account_type" style="width:100%;margin-bottom:10px;padding:12px;border-radius:${THEME.radius.input}px;font-size:${THEME.font.formText}px;">
-          <option>Black</option>
-          <option>White</option>
-        </select>
-        <select name="status" style="width:100%;margin-bottom:10px;padding:12px;border-radius:${THEME.radius.input}px;font-size:${THEME.font.formText}px;">
-          <option>Da saldare</option>
-          <option>Saldato</option>
-        </select>
-        <input name="deposit" type="number" placeholder="Acconto" value="0" style="width:100%;margin-bottom:10px;padding:12px;border-radius:${THEME.radius.input}px;border:0;font-size:${THEME.font.formText}px;">
-        <input name="apartment" type="number" placeholder="Appartamento" style="width:100%;margin-bottom:10px;padding:12px;border-radius:${THEME.radius.input}px;border:0;font-size:${THEME.font.formText}px;">
-        <input name="source" placeholder="Provenienza: Booking / Airbnb / Diretto" style="width:100%;margin-bottom:10px;padding:12px;border-radius:${THEME.radius.input}px;border:0;font-size:${THEME.font.formText}px;">
-        <textarea name="notes" placeholder="Note" style="width:100%;margin-bottom:10px;padding:12px;border-radius:${THEME.radius.input}px;border:0;font-size:${THEME.font.formText}px;"></textarea>
+      <form id="bookingForm" style="display:none;margin-top:20px;background:linear-gradient(145deg,#111820,#080b10);padding:0;border-radius:28px;border:1px solid rgba(255,255,255,.10);box-shadow:0 28px 80px rgba(0,0,0,.46);overflow:hidden;">
+        <div style="padding:22px 22px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid rgba(255,255,255,.07);">
+          <div style="display:flex;align-items:center;gap:14px;min-width:0;">
+            <div style="width:58px;height:58px;border-radius:999px;background:rgba(48,209,88,.08);border:1px solid rgba(48,209,88,.55);display:flex;align-items:center;justify-content:center;color:${THEME.colors.green};font-size:28px;font-weight:900;box-shadow:0 0 28px rgba(48,209,88,.10);flex-shrink:0;">+</div>
+            <div style="min-width:0;">
+              <div style="font-size:clamp(24px,4vw,34px);line-height:1.05;font-weight:950;letter-spacing:-.045em;color:${THEME.colors.textPrimary};">New Black Reservation</div>
+              <div style="margin-top:6px;color:${THEME.colors.textSecondary};font-size:clamp(13px,2.8vw,16px);font-weight:650;">Insert the details for this Black booking</div>
+            </div>
+          </div>
+          <button id="cancelFormTop" type="button" style="width:44px;height:44px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:${THEME.colors.textPrimary};font-size:26px;line-height:1;font-weight:350;flex-shrink:0;">×</button>
+        </div>
 
-        <button type="submit" style="width:100%;padding:14px;border:0;border-radius:${THEME.radius.button}px;background:${THEME.colors.green};color:#000;font-size:${THEME.font.formText}px;font-weight:700;">
-          Salva
-        </button>
+        <div style="padding:20px 22px 18px;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px 22px;">
+            <label style="display:flex;flex-direction:column;gap:8px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;">
+              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">♙</span>Guest Name</span>
+              <input name="name" placeholder="Enter guest name" required style="width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
+            </label>
+
+            <label style="display:flex;flex-direction:column;gap:8px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;">
+              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:22px;">€</span>Total Amount (€)</span>
+              <input name="amount" type="number" placeholder="0,00" required style="width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
+            </label>
+
+            <label style="display:flex;flex-direction:column;gap:8px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;">
+              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">☷</span>Account Type</span>
+              <select name="account_type" style="width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
+                <option>Black</option>
+                <option>White</option>
+              </select>
+            </label>
+
+            <label style="display:flex;flex-direction:column;gap:8px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;">
+              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">▣</span>Payment Status</span>
+              <select name="status" style="width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
+                <option>Da saldare</option>
+                <option>Saldato</option>
+              </select>
+            </label>
+
+            <label style="display:flex;flex-direction:column;gap:8px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;">
+              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">◇</span>Deposit / Security (€)</span>
+              <input name="deposit" type="number" placeholder="0,00" value="0" style="width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
+            </label>
+
+            <label style="display:flex;flex-direction:column;gap:8px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;">
+              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">⌂</span>Apartment</span>
+              <select name="apartment" style="width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
+                <option value="">Select apartment</option>
+                <option value="1">Apartment 1</option>
+                <option value="2">Apartment 2</option>
+                <option value="3">Apartment 3</option>
+                <option value="4">Apartment 4</option>
+                <option value="5">Apartment 5</option>
+                <option value="6">Apartment 6</option>
+                <option value="7">Apartment 7</option>
+                <option value="8">Apartment 8</option>
+              </select>
+            </label>
+          </div>
+
+          <label style="margin-top:18px;display:flex;flex-direction:column;gap:8px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;">
+            <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">◎</span>Source</span>
+            <select name="source" style="width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
+              <option value="">Select source</option>
+              <option>Diretto</option>
+              <option>Booking</option>
+              <option>Airbnb</option>
+            </select>
+          </label>
+
+          <label style="margin-top:18px;display:flex;flex-direction:column;gap:8px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;">
+            <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">▤</span>Notes</span>
+            <textarea name="notes" placeholder="Add any additional notes..." style="width:100%;min-height:92px;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;resize:vertical;"></textarea>
+          </label>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;padding:16px 22px 22px;border-top:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.025);">
+          <button id="cancelForm" type="button" style="width:100%;padding:16px;border:1px solid rgba(255,255,255,.10);border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.03));color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;font-weight:850;">× Cancel</button>
+          <button type="submit" style="width:100%;padding:16px;border:0;border-radius:16px;background:linear-gradient(135deg,#30d158,#59d96b);color:#031007;font-size:${THEME.font.formText}px;font-weight:950;box-shadow:0 16px 36px rgba(48,209,88,.22);">▣ Save Black Reservation</button>
+        </div>
       </form>
 
       <h3 style="margin-top:28px;font-size:${THEME.font.sectionTitle}px;">Prenotazioni</h3>
@@ -327,6 +389,15 @@ function renderApp() {
   document.getElementById("importLodgifyId").onclick = importLodgifyById;
 
   document.getElementById("bookingForm").onsubmit = saveBooking;
+  const closeBookingForm = () => {
+    const form = document.getElementById("bookingForm");
+    form.reset();
+    delete form.dataset.editId;
+    form.style.display = "none";
+  };
+
+  document.getElementById("cancelForm").onclick = closeBookingForm;
+  document.getElementById("cancelFormTop").onclick = closeBookingForm;
 
   // Logout handler
   document.getElementById("logoutButton").onclick = async () => {
