@@ -127,6 +127,55 @@ function euro(value) {
   return `${formatted} €`;
 }
 
+function formatDateIT(value) {
+  if (!value) return "-";
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString("it-IT", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  }).replaceAll("/", ".");
+}
+
+function formatDateTimeIT(value) {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+  return date.toLocaleString("it-IT", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+function formatSyncNote(notes) {
+  const text = String(notes || "");
+  const match = text.match(/Lodgify sync · (\d{4}-\d{2}-\d{2}) → (\d{4}-\d{2}-\d{2})/);
+  if (!match) return text;
+  return `Lodgify sync · ${formatDateIT(match[1])} → ${formatDateIT(match[2])}`;
+}
+
+function getSyncStats(bookings) {
+  const lodgify = bookings.filter(b => b.synced_from === "Lodgify");
+  const airbnb = lodgify.filter(b => String(b.source || "").toLowerCase().includes("airbnb"));
+  const booking = lodgify.filter(b => String(b.source || "").toLowerCase().includes("booking"));
+  const lastSync = lodgify
+    .map(b => b.last_synced_at)
+    .filter(Boolean)
+    .sort()
+    .at(-1);
+
+  return {
+    total: lodgify.length,
+    airbnb: airbnb.length,
+    booking: booking.length,
+    lastSync
+  };
+}
+
 function getInitials(name) {
   return String(name || "?")
     .trim()
@@ -216,9 +265,16 @@ function renderApp() {
 
       <section id="dashboard" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:20px 0;"></section>
 
-      <button id="openForm" style="width:100%;padding:16px;border:0;border-radius:${THEME.radius.button}px;background:${THEME.colors.blue};color:${THEME.colors.textPrimary};font-size:${THEME.font.button}px;font-weight:700;">
-        + Nuova prenotazione
-      </button>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;">
+        <button id="openForm" style="width:100%;padding:16px;border:0;border-radius:${THEME.radius.button}px;background:${THEME.colors.blue};color:${THEME.colors.textPrimary};font-size:${THEME.font.button}px;font-weight:700;">
+          + Nuova prenotazione
+        </button>
+        <button id="syncLodgify" style="width:100%;padding:16px;border:1px solid rgba(215,177,122,.38);border-radius:${THEME.radius.button}px;background:linear-gradient(135deg,rgba(215,177,122,.18),rgba(120,70,22,.14));color:#d7b17a;font-size:${THEME.font.button}px;font-weight:800;">
+          ↻ Sincronizza Lodgify
+        </button>
+      </div>
+
+      <section id="syncSummary"></section>
 
       <form id="bookingForm" style="display:none;margin-top:20px;background:${THEME.colors.cardBackground};padding:${THEME.spacing.form}px;border-radius:${THEME.radius.form}px;">
         <input name="name" placeholder="Nome" required style="width:100%;margin-bottom:10px;padding:12px;border-radius:${THEME.radius.input}px;border:0;font-size:${THEME.font.formText}px;">
@@ -252,6 +308,7 @@ function renderApp() {
     delete form.dataset.editId;
     form.style.display = form.style.display === "none" ? "block" : "none";
   };
+  document.getElementById("syncLodgify").onclick = syncLodgify;
 
   document.getElementById("bookingForm").onsubmit = saveBooking;
 
@@ -274,7 +331,30 @@ async function loadBookings() {
   }
 
   renderDashboard(data);
+  renderSyncSummary(data);
   renderBookings(data);
+}
+
+function renderSyncSummary(bookings) {
+  const stats = getSyncStats(bookings);
+  const container = document.getElementById("syncSummary");
+  if (!container) return;
+
+  container.innerHTML = `
+    <div style="margin-top:14px;background:linear-gradient(135deg,rgba(22,27,34,.94),rgba(12,15,20,.94));border:1px solid rgba(215,177,122,.26);border-radius:${THEME.radius.card}px;padding:14px;box-shadow:0 14px 38px rgba(0,0,0,.22);">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+        <div>
+          <div style="color:#d7b17a;font-size:${THEME.font.helper}px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;">Lodgify Sync</div>
+          <div style="margin-top:4px;color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;">Ultima sync: ${formatDateTimeIT(stats.lastSync)}</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="padding:7px 10px;border-radius:999px;background:#003b95;color:#fff;font-size:${THEME.font.helper}px;font-weight:850;">Booking ${stats.booking}</span>
+          <span style="padding:7px 10px;border-radius:999px;background:#ff385c;color:#fff;font-size:${THEME.font.helper}px;font-weight:850;">Airbnb ${stats.airbnb}</span>
+          <span style="padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.08);color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;">OTA ${stats.total}</span>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function renderDashboard(bookings) {
@@ -482,7 +562,48 @@ function renderBookings(bookings) {
           </button>
         </div>
 
-        ${b.notes ? `<div style="margin-top:12px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.045);color:#c7c7cc;font-size:${THEME.font.helper}px;line-height:1.35;">${b.notes}</div>` : ""}
+        ${b.notes ? `<div style="margin-top:12px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.045);color:#c7c7cc;font-size:${THEME.font.helper}px;line-height:1.35;">${formatSyncNote(b.notes)}</div>` : ""}
+async function syncLodgify() {
+  const button = document.getElementById("syncLodgify");
+  if (!button) return;
+
+  const originalText = button.textContent;
+  button.disabled = true;
+  button.textContent = "Sincronizzazione...";
+  button.style.opacity = ".72";
+
+  try {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/bright-api`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${accessToken || SUPABASE_KEY}`
+      },
+      body: JSON.stringify({ source: "ShinEscape Manager" })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || result.success === false) {
+      alert(`Errore sync Lodgify: ${result.error || result.step || "errore sconosciuto"}`);
+      console.log(result);
+      return;
+    }
+
+    alert(`Sync completata: ${result.filteredAirbnbBooking || result.imported_or_updated || 0} prenotazioni OTA elaborate.`);
+    await loadBookings();
+  } catch (error) {
+    alert(`Errore sync Lodgify: ${error.message}`);
+  } finally {
+    button.disabled = false;
+    button.textContent = originalText;
+    button.style.opacity = "1";
+  }
+}
+
       </div>
     `;
   }).join("");
