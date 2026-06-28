@@ -291,7 +291,8 @@ function renderApp() {
 
       <section id="syncSummary"></section>
 
-      <form id="bookingForm" style="display:none;margin-top:20px;background:linear-gradient(145deg,#111820,#080b10);padding:0;border-radius:28px;border:1px solid rgba(255,255,255,.10);box-shadow:0 28px 80px rgba(0,0,0,.46);overflow:hidden;">
+      <form id="bookingForm" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.74);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:calc(18px + env(safe-area-inset-top)) 14px calc(18px + env(safe-area-inset-bottom));box-sizing:border-box;align-items:center;justify-content:center;overflow-y:auto;">
+        <div style="width:100%;max-width:860px;background:linear-gradient(145deg,#111820,#080b10);padding:0;border-radius:28px;border:1px solid rgba(255,255,255,.10);box-shadow:0 28px 80px rgba(0,0,0,.62);overflow:hidden;margin:auto;">
         <div style="padding:22px 22px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid rgba(255,255,255,.07);">
           <div style="display:flex;align-items:center;gap:14px;min-width:0;">
             <div style="width:58px;height:58px;border-radius:999px;background:rgba(48,209,88,.08);border:1px solid rgba(48,209,88,.55);display:flex;align-items:center;justify-content:center;color:${THEME.colors.green};font-size:28px;font-weight:900;box-shadow:0 0 28px rgba(48,209,88,.10);flex-shrink:0;">+</div>
@@ -372,6 +373,7 @@ function renderApp() {
           <button id="cancelForm" type="button" style="width:100%;padding:16px;border:1px solid rgba(255,255,255,.10);border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.03));color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;font-weight:850;">× Cancel</button>
           <button type="submit" style="width:100%;padding:16px;border:0;border-radius:16px;background:linear-gradient(135deg,#30d158,#59d96b);color:#031007;font-size:${THEME.font.formText}px;font-weight:950;box-shadow:0 16px 36px rgba(48,209,88,.22);">▣ Save Black Reservation</button>
         </div>
+        </div>
       </form>
 
       <h3 style="margin-top:28px;font-size:${THEME.font.sectionTitle}px;">Prenotazioni</h3>
@@ -383,7 +385,7 @@ function renderApp() {
     const form = document.getElementById("bookingForm");
     form.reset();
     delete form.dataset.editId;
-    form.style.display = form.style.display === "none" ? "block" : "none";
+    form.style.display = form.style.display === "flex" ? "none" : "flex";
   };
   document.getElementById("syncLodgify").onclick = syncLodgify;
   document.getElementById("importLodgifyId").onclick = importLodgifyById;
@@ -806,6 +808,5 @@ window.editBooking = function(b) {
   form.source.value = b.source || "";
   form.notes.value = b.notes || "";
 
-  form.style.display = "block";
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  form.style.display = "flex";
 };
