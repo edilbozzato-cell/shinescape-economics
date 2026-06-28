@@ -32,9 +32,9 @@ const THEME = {
     normal: 14,
     formText: 16,
     button: 17,
-    targetAmount: 30,
-    dashboardAmount: 24,
-    totalAmount: 25,
+    targetAmount: 28,
+    dashboardAmount: 22,
+    totalAmount: 22,
     bookingName: 18,
     bookingAmount: 20
   },
@@ -118,12 +118,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 function euro(value) {
-  return Number(value || 0).toLocaleString("it-IT", {
-    style: "currency",
-    currency: "EUR",
+  const formatted = Number(value || 0).toLocaleString("it-IT", {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
+    useGrouping: true
   });
+
+  return `${formatted} €`;
 }
 
 function getInitials(name) {
@@ -304,22 +305,22 @@ function renderDashboard(bookings) {
 
   document.getElementById("dashboard").innerHTML = `
     <div style="grid-column:1 / -1;background:linear-gradient(135deg,#111820,#0b0f14);padding:${THEME.spacing.card}px;border-radius:${THEME.radius.card}px;border:1px solid ${THEME.colors.cardBorder};box-shadow:0 18px 50px rgba(0,0,0,.35);">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;align-items:center;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:18px;align-items:start;">
         <div>
           <div style="font-size:${THEME.font.helper}px;color:${THEME.colors.blue};font-weight:900;letter-spacing:.04em;">TARGET RESIDUO BLACK</div>
-          <div style="margin-top:8px;font-size:${THEME.font.targetAmount}px;font-weight:950;line-height:1;">${euro(blackResidual)}</div>
+          <div style="margin-top:8px;font-size:clamp(26px,4vw,${THEME.font.targetAmount}px);font-weight:950;line-height:1;">${euro(blackResidual)}</div>
         </div>
         <div>
           <div style="color:#c7c7cc;font-size:${THEME.font.helper}px;">Incassato</div>
-          <div style="margin-top:8px;font-size:${THEME.font.totalAmount}px;font-weight:800;">${euro(b.saldato)}</div>
+          <div style="margin-top:8px;font-size:clamp(20px,3vw,${THEME.font.totalAmount}px);font-weight:800;">${euro(b.saldato)}</div>
         </div>
         <div>
           <div style="color:#c7c7cc;font-size:${THEME.font.helper}px;">Complessivo</div>
-          <div style="margin-top:8px;font-size:${THEME.font.totalAmount}px;font-weight:800;">${euro(b.complessivo)}</div>
+          <div style="margin-top:8px;font-size:clamp(20px,3vw,${THEME.font.totalAmount}px);font-weight:800;">${euro(b.complessivo)}</div>
         </div>
         <div>
           <div style="color:#c7c7cc;font-size:${THEME.font.helper}px;">Raggiunto</div>
-          <div style="margin-top:8px;color:${THEME.colors.green};font-size:${THEME.font.totalAmount}px;font-weight:900;">${blackProgress.toFixed(1).replace('.', ',')}%</div>
+          <div style="margin-top:8px;color:${THEME.colors.green};font-size:clamp(20px,3vw,${THEME.font.totalAmount}px);font-weight:900;">${blackProgress.toFixed(1).replace('.', ',')}%</div>
         </div>
         <div>
           <div style="font-size:${THEME.font.helper}px;color:${THEME.colors.blue};font-weight:800;">${euro(b.complessivo)} / ${euro(TARGET_BLACK)}</div>
@@ -331,22 +332,22 @@ function renderDashboard(bookings) {
     </div>
 
     <div style="grid-column:1 / -1;background:linear-gradient(135deg,#15191b,#0b0f12);padding:${THEME.spacing.card}px;border-radius:${THEME.radius.card}px;border:1px solid ${THEME.colors.cardBorder};box-shadow:0 18px 50px rgba(0,0,0,.35);">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;align-items:center;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:18px;align-items:start;">
         <div>
           <div style="font-size:${THEME.font.helper}px;color:${THEME.colors.whiteLabel};font-weight:900;letter-spacing:.04em;">TARGET RESIDUO WHITE</div>
-          <div style="margin-top:8px;font-size:${THEME.font.targetAmount}px;font-weight:950;line-height:1;">${euro(whiteResidual)}</div>
+          <div style="margin-top:8px;font-size:clamp(26px,4vw,${THEME.font.targetAmount}px);font-weight:950;line-height:1;">${euro(whiteResidual)}</div>
         </div>
         <div>
           <div style="color:#c7c7cc;font-size:${THEME.font.helper}px;">Incassato</div>
-          <div style="margin-top:8px;font-size:${THEME.font.totalAmount}px;font-weight:800;">${euro(w.saldato)}</div>
+          <div style="margin-top:8px;font-size:clamp(20px,3vw,${THEME.font.totalAmount}px);font-weight:800;">${euro(w.saldato)}</div>
         </div>
         <div>
           <div style="color:#c7c7cc;font-size:${THEME.font.helper}px;">Complessivo</div>
-          <div style="margin-top:8px;font-size:${THEME.font.totalAmount}px;font-weight:800;">${euro(w.complessivo)}</div>
+          <div style="margin-top:8px;font-size:clamp(20px,3vw,${THEME.font.totalAmount}px);font-weight:800;">${euro(w.complessivo)}</div>
         </div>
         <div>
           <div style="color:#c7c7cc;font-size:${THEME.font.helper}px;">Raggiunto</div>
-          <div style="margin-top:8px;color:${THEME.colors.green};font-size:${THEME.font.totalAmount}px;font-weight:900;">${whiteProgress.toFixed(1).replace('.', ',')}%</div>
+          <div style="margin-top:8px;color:${THEME.colors.green};font-size:clamp(20px,3vw,${THEME.font.totalAmount}px);font-weight:900;">${whiteProgress.toFixed(1).replace('.', ',')}%</div>
         </div>
         <div>
           <div style="font-size:${THEME.font.helper}px;color:${THEME.colors.whiteLabel};font-weight:800;">${euro(w.complessivo)} / ${euro(TARGET_WHITE)}</div>
@@ -360,7 +361,7 @@ function renderDashboard(bookings) {
     <div style="background:linear-gradient(145deg,#101b2b,#0b1018);padding:22px;border-radius:${THEME.radius.card}px;border:1px solid #0a84ff;box-shadow:0 18px 50px rgba(10,132,255,.14);">
       <div style="font-size:${THEME.font.summaryTitle}px;color:${THEME.colors.blue};font-weight:950;letter-spacing:.04em;">BLACK</div>
       <div style="margin-top:22px;color:#c7c7cc;font-size:${THEME.font.formText}px;">Incassato</div>
-      <div style="margin-top:8px;font-size:${THEME.font.targetAmount}px;font-weight:950;">${euro(b.saldato)}</div>
+      <div style="margin-top:8px;font-size:clamp(26px,4vw,${THEME.font.targetAmount}px);font-weight:950;">${euro(b.saldato)}</div>
       <div style="height:1px;background:#344150;margin:24px 0;"></div>
       <div style="color:#c7c7cc;font-size:${THEME.font.formText}px;">Complessivo</div>
       <div style="margin-top:8px;font-size:${THEME.font.dashboardAmount}px;font-weight:850;">${euro(b.complessivo)}</div>
@@ -369,7 +370,7 @@ function renderDashboard(bookings) {
     <div style="background:linear-gradient(145deg,#151b1e,#101214);padding:22px;border-radius:${THEME.radius.card}px;border:1px solid ${THEME.colors.cardBorder};box-shadow:0 18px 50px rgba(0,0,0,.35);">
       <div style="font-size:${THEME.font.summaryTitle}px;color:${THEME.colors.whiteLabel};font-weight:950;letter-spacing:.04em;">WHITE</div>
       <div style="margin-top:22px;color:#c7c7cc;font-size:${THEME.font.formText}px;">Incassato</div>
-      <div style="margin-top:8px;font-size:${THEME.font.targetAmount}px;font-weight:950;">${euro(w.saldato)}</div>
+      <div style="margin-top:8px;font-size:clamp(26px,4vw,${THEME.font.targetAmount}px);font-weight:950;">${euro(w.saldato)}</div>
       <div style="height:1px;background:#344150;margin:24px 0;"></div>
       <div style="color:#c7c7cc;font-size:${THEME.font.formText}px;">Complessivo</div>
       <div style="margin-top:8px;font-size:${THEME.font.dashboardAmount}px;font-weight:850;">${euro(w.complessivo)}</div>
@@ -380,15 +381,15 @@ function renderDashboard(bookings) {
         <div style="min-width:0;width:100%;">
           <div style="font-size:${THEME.font.summaryTitle}px;color:${THEME.colors.blue};font-weight:950;letter-spacing:.04em;">TOTALE</div>
           <div style="margin-top:22px;color:#c7c7cc;font-size:${THEME.font.formText}px;">Actual Black + White</div>
-          <div style="margin-top:8px;font-size:${THEME.font.targetAmount}px;font-weight:950;">${euro(totalComplessivo)}</div>
+          <div style="margin-top:8px;font-size:clamp(26px,4vw,${THEME.font.targetAmount}px);font-weight:950;">${euro(totalComplessivo)}</div>
           <div style="margin-top:18px;">
             <div style="display:flex;justify-content:space-between;gap:18px;align-items:flex-end;margin-bottom:8px;">
               <div style="text-align:center;flex:1;">
-                <div style="color:${THEME.colors.green};font-size:${THEME.font.totalAmount}px;font-weight:950;">${blackShare.toFixed(1).replace('.', ',')}%</div>
+                <div style="color:${THEME.colors.green};font-size:clamp(20px,3vw,${THEME.font.totalAmount}px);font-weight:950;">${blackShare.toFixed(1).replace('.', ',')}%</div>
                 <div style="width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid ${THEME.colors.green};margin:4px auto 0;"></div>
               </div>
               <div style="text-align:center;flex:1;">
-                <div style="color:${THEME.colors.red};font-size:${THEME.font.totalAmount}px;font-weight:950;">${whiteShare.toFixed(1).replace('.', ',')}%</div>
+                <div style="color:${THEME.colors.red};font-size:clamp(20px,3vw,${THEME.font.totalAmount}px);font-weight:950;">${whiteShare.toFixed(1).replace('.', ',')}%</div>
                 <div style="width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid ${THEME.colors.red};margin:4px auto 0;"></div>
               </div>
             </div>
@@ -404,14 +405,14 @@ function renderDashboard(bookings) {
         </div>
         <div style="border-left:1px solid #344150;padding-left:22px;">
           <div style="color:#c7c7cc;font-size:${THEME.font.formText}px;">Totale incassato</div>
-          <div style="margin-top:8px;color:${THEME.colors.green};font-size:${THEME.font.targetAmount}px;font-weight:950;">${euro(b.saldato + w.saldato)}</div>
+          <div style="margin-top:8px;color:${THEME.colors.green};font-size:clamp(26px,4vw,${THEME.font.targetAmount}px);font-weight:950;">${euro(b.saldato + w.saldato)}</div>
         </div>
       </div>
 
       <div style="height:1px;background:#344150;margin:24px 0;"></div>
 
       <div style="color:#c7c7cc;font-size:${THEME.font.formText}px;">Cifra da raggiungere</div>
-      <div style="margin-top:8px;color:${THEME.colors.blue};font-size:${THEME.font.targetAmount}px;font-weight:950;">${euro(TARGET_TOTAL)}</div>
+      <div style="margin-top:8px;color:${THEME.colors.blue};font-size:clamp(26px,4vw,${THEME.font.targetAmount}px);font-weight:950;">${euro(TARGET_TOTAL)}</div>
       <div style="margin-top:14px;height:12px;background:${THEME.colors.cardSecondary};border-radius:999px;overflow:hidden;">
         <div style="height:100%;width:${totalProgress}%;background:linear-gradient(90deg,#0a84ff,#2f8cff);border-radius:999px;"></div>
       </div>
