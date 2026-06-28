@@ -126,8 +126,16 @@ function euro(value) {
 }
 
 function renderApp() {
+  document.documentElement.style.margin = "0";
+  document.documentElement.style.padding = "0";
+  document.documentElement.style.background = THEME.colors.pageBackground;
+  document.documentElement.style.minHeight = "100%";
+  document.body.style.margin = "0";
+  document.body.style.padding = "0";
+  document.body.style.background = THEME.colors.pageBackground;
+  document.body.style.minHeight = "100%";
   document.body.innerHTML = `
-    <main style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${THEME.colors.pageBackground};color:${THEME.colors.textPrimary};min-height:100vh;min-height:100dvh;padding:${THEME.spacing.page}px;padding-top:calc(${THEME.spacing.page}px + env(safe-area-inset-top));padding-bottom:calc(${THEME.spacing.page}px + env(safe-area-inset-bottom));box-sizing:border-box;">
+    <main style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${THEME.colors.pageBackground};color:${THEME.colors.textPrimary};min-height:100vh;min-height:100dvh;width:100vw;max-width:none;margin:0;padding:${THEME.spacing.page}px;padding-top:calc(${THEME.spacing.page}px + env(safe-area-inset-top));padding-bottom:calc(${THEME.spacing.page}px + env(safe-area-inset-bottom));box-sizing:border-box;overflow-x:hidden;">
       <header style="display:flex;align-items:center;gap:18px;margin-bottom:22px;padding:18px;border-radius:${THEME.radius.card}px;background:linear-gradient(135deg,#0b1118,#111820);border:1px solid ${THEME.colors.cardBorder};box-shadow:0 18px 50px rgba(0,0,0,.35);position:relative;">
         <div style="width:88px;height:88px;border-radius:22px;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid rgba(255,255,255,.08);">
           <img src="assets/logo.png" alt="ShinEscape Logo" style="width:100%;height:100%;object-fit:contain;display:block;">
@@ -308,10 +316,10 @@ function renderDashboard(bookings) {
     </div>
 
     <div style="grid-column:1 / -1;background:linear-gradient(145deg,#101820,#090d12);padding:22px;border-radius:${THEME.radius.card}px;border:1px solid #0a84ff;box-shadow:0 18px 50px rgba(10,132,255,.16);">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:18px;align-items:flex-start;">
-        <div style="min-width:0;">
+      <div style="display:grid;grid-template-columns:minmax(0,1.8fr) minmax(260px,.8fr);gap:18px;align-items:flex-start;">
+        <div style="min-width:0;width:100%;">
           <div style="font-size:${THEME.font.summaryTitle}px;color:${THEME.colors.blue};font-weight:950;letter-spacing:.04em;">TOTALE</div>
-          <div style="margin-top:22px;color:#c7c7cc;font-size:${THEME.font.formText}px;">Cifra attuale (Black + White)</div>
+          <div style="margin-top:22px;color:#c7c7cc;font-size:${THEME.font.formText}px;">Actual Black + White</div>
           <div style="margin-top:8px;font-size:${THEME.font.targetAmount}px;font-weight:950;">${euro(totalComplessivo)}</div>
           <div style="margin-top:18px;">
             <div style="display:flex;justify-content:space-between;gap:18px;align-items:flex-end;margin-bottom:8px;">
@@ -324,7 +332,7 @@ function renderDashboard(bookings) {
                 <div style="width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid ${THEME.colors.red};margin:4px auto 0;"></div>
               </div>
             </div>
-            <div style="display:flex;width:100%;height:14px;background:${THEME.colors.cardSecondary};border-radius:999px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);">
+            <div style="display:flex;width:100%;max-width:none;height:14px;background:${THEME.colors.cardSecondary};border-radius:999px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);">
               <div style="width:${blackShare}%;background:linear-gradient(90deg,#24b84f,${THEME.colors.green});"></div>
               <div style="width:${whiteShare}%;background:linear-gradient(90deg,${THEME.colors.red},#ff6b63);"></div>
             </div>
