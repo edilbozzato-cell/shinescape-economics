@@ -313,14 +313,24 @@ function renderDashboard(bookings) {
           <div style="font-size:${THEME.font.summaryTitle}px;color:${THEME.colors.blue};font-weight:950;letter-spacing:.04em;">TOTALE</div>
           <div style="margin-top:22px;color:#c7c7cc;font-size:${THEME.font.formText}px;">Cifra attuale (Black + White)</div>
           <div style="margin-top:8px;font-size:${THEME.font.targetAmount}px;font-weight:950;">${euro(totalComplessivo)}</div>
-          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px;">
-            <div style="background:rgba(10,132,255,.12);border:1px solid rgba(10,132,255,.35);border-radius:14px;padding:12px;">
-              <div style="color:#c7c7cc;font-size:${THEME.font.helper}px;">% Black su actual</div>
-              <div style="margin-top:6px;color:${THEME.colors.blue};font-size:${THEME.font.totalAmount}px;font-weight:950;">${blackShare.toFixed(1).replace('.', ',')}%</div>
+          <div style="margin-top:18px;">
+            <div style="display:flex;justify-content:space-between;gap:18px;align-items:flex-end;margin-bottom:8px;">
+              <div style="text-align:center;flex:1;">
+                <div style="color:${THEME.colors.green};font-size:${THEME.font.totalAmount}px;font-weight:950;">${blackShare.toFixed(1).replace('.', ',')}%</div>
+                <div style="width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid ${THEME.colors.green};margin:4px auto 0;"></div>
+              </div>
+              <div style="text-align:center;flex:1;">
+                <div style="color:${THEME.colors.red};font-size:${THEME.font.totalAmount}px;font-weight:950;">${whiteShare.toFixed(1).replace('.', ',')}%</div>
+                <div style="width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid ${THEME.colors.red};margin:4px auto 0;"></div>
+              </div>
             </div>
-            <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:12px;">
-              <div style="color:#c7c7cc;font-size:${THEME.font.helper}px;">% White su actual</div>
-              <div style="margin-top:6px;color:${THEME.colors.whiteLabel};font-size:${THEME.font.totalAmount}px;font-weight:950;">${whiteShare.toFixed(1).replace('.', ',')}%</div>
+            <div style="display:flex;width:100%;height:14px;background:${THEME.colors.cardSecondary};border-radius:999px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);">
+              <div style="width:${blackShare}%;background:linear-gradient(90deg,#24b84f,${THEME.colors.green});"></div>
+              <div style="width:${whiteShare}%;background:linear-gradient(90deg,${THEME.colors.red},#ff6b63);"></div>
+            </div>
+            <div style="display:flex;justify-content:center;gap:28px;flex-wrap:wrap;margin-top:12px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;">
+              <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${THEME.colors.green};margin-right:7px;"></span>Black sul totale</span>
+              <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${THEME.colors.red};margin-right:7px;"></span>White sul totale</span>
             </div>
           </div>
         </div>
