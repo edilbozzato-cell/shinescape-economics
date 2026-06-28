@@ -179,7 +179,7 @@ function applyAutomaticPaidStatus(bookings) {
     const checkoutDate = new Date(`${checkout}T00:00:00`);
     if (Number.isNaN(checkoutDate.getTime())) return booking;
 
-    if (checkoutDate >= today) {
+    if (checkoutDate <= today) {
       return { ...booking, status: "Saldato", departure_date: checkout };
     }
 
