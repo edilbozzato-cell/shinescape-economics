@@ -121,8 +121,68 @@ function euro(value) {
   return Number(value || 0).toLocaleString("it-IT", {
     style: "currency",
     currency: "EUR",
-    maximumFractionDigits: 0
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   });
+}
+
+function getInitials(name) {
+  return String(name || "?")
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map(part => part[0]?.toUpperCase() || "")
+    .join("") || "?";
+}
+
+function getSourceBadge(source) {
+  const normalized = String(source || "Diretta").trim().toLowerCase();
+
+  if (normalized.includes("airbnb")) {
+    return {
+      label: "Airbnb",
+      icon: "A",
+      background: "#ff385c",
+      border: "rgba(255,56,92,.35)",
+      color: "#ffffff"
+    };
+  }
+
+  if (normalized.includes("booking")) {
+    return {
+      label: "Booking",
+      icon: "B.",
+      background: "#003b95",
+      border: "rgba(0,59,149,.45)",
+      color: "#ffffff"
+    };
+  }
+
+  return {
+    label: "Diretta",
+    icon: "S",
+    background: "#121212",
+    border: "rgba(215,177,122,.55)",
+    color: "#d7b17a"
+  };
+}
+
+function getStatusBadge(status) {
+  if (status === "Saldato") {
+    return {
+      label: "Saldato",
+      background: "rgba(48,209,88,.14)",
+      color: THEME.colors.green,
+      border: "rgba(48,209,88,.28)"
+    };
+  }
+
+  return {
+    label: "Da saldare",
+    background: "rgba(255,159,10,.13)",
+    color: "#ffcc66",
+    border: "rgba(255,159,10,.28)"
+  };
 }
 
 function renderApp() {
@@ -365,20 +425,66 @@ function renderDashboard(bookings) {
 }
 
 function renderBookings(bookings) {
-  document.getElementById("bookingList").innerHTML = bookings.map(b => `
-    <div onclick='editBooking(${JSON.stringify(b)})' style="background:${b.status === 'Saldato' ? '#143d22' : THEME.colors.cardBackground};margin-bottom:10px;padding:14px;border-radius:${THEME.radius.button}px;cursor:pointer;border:${b.name === 'SumWhite' ? '1px solid #ffffff' : (b.status === 'Saldato' ? '1px solid #30d158' : '1px solid transparent')};">
-      <b>${b.name}${b.status === 'Saldato' ? ' ✅' : ''}</b><br>
-      ${euro(b.amount)} · ${b.account_type} · ${b.status}<br>
-      Acconto: ${euro(b.deposit)}<br>
-      Appartamento: ${b.apartment || "-"}<br>
-      Provenienza: ${b.source || "-"}<br>
-      ${b.notes ? `<small>${b.notes}</small><br>` : ""}
+  document.getElementById("bookingList").innerHTML = bookings.map(b => {
+    const sourceBadge = getSourceBadge(b.source);
+    const statusBadge = getStatusBadge(b.status);
+    const isPaid = b.status === "Saldato";
+    const isSumWhite = b.name === "SumWhite";
+    const initials = getInitials(b.name);
+    const cardBorder = isSumWhite ? "#ffffff" : (isPaid ? THEME.colors.green : "rgba(255,255,255,.06)");
+    const cardBackground = isPaid
+      ? "linear-gradient(135deg,rgba(20,61,34,.96),rgba(10,18,13,.96))"
+      : "linear-gradient(135deg,rgba(22,27,34,.96),rgba(12,15,20,.96))";
 
-<button onclick="event.stopPropagation(); deleteBooking('${b.id}')" style="margin-top:12px;padding:10px 14px;border:0;border-radius:${THEME.radius.input}px;background:${THEME.colors.red};color:${THEME.colors.textPrimary};font-weight:700;">
-  Elimina
-</button>
-    </div>
-  `).join("");
+    return `
+      <div onclick='editBooking(${JSON.stringify(b)})' style="background:${cardBackground};margin-bottom:12px;padding:14px;border-radius:20px;cursor:pointer;border:1px solid ${cardBorder};box-shadow:0 14px 38px rgba(0,0,0,.28);box-sizing:border-box;">
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;">
+          <div style="width:46px;height:46px;border-radius:999px;background:radial-gradient(circle at 35% 25%,#d7b17a,#6b3f13);display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:15px;font-weight:900;border:1px solid rgba(215,177,122,.45);box-shadow:0 8px 22px rgba(215,177,122,.14);">
+            ${initials}
+          </div>
+
+          <div style="min-width:0;">
+            <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+              <div style="font-size:${THEME.font.bookingName}px;font-weight:900;color:${THEME.colors.textPrimary};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                ${b.name}${isPaid ? " ✅" : ""}
+              </div>
+            </div>
+            <div style="margin-top:4px;color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+              App. ${b.apartment || "-"} · ${b.account_type}
+            </div>
+          </div>
+
+          <div style="text-align:right;white-space:nowrap;">
+            <div style="font-size:${THEME.font.bookingAmount}px;font-weight:950;color:${THEME.colors.textPrimary};">
+              ${euro(b.amount)}
+            </div>
+            <div style="margin-top:5px;font-size:${THEME.font.helper}px;color:${THEME.colors.textSecondary};">
+              Acconto ${euro(b.deposit)}
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;background:${sourceBadge.background};border:1px solid ${sourceBadge.border};color:${sourceBadge.color};font-size:${THEME.font.helper}px;font-weight:850;">
+              <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:999px;background:rgba(255,255,255,.12);font-size:11px;font-weight:950;">${sourceBadge.icon}</span>
+              ${sourceBadge.label}
+            </span>
+
+            <span style="display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;background:${statusBadge.background};border:1px solid ${statusBadge.border};color:${statusBadge.color};font-size:${THEME.font.helper}px;font-weight:850;">
+              ${statusBadge.label}
+            </span>
+          </div>
+
+          <button onclick="event.stopPropagation(); deleteBooking('${b.id}')" style="padding:8px 12px;border:1px solid rgba(255,59,48,.35);border-radius:999px;background:rgba(255,59,48,.10);color:${THEME.colors.red};font-weight:850;font-size:${THEME.font.helper}px;">
+            Elimina
+          </button>
+        </div>
+
+        ${b.notes ? `<div style="margin-top:12px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.045);color:#c7c7cc;font-size:${THEME.font.helper}px;line-height:1.35;">${b.notes}</div>` : ""}
+      </div>
+    `;
+  }).join("");
 }
 
 async function saveBooking(event) {
