@@ -274,6 +274,21 @@ function renderApp() {
         </button>
       </div>
 
+      <section style="margin-top:12px;background:linear-gradient(135deg,rgba(22,27,34,.94),rgba(12,15,20,.94));border:1px solid rgba(255,255,255,.08);border-radius:${THEME.radius.card}px;padding:14px;box-shadow:0 14px 38px rgba(0,0,0,.22);">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div>
+            <div style="color:#d7b17a;font-size:${THEME.font.helper}px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;">Importa ID Lodgify</div>
+            <div style="margin-top:4px;color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;line-height:1.35;">Usalo per importare una prenotazione OTA che non compare nella sync automatica.</div>
+          </div>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;">
+            <input id="lodgifyBookingId" inputmode="numeric" placeholder="ID prenotazione Lodgify" style="width:100%;box-sizing:border-box;padding:14px 14px;border:0;border-radius:${THEME.radius.input}px;background:${THEME.colors.cardSecondary};color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
+            <button id="importLodgifyId" type="button" style="padding:14px 16px;border:1px solid rgba(215,177,122,.38);border-radius:${THEME.radius.button}px;background:rgba(215,177,122,.14);color:#d7b17a;font-size:${THEME.font.formText}px;font-weight:850;white-space:nowrap;">
+              Importa
+            </button>
+          </div>
+        </div>
+      </section>
+
       <section id="syncSummary"></section>
 
       <form id="bookingForm" style="display:none;margin-top:20px;background:${THEME.colors.cardBackground};padding:${THEME.spacing.form}px;border-radius:${THEME.radius.form}px;">
@@ -309,6 +324,7 @@ function renderApp() {
     form.style.display = form.style.display === "none" ? "block" : "none";
   };
   document.getElementById("syncLodgify").onclick = syncLodgify;
+  document.getElementById("importLodgifyId").onclick = importLodgifyById;
 
   document.getElementById("bookingForm").onsubmit = saveBooking;
 
@@ -568,13 +584,12 @@ function renderBookings(bookings) {
   }).join("");
 }
 
-async function syncLodgify() {
-  const button = document.getElementById("syncLodgify");
-  if (!button) return;
+async function callLodgifyFunction(payload, button, loadingText) {
+  if (!button) return null;
 
   const originalText = button.textContent;
   button.disabled = true;
-  button.textContent = "Sincronizzazione...";
+  button.textContent = loadingText;
   button.style.opacity = ".72";
 
   try {
@@ -587,26 +602,61 @@ async function syncLodgify() {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${accessToken || SUPABASE_KEY}`
       },
-      body: JSON.stringify({ source: "ShinEscape Manager" })
+      body: JSON.stringify(payload || {})
     });
 
     const result = await response.json();
 
     if (!response.ok || result.success === false) {
-      alert(`Errore sync Lodgify: ${result.error || result.step || "errore sconosciuto"}`);
+      alert(`Errore Lodgify: ${result.error || result.message || result.step || "errore sconosciuto"}`);
       console.log(result);
-      return;
+      return null;
     }
 
-    alert(`Sync completata: ${result.imported_or_updated || result.filteredAirbnbBooking || 0} prenotazioni OTA elaborate.`);
-    await loadBookings();
+    return result;
   } catch (error) {
-    alert(`Errore sync Lodgify: ${error.message}`);
+    alert(`Errore Lodgify: ${error.message}`);
+    return null;
   } finally {
     button.disabled = false;
     button.textContent = originalText;
     button.style.opacity = "1";
   }
+}
+
+async function syncLodgify() {
+  const button = document.getElementById("syncLodgify");
+  const result = await callLodgifyFunction({}, button, "Sincronizzazione...");
+  if (!result) return;
+
+  const count = result.imported_or_updated || result.filteredAirbnbBooking || result.booking ? 1 : 0;
+  alert(`Sync completata: ${count} prenotazioni OTA elaborate.`);
+  await loadBookings();
+}
+
+async function importLodgifyById() {
+  const input = document.getElementById("lodgifyBookingId");
+  const button = document.getElementById("importLodgifyId");
+  const bookingId = String(input?.value || "").trim();
+
+  if (!bookingId) {
+    alert("Inserisci un ID prenotazione Lodgify");
+    return;
+  }
+
+  const result = await callLodgifyFunction({ id: bookingId }, button, "Importo...");
+  if (!result) return;
+
+  if (result.action === "imported_or_updated") {
+    alert(`Prenotazione importata: ${result.booking?.name || bookingId} · ${euro(result.booking?.amount || 0)}`);
+    input.value = "";
+  } else if (result.action === "skipped_or_removed") {
+    alert(`Prenotazione non importata: stato ${result.reason?.status || "non valido"}, sorgente ${result.reason?.source || "non OTA"}.`);
+  } else {
+    alert("Operazione Lodgify completata.");
+  }
+
+  await loadBookings();
 }
 
 async function saveBooking(event) {
