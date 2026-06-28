@@ -563,6 +563,11 @@ function renderBookings(bookings) {
         </div>
 
         ${b.notes ? `<div style="margin-top:12px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.045);color:#c7c7cc;font-size:${THEME.font.helper}px;line-height:1.35;">${formatSyncNote(b.notes)}</div>` : ""}
+      </div>
+    `;
+  }).join("");
+}
+
 async function syncLodgify() {
   const button = document.getElementById("syncLodgify");
   if (!button) return;
@@ -602,11 +607,6 @@ async function syncLodgify() {
     button.textContent = originalText;
     button.style.opacity = "1";
   }
-}
-
-      </div>
-    `;
-  }).join("");
 }
 
 async function saveBooking(event) {
