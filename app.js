@@ -596,51 +596,60 @@ function renderDashboard(bookings) {
       <div style="margin-top:8px;font-size:${THEME.font.dashboardAmount}px;font-weight:850;">${euro(w.complessivo)}</div>
     </div>
 
-    <div style="grid-column:1 / -1;background:linear-gradient(145deg,#101820,#090d12);padding:22px;border-radius:${THEME.radius.card}px;border:1px solid #0a84ff;box-shadow:0 18px 50px rgba(10,132,255,.16);">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;align-items:flex-start;">
-        <div style="min-width:0;width:100%;">
-          <div style="font-size:${THEME.font.summaryTitle}px;color:${THEME.colors.blue};font-weight:950;letter-spacing:.04em;">TOTALE</div>
-          <div style="margin-top:22px;color:#c7c7cc;font-size:${THEME.font.formText}px;">Actual Black + White</div>
-          <div style="margin-top:8px;font-size:clamp(22px,5.5vw,26px);font-weight:950;line-height:1.12;white-space:nowrap;">${euro(totalComplessivo)}</div>
-          <div style="margin-top:18px;">
-            <div style="display:flex;justify-content:space-between;gap:18px;align-items:flex-end;margin-bottom:8px;">
-              <div style="text-align:center;flex:1;">
-                <div style="color:${THEME.colors.green};font-size:clamp(20px,3vw,${THEME.font.totalAmount}px);font-weight:950;">${blackShare.toFixed(1).replace('.', ',')}%</div>
-                <div style="width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid ${THEME.colors.green};margin:4px auto 0;"></div>
-              </div>
-              <div style="text-align:center;flex:1;">
-                <div style="color:${THEME.colors.red};font-size:clamp(20px,3vw,${THEME.font.totalAmount}px);font-weight:950;">${whiteShare.toFixed(1).replace('.', ',')}%</div>
-                <div style="width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid ${THEME.colors.red};margin:4px auto 0;"></div>
-              </div>
+    <div style="grid-column:1 / -1;position:relative;overflow:hidden;padding:24px;border-radius:30px;background:linear-gradient(145deg,rgba(255,255,255,.135),rgba(255,255,255,.035) 42%,rgba(10,132,255,.055));border:1px solid rgba(255,255,255,.16);box-shadow:0 30px 90px rgba(0,0,0,.42),0 0 0 1px rgba(10,132,255,.12),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(255,255,255,.045);backdrop-filter:blur(34px) saturate(185%);-webkit-backdrop-filter:blur(34px) saturate(185%);">
+      <div style="position:absolute;inset:-1px;pointer-events:none;background:radial-gradient(circle at 14% 0%,rgba(255,255,255,.30),transparent 28%),radial-gradient(circle at 92% 16%,rgba(10,132,255,.22),transparent 30%),linear-gradient(115deg,rgba(255,255,255,.14),transparent 30%,transparent 72%,rgba(255,255,255,.06));opacity:.72;"></div>
+      <div style="position:absolute;left:18px;right:18px;top:12px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.48),transparent);pointer-events:none;"></div>
+
+      <div style="position:relative;z-index:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;align-items:stretch;">
+        <div style="min-width:0;width:100%;padding:18px;border-radius:24px;background:rgba(4,8,14,.24);border:1px solid rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.10);">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div style="font-size:${THEME.font.summaryTitle}px;color:${THEME.colors.blue};font-weight:950;letter-spacing:.055em;text-transform:uppercase;text-shadow:0 0 24px rgba(10,132,255,.28);">TOTALE</div>
+            <div style="padding:7px 11px;border-radius:999px;background:rgba(10,132,255,.14);border:1px solid rgba(10,132,255,.26);color:#b8dcff;font-size:${THEME.font.helper}px;font-weight:850;box-shadow:inset 0 1px 0 rgba(255,255,255,.12);">Black + White</div>
+          </div>
+
+          <div style="margin-top:22px;color:rgba(255,255,255,.68);font-size:${THEME.font.formText}px;font-weight:650;">Actual complessivo</div>
+          <div style="margin-top:7px;font-size:clamp(26px,7vw,42px);font-weight:950;line-height:1.02;letter-spacing:-.055em;white-space:nowrap;color:${THEME.colors.textPrimary};text-shadow:0 18px 42px rgba(0,0,0,.38);">${euro(totalComplessivo)}</div>
+
+          <div style="margin-top:22px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
+            <div style="padding:13px;border-radius:19px;background:rgba(48,209,88,.10);border:1px solid rgba(48,209,88,.18);box-shadow:inset 0 1px 0 rgba(255,255,255,.10);">
+              <div style="color:${THEME.colors.green};font-size:clamp(22px,5vw,30px);font-weight:950;line-height:1;">${blackShare.toFixed(1).replace('.', ',')}%</div>
+              <div style="margin-top:6px;color:rgba(255,255,255,.72);font-size:${THEME.font.helper}px;font-weight:750;">Black sul totale</div>
             </div>
-            <div style="display:flex;width:100%;max-width:none;height:14px;background:${THEME.colors.cardSecondary};border-radius:999px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);">
-              <div style="width:${blackShare}%;background:linear-gradient(90deg,#24b84f,${THEME.colors.green});"></div>
-              <div style="width:${whiteShare}%;background:linear-gradient(90deg,${THEME.colors.red},#ff6b63);"></div>
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px 16px;margin-top:12px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;">
-              <span style="display:flex;align-items:center;gap:7px;min-width:0;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${THEME.colors.green};flex-shrink:0;"></span><span>Black sul totale</span></span>
-              <span style="display:flex;align-items:center;gap:7px;min-width:0;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${THEME.colors.red};flex-shrink:0;"></span><span>White sul totale</span></span>
+            <div style="padding:13px;border-radius:19px;background:rgba(255,59,48,.10);border:1px solid rgba(255,59,48,.18);box-shadow:inset 0 1px 0 rgba(255,255,255,.10);">
+              <div style="color:${THEME.colors.red};font-size:clamp(22px,5vw,30px);font-weight:950;line-height:1;">${whiteShare.toFixed(1).replace('.', ',')}%</div>
+              <div style="margin-top:6px;color:rgba(255,255,255,.72);font-size:${THEME.font.helper}px;font-weight:750;">White sul totale</div>
             </div>
           </div>
-        </div>
-        <div style="border-left:1px solid #344150;padding-left:22px;min-width:0;">
-          <div style="color:#c7c7cc;font-size:${THEME.font.formText}px;">Totale incassato</div>
-          <div style="margin-top:8px;color:${THEME.colors.green};font-size:clamp(21px,5.8vw,26px);font-weight:950;line-height:1.12;white-space:nowrap;">${euro(b.saldato + w.saldato)}</div>
-        </div>
-      </div>
 
-      <div style="height:1px;background:#344150;margin:24px 0;"></div>
+          <div style="margin-top:16px;position:relative;height:18px;border-radius:999px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.10);overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.12);">
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.30),transparent 45%,rgba(255,255,255,.04));opacity:.55;"></div>
+            <div style="height:100%;width:${blackShare}%;background:linear-gradient(90deg,rgba(48,209,88,.75),rgba(48,209,88,.98));box-shadow:0 0 22px rgba(48,209,88,.34),inset 0 1px 0 rgba(255,255,255,.24);float:left;"></div>
+            <div style="height:100%;width:${whiteShare}%;background:linear-gradient(90deg,rgba(255,59,48,.78),rgba(255,107,99,.98));box-shadow:0 0 22px rgba(255,59,48,.25),inset 0 1px 0 rgba(255,255,255,.22);float:left;"></div>
+          </div>
+        </div>
 
-      <div style="color:#c7c7cc;font-size:${THEME.font.formText}px;">Cifra da raggiungere</div>
-      <div style="margin-top:8px;color:${THEME.colors.blue};font-size:clamp(22px,5.5vw,26px);font-weight:950;line-height:1.12;white-space:nowrap;">${euro(TARGET_TOTAL)}</div>
-      <div style="margin-top:14px;height:12px;background:${THEME.colors.cardSecondary};border-radius:999px;overflow:hidden;">
-        <div style="height:100%;width:${totalProgress}%;background:linear-gradient(90deg,#0a84ff,#2f8cff);border-radius:999px;"></div>
+        <div style="min-width:0;display:flex;flex-direction:column;gap:14px;">
+          <div style="padding:18px;border-radius:24px;background:rgba(4,8,14,.24);border:1px solid rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.10);">
+            <div style="color:rgba(255,255,255,.68);font-size:${THEME.font.formText}px;font-weight:650;">Totale incassato</div>
+            <div style="margin-top:8px;color:${THEME.colors.green};font-size:clamp(24px,6vw,36px);font-weight:950;line-height:1.05;letter-spacing:-.045em;white-space:nowrap;text-shadow:0 0 28px rgba(48,209,88,.18);">${euro(b.saldato + w.saldato)}</div>
+          </div>
+
+          <div style="padding:18px;border-radius:24px;background:rgba(4,8,14,.24);border:1px solid rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.10);">
+            <div style="color:rgba(255,255,255,.68);font-size:${THEME.font.formText}px;font-weight:650;">Cifra da raggiungere</div>
+            <div style="margin-top:8px;color:${THEME.colors.blue};font-size:clamp(24px,6vw,36px);font-weight:950;line-height:1.05;letter-spacing:-.045em;white-space:nowrap;text-shadow:0 0 28px rgba(10,132,255,.22);">${euro(TARGET_TOTAL)}</div>
+
+            <div style="margin-top:16px;height:16px;border-radius:999px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.10);overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.12);">
+              <div style="height:100%;width:${totalProgress}%;background:linear-gradient(90deg,rgba(10,132,255,.72),rgba(76,170,255,.98));border-radius:999px;box-shadow:0 0 24px rgba(10,132,255,.34),inset 0 1px 0 rgba(255,255,255,.24);"></div>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px;color:rgba(255,255,255,.70);font-size:${THEME.font.helper}px;">
+              <span><b style="color:${THEME.colors.blue};">${euro(totalComplessivo)}</b> / ${euro(TARGET_TOTAL)}</span>
+              <span style="color:${THEME.colors.blue};font-weight:950;">${totalProgress.toFixed(1).replace('.', ',')}%</span>
+            </div>
+            <div style="margin-top:10px;color:rgba(255,255,255,.70);font-size:${THEME.font.helper}px;">Residuo: <b style="color:${THEME.colors.textPrimary};">${euro(totalResidual)}</b></div>
+          </div>
+        </div>
       </div>
-      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:10px;color:#c7c7cc;font-size:${THEME.font.helper}px;">
-        <span><b style="color:${THEME.colors.blue};">${euro(totalComplessivo)}</b> / ${euro(TARGET_TOTAL)}</span>
-        <span style="color:${THEME.colors.blue};font-weight:900;">${totalProgress.toFixed(1).replace('.', ',')}%</span>
-      </div>
-      <div style="margin-top:10px;color:#c7c7cc;font-size:${THEME.font.helper}px;">Residuo: <b style="color:${THEME.colors.textPrimary};">${euro(totalResidual)}</b></div>
     </div>
   `;
 }
