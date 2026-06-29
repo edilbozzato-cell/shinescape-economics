@@ -596,57 +596,53 @@ function renderDashboard(bookings) {
       <div style="margin-top:8px;font-size:clamp(20px,5.2vw,24px);font-weight:850;line-height:1.1;white-space:nowrap;">${euro(w.complessivo)}</div>
     </div>
 
-    <div style="grid-column:1 / -1;position:relative;overflow:hidden;width:100%;box-sizing:border-box;padding:clamp(14px,3.6vw,22px);border-radius:28px;background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.035) 45%,rgba(10,132,255,.052));border:1px solid rgba(255,255,255,.13);box-shadow:0 24px 70px rgba(0,0,0,.38),0 0 0 1px rgba(10,132,255,.10),inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(255,255,255,.035);backdrop-filter:blur(26px) saturate(175%);-webkit-backdrop-filter:blur(26px) saturate(175%);">
-      <div style="position:absolute;inset:-1px;pointer-events:none;background:radial-gradient(circle at 14% 0%,rgba(255,255,255,.22),transparent 30%),radial-gradient(circle at 92% 14%,rgba(10,132,255,.16),transparent 32%),linear-gradient(115deg,rgba(255,255,255,.10),transparent 31%,transparent 72%,rgba(255,255,255,.04));opacity:.66;"></div>
-      <div style="position:absolute;left:18px;right:18px;top:12px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent);pointer-events:none;"></div>
-
-      <div style="position:relative;z-index:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:clamp(10px,2.8vw,14px);align-items:stretch;width:100%;box-sizing:border-box;">
-        <div style="min-width:0;width:100%;box-sizing:border-box;padding:clamp(13px,3.6vw,18px);border-radius:22px;background:rgba(4,8,14,.24);border:1px solid rgba(255,255,255,.09);box-shadow:inset 0 1px 0 rgba(255,255,255,.09);">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-width:0;">
-            <div style="min-width:0;font-size:clamp(20px,6.4vw,27px);color:${THEME.colors.blue};font-weight:950;letter-spacing:.04em;text-transform:uppercase;text-shadow:0 0 20px rgba(10,132,255,.24);line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">TOTALE</div>
-            <div style="flex-shrink:0;padding:6px 9px;border-radius:999px;background:rgba(10,132,255,.13);border:1px solid rgba(10,132,255,.24);color:#b8dcff;font-size:clamp(10px,2.8vw,12px);font-weight:850;box-shadow:inset 0 1px 0 rgba(255,255,255,.11);white-space:nowrap;">Black + White</div>
+    <div class="se-glass-card se-total-card">
+      <div class="se-total-grid">
+        <div class="se-glass-panel">
+          <div class="se-total-header">
+            <div class="se-total-title">TOTALE</div>
+            <div class="se-glass-pill">Black + White</div>
           </div>
 
-          <div style="margin-top:clamp(16px,4vw,20px);color:rgba(255,255,255,.68);font-size:clamp(13px,3.6vw,16px);font-weight:650;line-height:1.22;">Actual complessivo</div>
-          <div style="margin-top:6px;font-size:clamp(25px,7.8vw,34px);font-weight:950;line-height:1.04;letter-spacing:-.05em;white-space:nowrap;color:${THEME.colors.textPrimary};text-shadow:0 14px 32px rgba(0,0,0,.32);overflow:hidden;text-overflow:ellipsis;">${euro(totalComplessivo)}</div>
+          <div class="se-total-label">Actual complessivo</div>
+          <div class="se-total-main-value">${euro(totalComplessivo)}</div>
 
-          <div style="margin-top:clamp(16px,4vw,20px);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;width:100%;">
-            <div style="min-width:0;padding:11px 9px;border-radius:17px;background:rgba(48,209,88,.10);border:1px solid rgba(48,209,88,.17);box-shadow:inset 0 1px 0 rgba(255,255,255,.09);box-sizing:border-box;">
-              <div style="color:${THEME.colors.green};font-size:clamp(19px,5.5vw,26px);font-weight:950;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${blackShare.toFixed(1).replace('.', ',')}%</div>
-              <div style="margin-top:6px;color:rgba(255,255,255,.72);font-size:clamp(10px,3vw,12px);font-weight:750;line-height:1.18;">Black sul totale</div>
+          <div class="se-share-grid">
+            <div class="se-share-box is-green">
+              <div class="se-share-value">${blackShare.toFixed(1).replace('.', ',')}%</div>
+              <div class="se-share-label">Black sul totale</div>
             </div>
-            <div style="min-width:0;padding:11px 9px;border-radius:17px;background:rgba(255,59,48,.10);border:1px solid rgba(255,59,48,.17);box-shadow:inset 0 1px 0 rgba(255,255,255,.09);box-sizing:border-box;">
-              <div style="color:${THEME.colors.red};font-size:clamp(19px,5.5vw,26px);font-weight:950;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${whiteShare.toFixed(1).replace('.', ',')}%</div>
-              <div style="margin-top:6px;color:rgba(255,255,255,.72);font-size:clamp(10px,3vw,12px);font-weight:750;line-height:1.18;">White sul totale</div>
+            <div class="se-share-box is-red">
+              <div class="se-share-value">${whiteShare.toFixed(1).replace('.', ',')}%</div>
+              <div class="se-share-label">White sul totale</div>
             </div>
           </div>
 
-          <div style="margin-top:14px;position:relative;height:14px;border-radius:999px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.10);overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.11);">
-            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.26),transparent 45%,rgba(255,255,255,.03));opacity:.52;"></div>
-            <div style="height:100%;width:${blackShare}%;background:linear-gradient(90deg,rgba(48,209,88,.75),rgba(48,209,88,.98));box-shadow:0 0 18px rgba(48,209,88,.30),inset 0 1px 0 rgba(255,255,255,.20);float:left;"></div>
-            <div style="height:100%;width:${whiteShare}%;background:linear-gradient(90deg,rgba(255,59,48,.78),rgba(255,107,99,.98));box-shadow:0 0 18px rgba(255,59,48,.22),inset 0 1px 0 rgba(255,255,255,.18);float:left;"></div>
+          <div class="se-glass-progress">
+            <div class="se-progress-segment is-green" style="width:${blackShare}%;"></div>
+            <div class="se-progress-segment is-red" style="width:${whiteShare}%;"></div>
           </div>
         </div>
 
-        <div style="min-width:0;width:100%;box-sizing:border-box;display:grid;grid-template-rows:auto 1fr;gap:clamp(10px,2.8vw,14px);">
-          <div style="width:100%;box-sizing:border-box;padding:clamp(13px,3.6vw,18px);border-radius:22px;background:rgba(4,8,14,.24);border:1px solid rgba(255,255,255,.09);box-shadow:inset 0 1px 0 rgba(255,255,255,.09);overflow:hidden;">
-            <div style="color:rgba(255,255,255,.68);font-size:clamp(13px,3.6vw,16px);font-weight:650;line-height:1.22;">Totale incassato</div>
-            <div style="margin-top:7px;color:${THEME.colors.green};font-size:clamp(24px,7.2vw,32px);font-weight:950;line-height:1.05;letter-spacing:-.045em;white-space:nowrap;text-shadow:0 0 24px rgba(48,209,88,.17);overflow:hidden;text-overflow:ellipsis;">${euro(b.saldato + w.saldato)}</div>
+        <div class="se-total-side">
+          <div class="se-glass-panel">
+            <div class="se-total-label">Totale incassato</div>
+            <div class="se-total-value is-green">${euro(b.saldato + w.saldato)}</div>
           </div>
 
-          <div style="width:100%;box-sizing:border-box;padding:clamp(13px,3.6vw,18px);border-radius:22px;background:rgba(4,8,14,.24);border:1px solid rgba(255,255,255,.09);box-shadow:inset 0 1px 0 rgba(255,255,255,.09);overflow:hidden;">
-            <div style="color:rgba(255,255,255,.68);font-size:clamp(13px,3.6vw,16px);font-weight:650;line-height:1.22;">Cifra da raggiungere</div>
-            <div style="margin-top:7px;color:${THEME.colors.blue};font-size:clamp(24px,7.2vw,32px);font-weight:950;line-height:1.05;letter-spacing:-.045em;white-space:nowrap;text-shadow:0 0 24px rgba(10,132,255,.20);overflow:hidden;text-overflow:ellipsis;">${euro(TARGET_TOTAL)}</div>
+          <div class="se-glass-panel">
+            <div class="se-total-label">Cifra da raggiungere</div>
+            <div class="se-total-value is-blue">${euro(TARGET_TOTAL)}</div>
 
-            <div style="margin-top:14px;height:14px;border-radius:999px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.10);overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.11);">
-              <div style="height:100%;width:${totalProgress}%;background:linear-gradient(90deg,rgba(10,132,255,.72),rgba(76,170,255,.98));border-radius:999px;box-shadow:0 0 20px rgba(10,132,255,.30),inset 0 1px 0 rgba(255,255,255,.20);"></div>
+            <div class="se-glass-progress">
+              <div class="se-progress-fill" style="width:${totalProgress}%;"></div>
             </div>
 
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:11px;color:rgba(255,255,255,.70);font-size:clamp(10px,2.9vw,12px);line-height:1.22;">
-              <span style="min-width:0;"><b style="color:${THEME.colors.blue};">${euro(totalComplessivo)}</b> / ${euro(TARGET_TOTAL)}</span>
-              <span style="color:${THEME.colors.blue};font-weight:950;white-space:nowrap;">${totalProgress.toFixed(1).replace('.', ',')}%</span>
+            <div class="se-total-meta">
+              <span><b style="color:${THEME.colors.blue};">${euro(totalComplessivo)}</b> / ${euro(TARGET_TOTAL)}</span>
+              <span class="se-total-progress-percent">${totalProgress.toFixed(1).replace('.', ',')}%</span>
             </div>
-            <div style="margin-top:9px;color:rgba(255,255,255,.70);font-size:clamp(10px,2.9vw,12px);line-height:1.22;">Residuo: <b style="color:${THEME.colors.textPrimary};">${euro(totalResidual)}</b></div>
+            <div class="se-total-residual">Residuo: <b style="color:${THEME.colors.textPrimary};">${euro(totalResidual)}</b></div>
           </div>
         </div>
       </div>
