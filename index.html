@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <link rel="stylesheet" href="./styles.css?v=7">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ShinEscape Manager</title>
+  <link rel="stylesheet" href="./styles.css?v=11">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#111111">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,6 +13,192 @@
   <link rel="apple-touch-icon" href="assets/logo.png">
 </head>
 <body>
-  <script type="module" src="app.js?v=2"></script>
+  <div id="appRoot"></div>
+
+  <template id="loginTemplate">
+    <main class="login-view">
+      <section class="login-shell">
+        <div class="login-brand">
+          <div class="login-logo"><img src="assets/logo.png" alt="ShinEscape Logo"></div>
+          <div class="login-brand-name">ShinEscape</div>
+        </div>
+        <div class="login-panel">
+          <div class="login-heading">
+            <div class="login-title">ShinEscape</div>
+            <div class="login-location">Budoni</div>
+          </div>
+          <div class="login-fields">
+            <input id="loginEmail" class="login-input" type="email" autocomplete="username" placeholder="Email">
+            <input id="loginPassword" class="login-input" type="password" autocomplete="current-password" placeholder="Password">
+            <button id="loginButton" class="button button-primary login-submit">Accedi</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </template>
+
+  <template id="appTemplate">
+    <main class="app-view">
+      <header class="app-header">
+        <div class="app-logo"><img src="assets/logo.png" alt="ShinEscape Logo"></div>
+        <div class="app-brand-copy">
+          <div class="app-kicker">ShinEscape</div>
+          <h1>Manager</h1>
+          <div class="app-badge"><span></span>Economics Dashboard</div>
+        </div>
+        <button id="logoutButton" class="logout-button">Logout</button>
+      </header>
+
+      <section id="dashboard" class="dashboard-grid">
+        <article class="target-card target-card-black">
+          <div class="target-grid">
+            <div><div class="target-kicker">TARGET RESIDUO BLACK</div><div id="blackResidual" class="target-main-value"></div></div>
+            <div><div class="metric-label">Incassato</div><div id="blackCollected" class="target-value"></div></div>
+            <div><div class="metric-label">Complessivo</div><div id="blackOverall" class="target-value"></div></div>
+            <div><div class="metric-label">Raggiunto</div><div id="blackReached" class="target-value is-green"></div></div>
+            <div><div id="blackProgressMeta" class="target-progress-meta"></div><div class="target-progress"><div id="blackProgressBar" class="target-progress-fill is-blue"></div></div></div>
+          </div>
+        </article>
+
+        <article class="target-card target-card-white">
+          <div class="target-grid">
+            <div><div class="target-kicker is-white">TARGET RESIDUO WHITE</div><div id="whiteResidual" class="target-main-value"></div></div>
+            <div><div class="metric-label">Incassato</div><div id="whiteCollected" class="target-value"></div></div>
+            <div><div class="metric-label">Complessivo</div><div id="whiteOverall" class="target-value"></div></div>
+            <div><div class="metric-label">Raggiunto</div><div id="whiteReached" class="target-value is-green"></div></div>
+            <div><div id="whiteProgressMeta" class="target-progress-meta is-white"></div><div class="target-progress"><div id="whiteProgressBar" class="target-progress-fill is-white"></div></div></div>
+          </div>
+        </article>
+
+        <article class="summary-card summary-card-black">
+          <div class="summary-title is-blue">BLACK</div><div class="summary-label">Incassato</div><div id="blackSummaryCollected" class="summary-main-value"></div>
+          <hr><div class="summary-label">Complessivo</div><div id="blackSummaryOverall" class="summary-value"></div>
+        </article>
+        <article class="summary-card summary-card-white">
+          <div class="summary-title">WHITE</div><div class="summary-label">Incassato</div><div id="whiteSummaryCollected" class="summary-main-value"></div>
+          <hr><div class="summary-label">Complessivo</div><div id="whiteSummaryOverall" class="summary-value"></div>
+        </article>
+
+        <article class="se-glass-card se-total-card">
+          <div class="se-total-grid">
+            <div class="se-glass-panel">
+              <div class="se-total-header"><div class="se-total-title">TOTALE</div><div class="se-glass-pill">Black + White</div></div>
+              <div class="se-total-label">Actual complessivo</div><div id="totalOverall" class="se-total-main-value"></div>
+              <div class="se-share-grid">
+                <div class="se-share-box is-green"><div id="blackShare" class="se-share-value"></div><div class="se-share-label">Black sul totale</div></div>
+                <div class="se-share-box is-red"><div id="whiteShare" class="se-share-value"></div><div class="se-share-label">White sul totale</div></div>
+              </div>
+              <div class="se-glass-progress"><div id="blackShareBar" class="se-progress-segment is-green"></div><div id="whiteShareBar" class="se-progress-segment is-red"></div></div>
+            </div>
+            <div class="se-total-side">
+              <div class="se-glass-panel"><div class="se-total-label">Totale incassato</div><div id="totalCollected" class="se-total-value is-green"></div></div>
+              <div class="se-glass-panel">
+                <div class="se-total-label">Cifra da raggiungere</div><div id="totalTarget" class="se-total-value is-blue"></div>
+                <div class="se-glass-progress"><div id="totalProgressBar" class="se-progress-fill"></div></div>
+                <div class="se-total-meta"><span><b id="totalProgressCurrent"></b> / <span id="totalProgressTarget"></span></span><span id="totalProgressPercent" class="se-total-progress-percent"></span></div>
+                <div class="se-total-residual">Residuo: <b id="totalResidual"></b></div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="nights-chart-card" aria-labelledby="nightsChartTitle">
+        <div class="nights-chart-header">
+          <div><div class="chart-kicker">Occupazione stagionale</div><h2 id="nightsChartTitle">Notti per mese <span id="nightsChartYear"></span></h2></div>
+          <div class="nights-chart-summary">
+            <div><span>Totale notti prenotate</span><strong id="nightsChartTotal"></strong></div>
+            <div><span>Target totale</span><strong id="nightsChartTarget"></strong></div>
+            <div id="nightsChartDelta" class="nights-chart-delta"></div>
+          </div>
+        </div>
+        <div class="nights-chart-legend"><span><i class="is-target"></i>Target</span><span><i class="is-actual"></i>Notti prenotate</span></div>
+        <div class="nights-chart-scroll">
+          <svg class="nights-chart" viewBox="0 0 800 300" role="img" aria-label="Confronto tra target e notti prenotate da giugno a ottobre">
+            <defs>
+              <linearGradient id="actualNightsGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a970ff" stop-opacity=".38"/><stop offset="100%" stop-color="#6f35d4" stop-opacity="0"/></linearGradient>
+              <filter id="actualNightsGlow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <g class="nights-chart-grid"><line x1="64" y1="34" x2="764" y2="34"/><line x1="64" y1="87" x2="764" y2="87"/><line x1="64" y1="140" x2="764" y2="140"/><line x1="64" y1="193" x2="764" y2="193"/><line x1="64" y1="246" x2="764" y2="246"/></g>
+            <g class="nights-chart-axis"><text class="nights-chart-y-label" x="51" y="39"></text><text class="nights-chart-y-label" x="51" y="92"></text><text class="nights-chart-y-label" x="51" y="145"></text><text class="nights-chart-y-label" x="51" y="198"></text><text class="nights-chart-y-label" x="51" y="251"></text></g>
+            <path id="actualNightsArea" class="nights-chart-area"></path>
+            <polyline id="targetNightsLine" class="nights-chart-line is-target"></polyline>
+            <polyline id="actualNightsLine" class="nights-chart-line is-actual"></polyline>
+            <g class="nights-chart-dots"><circle id="actualNightDot0" r="7"/><circle id="actualNightDot1" r="7"/><circle id="actualNightDot2" r="7"/><circle id="actualNightDot3" r="7"/><circle id="actualNightDot4" r="7"/></g>
+            <g class="nights-chart-values"><text id="actualNightValue0"></text><text id="actualNightValue1"></text><text id="actualNightValue2"></text><text id="actualNightValue3"></text><text id="actualNightValue4"></text></g>
+            <g class="nights-chart-months"><text id="nightMonth0" y="282">GIUGNO</text><text id="nightMonth1" y="282">LUGLIO</text><text id="nightMonth2" y="282">AGOSTO</text><text id="nightMonth3" y="282">SETTEMBRE</text><text id="nightMonth4" y="282">OTTOBRE</text></g>
+          </svg>
+        </div>
+      </section>
+
+      <div class="app-actions">
+        <button id="openForm" class="button button-primary">+ Nuova prenotazione</button>
+        <button id="syncLodgify" class="button button-gold">↻ Sincronizza Lodgify</button>
+      </div>
+
+      <section class="import-panel">
+        <div class="import-section">
+          <div class="import-copy"><div class="gold-kicker">Importa ID Lodgify</div><div class="helper-copy">Usalo per importare una prenotazione OTA che non compare nella sync automatica.</div></div>
+          <div class="import-controls"><input id="lodgifyBookingId" class="control" inputmode="numeric" placeholder="ID prenotazione Lodgify"><button id="importLodgifyId" class="button button-gold-compact" type="button">Importa</button></div>
+        </div>
+        <div id="syncSummary" class="sync-summary" hidden>
+          <div><div class="gold-kicker">Lodgify Sync</div><div id="lastSync" class="helper-copy"></div></div>
+          <div class="sync-badges"><span id="bookingSyncCount" class="sync-badge is-booking"></span><span id="airbnbSyncCount" class="sync-badge is-airbnb"></span><span id="otaSyncCount" class="sync-badge"></span></div>
+        </div>
+      </section>
+
+      <form id="bookingForm" class="booking-form-overlay" hidden>
+        <div class="booking-form-dialog">
+          <div class="booking-form-header">
+            <div class="booking-form-heading"><div class="booking-form-icon">+</div><div><div class="booking-form-title">New Black Reservation</div><div class="booking-form-subtitle">Insert the details for this Black booking</div></div></div>
+            <button id="cancelFormTop" class="close-button" type="button">×</button>
+          </div>
+          <div class="booking-form-body">
+            <div class="booking-form-grid">
+              <label class="form-field"><span><i>♙</i>Guest Name</span><input name="name" placeholder="Enter guest name" required></label>
+              <label class="form-field"><span><i>€</i>Total Amount (€)</span><input name="amount" type="number" placeholder="0,00" required></label>
+              <label class="form-field"><span><i>☷</i>Account Type</span><select name="account_type"><option>Black</option><option>White</option></select></label>
+              <label class="form-field"><span><i>▣</i>Payment Status</span><select name="status"><option>Da saldare</option><option>Saldato</option></select></label>
+              <label class="form-field"><span><i>◇</i>Acconto (€)</span><input name="deposit" type="number" placeholder="0,00" value="0"></label>
+              <label class="form-field"><span><i>⌂</i>Apartment</span><select name="apartment"><option value="">Select apartment</option><option value="1">Apartment 1</option><option value="2">Apartment 2</option><option value="3">Apartment 3</option><option value="4">Apartment 4</option><option value="5">Apartment 5</option><option value="6">Apartment 6</option><option value="7">Apartment 7</option><option value="8">Apartment 8</option></select></label>
+              <label class="form-field"><span><i>▦</i>Check-in Date</span><input name="arrival_date" type="date"></label>
+              <label class="form-field"><span><i>▦</i>Check-out Date</span><input name="departure_date" type="date"></label>
+              <label class="form-field is-wide"><span><i>◎</i>Source</span><select name="source"><option value="">Select source</option><option>Diretto</option><option>Booking</option><option>Airbnb</option></select></label>
+              <label class="form-field is-wide is-notes"><span><i>▤</i>Notes</span><textarea name="notes" placeholder="Add any additional notes..."></textarea></label>
+            </div>
+          </div>
+          <div class="booking-form-actions"><button id="cancelForm" class="button button-secondary" type="button">× Cancel</button><button class="button button-save" type="submit">▣ Save Black Reservation</button></div>
+        </div>
+      </form>
+
+      <section class="bookings-heading"><h2>Prenotazioni</h2><div class="search-box"><input id="bookingSearch" type="search" autocomplete="off" placeholder="Cerca cliente, appartamento, fonte..."><span>⌕</span></div></section>
+      <section id="bookingList"></section>
+    </main>
+  </template>
+
+  <template id="bookingAreaTemplate">
+    <div class="se-booking-area">
+      <div class="se-booking-list-header"><div><div class="se-booking-list-title">Elenco prenotazioni</div><div class="se-booking-list-count"></div></div><div class="se-booking-sort-chip">Ordina per · Check-in</div></div>
+      <section class="se-paid-section" hidden><div class="se-booking-section-heading"><div><div class="se-booking-section-title">Saldate</div><div class="se-booking-section-count"></div></div><div class="se-swipe-hint">Scorri →</div></div><div class="se-paid-carousel"></div></section>
+      <section class="se-unpaid-section" hidden><div class="se-booking-section-heading"><div><div class="se-booking-section-title">Da saldare</div><div class="se-booking-section-count"></div></div></div><div class="se-unpaid-list"></div></section>
+    </div>
+  </template>
+
+  <template id="bookingCardTemplate">
+    <article class="se-booking-pass">
+      <div class="se-booking-pass-main">
+        <div class="se-source-icon"></div>
+        <div class="se-booking-primary"><div class="se-booking-name-row"><div class="se-booking-name"></div><span class="se-status-chip"></span></div><div class="se-booking-meta"><span class="se-booking-source-text"></span><span class="se-booking-details"></span></div></div>
+        <div class="se-booking-price"><div class="se-booking-amount"></div><div class="se-booking-chevron">›</div></div>
+      </div>
+      <div class="se-booking-dates"><div class="se-date-box"><div class="se-date-value is-arrival"></div><div class="se-date-label">Check-in</div></div><div class="se-date-arrow">→</div><div class="se-date-box"><div class="se-date-value is-departure"></div><div class="se-date-label">Check-out</div></div><div class="se-nights-box"></div></div>
+      <div class="se-booking-footer"><div class="se-booking-deposit"></div><button class="se-delete-inline" type="button">Elimina</button></div>
+    </article>
+  </template>
+
+  <template id="emptyStateTemplate"><div class="empty-state">Nessuna prenotazione trovata.</div></template>
+  <template id="errorStateTemplate"><pre class="error-state"></pre></template>
+
+  <script type="module" src="app.js?v=6"></script>
 </body>
 </html>

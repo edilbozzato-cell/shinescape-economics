@@ -2,121 +2,33 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const SUPABASE_URL = "https://prpvhnwedpnnwpdvrttz.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBycHZobndlZHBubndwZHZydHR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MjAwMjcsImV4cCI6MjA5Nzk5NjAyN30.jnrGO7j0ptDfnKScitE3vU79SM6tvMevtfM6_Tv7iBE";
-
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
 const TARGET_BLACK = 40000;
 const TARGET_WHITE = 28000;
 const TARGET_TOTAL = 70000;
+
 let bookingSearchQuery = "";
 
-const THEME = {
-  colors: {
-    pageBackground: "#111",
-    cardBackground: "#1c1c1e",
-    cardSecondary: "#2c2c2e",
-    textPrimary: "#ffffff",
-    textSecondary: "#8e8e93",
-    green: "#30d158",
-    blue: "#0a84ff",
-    red: "#ff3b30",
-    blackLabel: "#2f8cff",
-    whiteLabel: "#ffffff",
-    cardBorder: "#2b3542"
-  },
-  font: {
-    pageTitle: 32,
-    pageSubtitle: 18,
-    sectionTitle: 22,
-    label: 12,
-    summaryTitle: 24,
-    helper: 13,
-    normal: 14,
-    formText: 16,
-    button: 17,
-    targetAmount: 28,
-    dashboardAmount: 22,
-    totalAmount: 22,
-    bookingName: 18,
-    bookingAmount: 20
-  },
-  radius: {
-    input: 12,
-    button: 14,
-    card: 22,
-    form: 20
-  },
-  spacing: {
-    page: 20,
-    card: 16,
-    form: 18
-  }
-};
-
-// --- Auth helpers ---
-async function checkAuth() {
-  const { data, error } = await supabase.auth.getSession();
-  if (error) return null;
-  return data.session;
+function cloneTemplate(id) {
+  const template = document.getElementById(id);
+  if (!template) throw new Error(`Template mancante: ${id}`);
+  return template.content.firstElementChild.cloneNode(true);
 }
 
-function renderLogin() {
-  document.documentElement.style.margin = "0";
-  document.documentElement.style.padding = "0";
-  document.documentElement.style.background = "#050506";
-  document.body.style.margin = "0";
-  document.body.style.padding = "0";
-  document.body.style.background = "#050506";
-
-  document.body.innerHTML = `
-    <main style="min-height:100vh;min-height:100dvh;width:100vw;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 18%,rgba(255,255,255,.055),transparent 28%),linear-gradient(180deg,#0b0c0e 0%,#050506 100%);padding:calc(26px + env(safe-area-inset-top)) 20px calc(26px + env(safe-area-inset-bottom));box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden;">
-      <section style="width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:34px;">
-        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;">
-          <div style="width:112px;height:112px;border-radius:28px;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:0 18px 55px rgba(0,0,0,.55);">
-            <img src="assets/logo.png" alt="ShinEscape Logo" style="width:100%;height:100%;object-fit:contain;display:block;">
-          </div>
-          <div style="font-size:18px;letter-spacing:.34em;color:#ffffff;font-weight:500;text-transform:uppercase;opacity:.92;">ShinEscape</div>
-        </div>
-
-        <div style="width:100%;background:rgba(28,28,30,.86);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);padding:30px 22px 22px;border-radius:30px;box-shadow:0 28px 80px rgba(0,0,0,.58);box-sizing:border-box;border:1px solid rgba(255,255,255,.06);">
-          <div style="text-align:center;margin-bottom:26px;">
-            <div style="font-size:clamp(30px,8vw,42px);font-weight:950;margin-bottom:2px;color:${THEME.colors.textPrimary};line-height:1.02;letter-spacing:-.055em;">ShinEscape</div>
-            <div style="margin-top:2px;font-size:clamp(17px,4.5vw,22px);font-weight:800;letter-spacing:.34em;text-transform:uppercase;background:linear-gradient(180deg,#d7b17a,#a66b2c);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#b88746;">Budoni</div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:14px;">
-            <input id="loginEmail" type="email" autocomplete="username" placeholder="Email" style="width:100%;box-sizing:border-box;padding:16px 16px;font-size:18px;border-radius:18px;border:1px solid rgba(255,255,255,.04);background:rgba(58,58,60,.72);color:${THEME.colors.textPrimary};outline:none;">
-            <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password" style="width:100%;box-sizing:border-box;padding:16px 16px;font-size:18px;border-radius:18px;border:1px solid rgba(255,255,255,.04);background:rgba(58,58,60,.72);color:${THEME.colors.textPrimary};outline:none;">
-            <button id="loginButton" style="width:100%;box-sizing:border-box;margin-top:18px;padding:17px;font-size:20px;font-weight:850;border:0;border-radius:20px;background:${THEME.colors.blue};color:${THEME.colors.textPrimary};cursor:pointer;box-shadow:0 16px 34px rgba(10,132,255,.28);">Accedi</button>
-          </div>
-        </div>
-      </section>
-    </main>
-  `;
-  document.getElementById("loginButton").onclick = async () => {
-    const email = document.getElementById("loginEmail").value.trim();
-    const password = document.getElementById("loginPassword").value;
-    if (!email || !password) {
-      alert("Inserisci email e password");
-      return;
-    }
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      alert(error.message);
-      return;
-    }
-    renderApp();
-    await loadBookings();
-  };
+function mountView(templateId) {
+  document.getElementById("appRoot").replaceChildren(cloneTemplate(templateId));
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-  const session = await checkAuth();
-  if (!session) {
-    renderLogin();
-    return;
-  }
-  renderApp();
-  await loadBookings();
-});
+function setText(id, value) {
+  const element = document.getElementById(id);
+  if (element) element.textContent = value;
+}
+
+function setProgress(id, value) {
+  const element = document.getElementById(id);
+  if (element) element.style.setProperty("--progress", `${value}%`);
+}
 
 function euro(value) {
   const formatted = Number(value || 0).toLocaleString("it-IT", {
@@ -124,39 +36,43 @@ function euro(value) {
     maximumFractionDigits: 2,
     useGrouping: true
   });
-
   return `${formatted} €`;
 }
 
-function formatDateIT(value) {
-  if (!value) return "-";
-  const date = new Date(`${value}T00:00:00`);
-  if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleDateString("it-IT", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric"
-  }).replaceAll("/", ".");
+function getCalendarDate(value) {
+  if (!value) return null;
+  const text = String(value).trim();
+  const isoMatch = text.match(/(\d{4})-(\d{2})-(\d{2})/);
+
+  if (isoMatch) {
+    const year = Number(isoMatch[1]);
+    const month = Number(isoMatch[2]);
+    const day = Number(isoMatch[3]);
+    const timestamp = Date.UTC(year, month - 1, day);
+    const date = new Date(timestamp);
+    if (date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day) {
+      return { year, month, day, timestamp };
+    }
+  }
+
+  const parsed = new Date(text);
+  if (Number.isNaN(parsed.getTime())) return null;
+  const year = parsed.getFullYear();
+  const month = parsed.getMonth() + 1;
+  const day = parsed.getDate();
+  return { year, month, day, timestamp: Date.UTC(year, month - 1, day) };
 }
 
 function formatDateShortIT(value) {
-  if (!value) return "-";
-  const date = new Date(`${value}T00:00:00`);
-  if (Number.isNaN(date.getTime())) return value;
+  const calendarDate = getCalendarDate(value);
+  if (!calendarDate) return "-";
+  const date = new Date(calendarDate.timestamp);
   return date.toLocaleDateString("it-IT", {
     day: "2-digit",
     month: "short",
-    year: "numeric"
+    year: "numeric",
+    timeZone: "UTC"
   }).replace(".", "");
-}
-
-function getNights(arrival, departure) {
-  if (!arrival || !departure) return null;
-  const start = new Date(`${arrival}T00:00:00`);
-  const end = new Date(`${departure}T00:00:00`);
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return null;
-  const diff = Math.round((end - start) / 86400000);
-  return diff > 0 ? diff : null;
 }
 
 function formatDateTimeIT(value) {
@@ -172,333 +88,152 @@ function formatDateTimeIT(value) {
   });
 }
 
-
-
-function formatSyncNote(notes) {
-  const text = String(notes || "");
-  const match = text.match(/Lodgify sync · (\d{4}-\d{2}-\d{2}) → (\d{4}-\d{2}-\d{2})/);
-  if (!match) return text;
-  return `Lodgify sync · ${formatDateIT(match[1])} → ${formatDateIT(match[2])}`;
+function getNights(arrival, departure) {
+  const start = getCalendarDate(arrival);
+  const end = getCalendarDate(departure);
+  if (!start || !end) return null;
+  const difference = Math.round((end.timestamp - start.timestamp) / 86400000);
+  return difference > 0 ? difference : null;
 }
 
-function getBookingDateLine(booking) {
-  if (booking.notes) return formatSyncNote(booking.notes);
-  if (booking.arrival_date || booking.departure_date) {
-    return `Stay · ${formatDateIT(booking.arrival_date)} → ${formatDateIT(booking.departure_date)}`;
-  }
-  return "";
+function getStoredNights(booking) {
+  const value = Number(booking.nights ?? booking.night_count ?? booking.nights_count ?? booking.total_nights);
+  return Number.isFinite(value) && value > 0 ? Math.round(value) : null;
 }
 
 function restoreStayDatesFromNotes(booking) {
-  if (!booking.notes || (booking.arrival_date && booking.departure_date)) return booking;
+  const existingArrival = booking.arrival_date || booking.check_in || booking.checkin || booking.start_date || null;
+  const existingDeparture = booking.departure_date || booking.check_out || booking.checkout || booking.end_date || null;
+  if (existingArrival && existingDeparture) {
+    return { ...booking, arrival_date: existingArrival, departure_date: existingDeparture };
+  }
+  if (!booking.notes) return booking;
 
-  const match = String(booking.notes).match(/(\d{4}-\d{2}-\d{2})\s*→\s*(\d{4}-\d{2}-\d{2})/);
-  if (!match) return booking;
+  const notes = String(booking.notes);
+  const isoDates = notes.match(/\d{4}-\d{2}-\d{2}/g) || [];
+  const italianMatch = notes.match(/(\d{1,2})[./](\d{1,2})[./](\d{4})(?:\s)*[→➜➡-](?:\s)*(\d{1,2})[./](\d{1,2})[./](\d{4})/);
+
+  let arrivalFromNotes = isoDates[0] || null;
+  let departureFromNotes = isoDates[1] || null;
+  if (!arrivalFromNotes && italianMatch) {
+    arrivalFromNotes = `${italianMatch[3]}-${italianMatch[2].padStart(2, "0")}-${italianMatch[1].padStart(2, "0")}`;
+    departureFromNotes = `${italianMatch[6]}-${italianMatch[5].padStart(2, "0")}-${italianMatch[4].padStart(2, "0")}`;
+  }
+  if (!arrivalFromNotes || !departureFromNotes) return booking;
 
   return {
     ...booking,
-    arrival_date: booking.arrival_date || match[1],
-    departure_date: booking.departure_date || match[2]
+    arrival_date: existingArrival || arrivalFromNotes,
+    departure_date: existingDeparture || departureFromNotes
   };
 }
 
 function applyAutomaticPaidStatus(bookings) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const todayTimestamp = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
 
   return bookings.map(originalBooking => {
     const booking = restoreStayDatesFromNotes(originalBooking);
     const isOta = booking.synced_from === "Lodgify" || ["Airbnb", "Booking"].includes(String(booking.source || ""));
-    if (!isOta) return booking;
+    if (!isOta || !booking.departure_date) return booking;
 
-    let checkout = booking.departure_date || null;
-
-    if (!checkout && booking.notes) {
-      const match = String(booking.notes).match(/→\s*(\d{4}-\d{2}-\d{2})/);
-      checkout = match ? match[1] : null;
+    const checkoutDate = getCalendarDate(booking.departure_date);
+    if (checkoutDate && checkoutDate.timestamp <= todayTimestamp) {
+      return { ...booking, status: "Saldato" };
     }
-
-    if (!checkout) return booking;
-
-    const checkoutDate = new Date(`${checkout}T00:00:00`);
-    if (Number.isNaN(checkoutDate.getTime())) return booking;
-
-    if (checkoutDate <= today) {
-      return { ...booking, status: "Saldato", departure_date: checkout };
-    }
-
     return booking;
   });
 }
 
-function getSyncStats(bookings) {
-  const lodgify = bookings.filter(b => b.synced_from === "Lodgify");
-  const airbnb = lodgify.filter(b => String(b.source || "").toLowerCase().includes("airbnb"));
-  const booking = lodgify.filter(b => String(b.source || "").toLowerCase().includes("booking"));
-  const lastSync = lodgify
-    .map(b => b.last_synced_at)
-    .filter(Boolean)
-    .sort()
-    .at(-1);
-
-  return {
-    total: lodgify.length,
-    airbnb: airbnb.length,
-    booking: booking.length,
-    lastSync
-  };
-}
-
-function getInitials(name) {
-  return String(name || "?")
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map(part => part[0]?.toUpperCase() || "")
-    .join("") || "?";
-}
-
-function getSourceBadge(source) {
+function getSourcePresentation(source) {
   const normalized = String(source || "Diretta").trim().toLowerCase();
-
-  if (normalized.includes("airbnb")) {
-    return {
-      label: "Airbnb",
-      icon: "A",
-      background: "#ff385c",
-      border: "rgba(255,56,92,.35)",
-      color: "#ffffff"
-    };
-  }
-
-  if (normalized.includes("booking")) {
-    return {
-      label: "Booking",
-      icon: "B.",
-      background: "#003b95",
-      border: "rgba(0,59,149,.45)",
-      color: "#ffffff"
-    };
-  }
-
-  return {
-    label: "Diretta",
-    icon: "S",
-    background: "#121212",
-    border: "rgba(215,177,122,.55)",
-    color: "#d7b17a"
-  };
+  if (normalized.includes("airbnb")) return { label: "Airbnb", icon: "A", className: "is-airbnb" };
+  if (normalized.includes("booking")) return { label: "Booking", icon: "B.", className: "is-booking" };
+  return { label: "Diretta", icon: "S", className: "is-direct" };
 }
 
-function getStatusBadge(status) {
-  if (status === "Saldato") {
-    return {
-      label: "Saldato",
-      background: "rgba(48,209,88,.14)",
-      color: THEME.colors.green,
-      border: "rgba(48,209,88,.28)"
-    };
+function getSyncStats(bookings) {
+  const lodgify = bookings.filter(booking => booking.synced_from === "Lodgify");
+  const airbnb = lodgify.filter(booking => String(booking.source || "").toLowerCase().includes("airbnb"));
+  const booking = lodgify.filter(item => String(item.source || "").toLowerCase().includes("booking"));
+  const lastSync = lodgify.map(item => item.last_synced_at).filter(Boolean).sort().at(-1);
+  return { total: lodgify.length, airbnb: airbnb.length, booking: booking.length, lastSync };
+}
+
+async function checkAuth() {
+  const { data, error } = await supabase.auth.getSession();
+  return error ? null : data.session;
+}
+
+function renderLogin() {
+  mountView("loginTemplate");
+  document.getElementById("loginButton").addEventListener("click", async () => {
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    if (!email || !password) {
+      alert("Inserisci email e password");
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    renderApp();
+    await loadBookings();
+  });
+}
+
+function openBookingForm(booking = null) {
+  const form = document.getElementById("bookingForm");
+  form.reset();
+  delete form.dataset.editId;
+
+  if (booking) {
+    form.dataset.editId = booking.id;
+    form.name.value = booking.name || "";
+    form.amount.value = booking.amount || "";
+    form.account_type.value = booking.account_type || "Black";
+    form.status.value = booking.status || "Da saldare";
+    form.deposit.value = booking.deposit || 0;
+    form.apartment.value = booking.apartment || "";
+    form.arrival_date.value = booking.arrival_date || "";
+    form.departure_date.value = booking.departure_date || "";
+    form.source.value = booking.source || "";
+    form.notes.value = booking.notes || "";
   }
 
-  return {
-    label: "Da saldare",
-    background: "rgba(255,159,10,.13)",
-    color: "#ffcc66",
-    border: "rgba(255,159,10,.28)"
-  };
+  form.hidden = false;
+  form.classList.add("is-open");
+}
+
+function closeBookingForm() {
+  const form = document.getElementById("bookingForm");
+  form.reset();
+  delete form.dataset.editId;
+  form.classList.remove("is-open");
+  form.hidden = true;
 }
 
 function renderApp() {
-  document.documentElement.style.margin = "0";
-  document.documentElement.style.padding = "0";
-  document.documentElement.style.background = THEME.colors.pageBackground;
-  document.documentElement.style.minHeight = "100%";
-  document.body.style.margin = "0";
-  document.body.style.padding = "0";
-  document.body.style.background = THEME.colors.pageBackground;
-  document.body.style.minHeight = "100%";
-  document.body.innerHTML = `
-    <main style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:${THEME.colors.pageBackground};color:${THEME.colors.textPrimary};min-height:100vh;min-height:100dvh;width:100vw;max-width:none;margin:0;padding:${THEME.spacing.page}px;padding-top:calc(${THEME.spacing.page}px + env(safe-area-inset-top));padding-bottom:calc(${THEME.spacing.page}px + env(safe-area-inset-bottom));box-sizing:border-box;overflow-x:hidden;">
-      <header style="display:flex;align-items:center;gap:18px;margin-bottom:22px;padding:18px;border-radius:${THEME.radius.card}px;background:linear-gradient(135deg,#0b1118,#111820);border:1px solid ${THEME.colors.cardBorder};box-shadow:0 18px 50px rgba(0,0,0,.35);position:relative;">
-        <div style="width:88px;height:88px;border-radius:22px;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid rgba(255,255,255,.08);">
-          <img src="assets/logo.png" alt="ShinEscape Logo" style="width:100%;height:100%;object-fit:contain;display:block;">
-        </div>
-        <div style="min-width:0;">
-          <div style="font-size:${THEME.font.helper}px;color:${THEME.colors.blue};font-weight:900;letter-spacing:.14em;text-transform:uppercase;">ShinEscape</div>
-          <h1 style="margin:4px 0 0;font-size:${THEME.font.pageTitle}px;line-height:1.05;font-weight:950;letter-spacing:-.04em;">Manager</h1>
-          <div style="margin-top:8px;display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border-radius:999px;background:rgba(10,132,255,.12);border:1px solid rgba(10,132,255,.35);color:#c7dfff;font-size:${THEME.font.helper}px;font-weight:800;">
-            <span style="width:8px;height:8px;border-radius:999px;background:${THEME.colors.green};box-shadow:0 0 14px ${THEME.colors.green};"></span>
-            Economics Dashboard
-          </div>
-        </div>
-        <button id="logoutButton" style="position:absolute;right:18px;top:18px;padding:7px 14px;font-size:13px;font-weight:700;border:0;border-radius:999px;background:${THEME.colors.cardSecondary};color:${THEME.colors.textSecondary};cursor:pointer;transition:background .15s;">
-          Logout
-        </button>
-      </header>
-
-      <section id="dashboard" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:20px 0;"></section>
-
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;">
-        <button id="openForm" style="width:100%;padding:16px;border:0;border-radius:${THEME.radius.button}px;background:${THEME.colors.blue};color:${THEME.colors.textPrimary};font-size:${THEME.font.button}px;font-weight:700;">
-          + Nuova prenotazione
-        </button>
-        <button id="syncLodgify" style="width:100%;padding:16px;border:1px solid rgba(215,177,122,.38);border-radius:${THEME.radius.button}px;background:linear-gradient(135deg,rgba(215,177,122,.18),rgba(120,70,22,.14));color:#d7b17a;font-size:${THEME.font.button}px;font-weight:800;">
-          ↻ Sincronizza Lodgify
-        </button>
-      </div>
-
-      <section style="margin-top:12px;background:linear-gradient(135deg,rgba(22,27,34,.94),rgba(12,15,20,.94));border:1px solid rgba(255,255,255,.08);border-radius:${THEME.radius.card}px;padding:14px;box-shadow:0 14px 38px rgba(0,0,0,.22);">
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div>
-            <div style="color:#d7b17a;font-size:${THEME.font.helper}px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;">Importa ID Lodgify</div>
-            <div style="margin-top:4px;color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;line-height:1.35;">Usalo per importare una prenotazione OTA che non compare nella sync automatica.</div>
-          </div>
-          <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;">
-            <input id="lodgifyBookingId" inputmode="numeric" placeholder="ID prenotazione Lodgify" style="width:100%;box-sizing:border-box;padding:14px 14px;border:0;border-radius:${THEME.radius.input}px;background:${THEME.colors.cardSecondary};color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
-            <button id="importLodgifyId" type="button" style="padding:14px 16px;border:1px solid rgba(215,177,122,.38);border-radius:${THEME.radius.button}px;background:rgba(215,177,122,.14);color:#d7b17a;font-size:${THEME.font.formText}px;font-weight:850;white-space:nowrap;">
-              Importa
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <section id="syncSummary"></section>
-
-      <form id="bookingForm" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.74);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:calc(18px + env(safe-area-inset-top)) 14px calc(18px + env(safe-area-inset-bottom));box-sizing:border-box;align-items:center;justify-content:center;overflow-y:auto;">
-        <div style="width:100%;max-width:860px;background:linear-gradient(145deg,#111820,#080b10);padding:0;border-radius:28px;border:1px solid rgba(255,255,255,.10);box-shadow:0 28px 80px rgba(0,0,0,.62);overflow:hidden;margin:auto;">
-        <div style="padding:22px 22px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid rgba(255,255,255,.07);">
-          <div style="display:flex;align-items:center;gap:14px;min-width:0;">
-            <div style="width:58px;height:58px;border-radius:999px;background:rgba(48,209,88,.08);border:1px solid rgba(48,209,88,.55);display:flex;align-items:center;justify-content:center;color:${THEME.colors.green};font-size:28px;font-weight:900;box-shadow:0 0 28px rgba(48,209,88,.10);flex-shrink:0;">+</div>
-            <div style="min-width:0;">
-              <div style="font-size:clamp(24px,4vw,34px);line-height:1.05;font-weight:950;letter-spacing:-.045em;color:${THEME.colors.textPrimary};">New Black Reservation</div>
-              <div style="margin-top:6px;color:${THEME.colors.textSecondary};font-size:clamp(13px,2.8vw,16px);font-weight:650;">Insert the details for this Black booking</div>
-            </div>
-          </div>
-          <button id="cancelFormTop" type="button" style="width:44px;height:44px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:${THEME.colors.textPrimary};font-size:26px;line-height:1;font-weight:350;flex-shrink:0;">×</button>
-        </div>
-
-        <div style="padding:20px 22px 18px;">
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0;border:1px solid rgba(255,255,255,.08);border-radius:22px;overflow:hidden;background:rgba(255,255,255,.025);">
-            <label style="min-height:138px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;border-right:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box;">
-              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">♙</span>Guest Name</span>
-              <input name="name" placeholder="Enter guest name" required style="margin-top:auto;width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
-            </label>
-
-            <label style="min-height:138px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box;">
-              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:22px;">€</span>Total Amount (€)</span>
-              <input name="amount" type="number" placeholder="0,00" required style="margin-top:auto;width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
-            </label>
-
-            <label style="min-height:138px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;border-right:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box;">
-              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">☷</span>Account Type</span>
-              <select name="account_type" style="margin-top:auto;width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
-                <option>Black</option>
-                <option>White</option>
-              </select>
-            </label>
-
-            <label style="min-height:138px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box;">
-              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">▣</span>Payment Status</span>
-              <select name="status" style="margin-top:auto;width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
-                <option>Da saldare</option>
-                <option>Saldato</option>
-              </select>
-            </label>
-
-            <label style="min-height:138px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;border-right:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box;">
-              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">◇</span>Acconto (€)</span>
-              <input name="deposit" type="number" placeholder="0,00" value="0" style="margin-top:auto;width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
-            </label>
-
-            <label style="min-height:138px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box;">
-              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">⌂</span>Apartment</span>
-              <select name="apartment" style="margin-top:auto;width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
-                <option value="">Select apartment</option>
-                <option value="1">Apartment 1</option>
-                <option value="2">Apartment 2</option>
-                <option value="3">Apartment 3</option>
-                <option value="4">Apartment 4</option>
-                <option value="5">Apartment 5</option>
-                <option value="6">Apartment 6</option>
-                <option value="7">Apartment 7</option>
-                <option value="8">Apartment 8</option>
-              </select>
-            </label>
-
-            <label style="min-height:138px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;border-right:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box;">
-              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">▦</span>Check-in Date</span>
-              <input name="arrival_date" type="date" style="margin-top:auto;width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
-            </label>
-
-            <label style="min-height:138px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box;">
-              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">▦</span>Check-out Date</span>
-              <input name="departure_date" type="date" style="margin-top:auto;width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
-            </label>
-
-            <label style="grid-column:1 / -1;min-height:126px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;border-bottom:1px solid rgba(255,255,255,.06);box-sizing:border-box;">
-              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">◎</span>Source</span>
-              <select name="source" style="margin-top:auto;width:100%;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;">
-                <option value="">Select source</option>
-                <option>Diretto</option>
-                <option>Booking</option>
-                <option>Airbnb</option>
-              </select>
-            </label>
-
-            <label style="grid-column:1 / -1;min-height:154px;display:flex;flex-direction:column;gap:12px;padding:20px 20px 18px;color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;box-sizing:border-box;">
-              <span style="display:flex;align-items:center;gap:8px;"><span style="color:${THEME.colors.green};font-size:20px;">▤</span>Notes</span>
-              <textarea name="notes" placeholder="Add any additional notes..." style="margin-top:auto;width:100%;min-height:78px;box-sizing:border-box;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:rgba(9,13,20,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;resize:vertical;"></textarea>
-            </label>
-          </div>
-        </div>
-
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;padding:16px 22px 22px;border-top:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.025);">
-          <button id="cancelForm" type="button" style="width:100%;padding:16px;border:1px solid rgba(255,255,255,.10);border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.03));color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;font-weight:850;">× Cancel</button>
-          <button type="submit" style="width:100%;padding:16px;border:0;border-radius:16px;background:linear-gradient(135deg,#30d158,#59d96b);color:#031007;font-size:${THEME.font.formText}px;font-weight:950;box-shadow:0 16px 36px rgba(48,209,88,.22);">▣ Save Black Reservation</button>
-        </div>
-        </div>
-      </form>
-
-  <div style="margin:28px 0 20px;display:flex;flex-direction:column;gap:12px;">
-    <h3 style="margin:0;font-size:${THEME.font.sectionTitle}px;">Prenotazioni</h3>
-    <div style="position:relative;width:100%;">
-      <input id="bookingSearch" type="search" autocomplete="off" placeholder="Cerca cliente, appartamento, fonte..." style="width:100%;box-sizing:border-box;padding:15px 46px 15px 16px;border-radius:18px;border:1px solid rgba(255,255,255,.10);background:rgba(28,28,30,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 12px 34px rgba(0,0,0,.22);">
-      <span style="position:absolute;right:16px;top:50%;transform:translateY(-50%);color:${THEME.colors.textSecondary};font-size:18px;pointer-events:none;">⌕</span>
-    </div>
-  </div>
-  <section id="bookingList"></section>
-    </main>
-  `;
-
-  document.getElementById("openForm").onclick = () => {
-    const form = document.getElementById("bookingForm");
-    form.reset();
-    delete form.dataset.editId;
-    form.style.display = form.style.display === "flex" ? "none" : "flex";
-  };
-  document.getElementById("syncLodgify").onclick = syncLodgify;
-  document.getElementById("bookingSearch").oninput = event => {
+  mountView("appTemplate");
+  document.getElementById("openForm").addEventListener("click", () => openBookingForm());
+  document.getElementById("syncLodgify").addEventListener("click", syncLodgify);
+  document.getElementById("importLodgifyId").addEventListener("click", importLodgifyById);
+  document.getElementById("bookingForm").addEventListener("submit", saveBooking);
+  document.getElementById("cancelForm").addEventListener("click", closeBookingForm);
+  document.getElementById("cancelFormTop").addEventListener("click", closeBookingForm);
+  document.getElementById("bookingSearch").addEventListener("input", event => {
     bookingSearchQuery = String(event.target.value || "").trim().toLowerCase();
     loadBookings();
-  };
-  document.getElementById("importLodgifyId").onclick = importLodgifyById;
-
-  document.getElementById("bookingForm").onsubmit = saveBooking;
-  const closeBookingForm = () => {
-    const form = document.getElementById("bookingForm");
-    form.reset();
-    delete form.dataset.editId;
-    form.style.display = "none";
-  };
-
-  document.getElementById("cancelForm").onclick = closeBookingForm;
-  document.getElementById("cancelFormTop").onclick = closeBookingForm;
-
-  // Logout handler
-  document.getElementById("logoutButton").onclick = async () => {
+  });
+  document.getElementById("logoutButton").addEventListener("click", async () => {
     await supabase.auth.signOut();
     renderLogin();
-  };
+  });
 }
 
 async function loadBookings() {
@@ -509,394 +244,291 @@ async function loadBookings() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    document.getElementById("bookingList").innerHTML = `<pre>${JSON.stringify(error, null, 2)}</pre>`;
+    const errorState = cloneTemplate("errorStateTemplate");
+    errorState.textContent = JSON.stringify(error, null, 2);
+    document.getElementById("bookingList").replaceChildren(errorState);
     return;
   }
 
-  const normalizedData = applyAutomaticPaidStatus(data || []);
+  const bookings = applyAutomaticPaidStatus(data || []);
+  renderDashboard(bookings);
+  renderMonthlyNightsChart(bookings);
+  renderSyncSummary(bookings);
+  renderBookings(bookings);
+}
 
-  renderDashboard(normalizedData);
-  renderSyncSummary(normalizedData);
-  renderBookings(normalizedData);
+function getSeasonYear(bookings) {
+  const years = bookings.map(booking => getCalendarDate(booking.arrival_date)?.year).filter(Boolean);
+  if (!years.length) return new Date().getFullYear();
+
+  const frequencies = years.reduce((counts, year) => {
+    counts.set(year, (counts.get(year) || 0) + 1);
+    return counts;
+  }, new Map());
+  return [...frequencies.entries()].sort((a, b) => b[1] - a[1])[0][0];
+}
+
+function calculateMonthlyNights(bookings, year) {
+  const totals = [0, 0, 0, 0, 0];
+
+  bookings.forEach(booking => {
+    const arrival = getCalendarDate(booking.arrival_date);
+    const departure = getCalendarDate(booking.departure_date);
+    if (!arrival || !departure || departure.timestamp <= arrival.timestamp) return;
+
+    for (let night = arrival.timestamp; night < departure.timestamp; night += 86400000) {
+      const date = new Date(night);
+      const month = date.getUTCMonth();
+      if (date.getUTCFullYear() === year && month >= 5 && month <= 9) totals[month - 5] += 1;
+    }
+  });
+  return totals;
+}
+
+function renderMonthlyNightsChart(bookings) {
+  const fullTarget = [40, 120, 120, 40, 0];
+  const seasonYear = getSeasonYear(bookings);
+  const fullActual = calculateMonthlyNights(bookings, seasonYear);
+  const showOctober = fullActual[4] > 0;
+  const actual = showOctober ? fullActual : fullActual.slice(0, 4);
+  const target = showOctober ? fullTarget : fullTarget.slice(0, 4);
+  const totalActual = fullActual.reduce((sum, value) => sum + value, 0);
+  const totalTarget = fullTarget.reduce((sum, value) => sum + value, 0);
+  const delta = totalActual - totalTarget;
+  const maximum = Math.max(120, ...actual);
+  const chartMaximum = Math.ceil((maximum * 1.15) / 20) * 20;
+  const xPositions = showOctober ? [86, 246, 406, 566, 726] : [100, 310, 520, 730];
+  const chartTop = 34;
+  const chartBottom = 246;
+  const chartHeight = chartBottom - chartTop;
+  const yForValue = value => chartBottom - (value / chartMaximum) * chartHeight;
+  const pointsFor = values => values.map((value, index) => `${xPositions[index]},${yForValue(value)}`).join(" ");
+
+  setText("nightsChartYear", seasonYear);
+  setText("nightsChartTotal", `${totalActual} notti`);
+  setText("nightsChartTarget", `${totalTarget} notti`);
+  const deltaElement = document.getElementById("nightsChartDelta");
+  deltaElement.textContent = delta === 0 ? "Target raggiunto" : `${Math.abs(delta)} notti ${delta > 0 ? "sopra" : "sotto"} il target`;
+  deltaElement.classList.toggle("is-above", delta > 0);
+  deltaElement.classList.toggle("is-below", delta < 0);
+  document.getElementById("targetNightsLine").setAttribute("points", pointsFor(target));
+  document.getElementById("actualNightsLine").setAttribute("points", pointsFor(actual));
+  document.getElementById("actualNightsArea").setAttribute("d", `M ${xPositions[0]} ${chartBottom} L ${pointsFor(actual).replaceAll(" ", " L ")} L ${xPositions.at(-1)} ${chartBottom} Z`);
+
+  const levels = [chartMaximum, chartMaximum * .75, chartMaximum * .5, chartMaximum * .25, 0];
+  document.querySelectorAll(".nights-chart-y-label").forEach((label, index) => {
+    label.textContent = Math.round(levels[index]);
+  });
+
+  fullActual.forEach((value, index) => {
+    const dot = document.getElementById(`actualNightDot${index}`);
+    const label = document.getElementById(`actualNightValue${index}`);
+    const month = document.getElementById(`nightMonth${index}`);
+    const isVisible = index < xPositions.length;
+    dot.classList.toggle("is-hidden", !isVisible);
+    label.classList.toggle("is-hidden", !isVisible);
+    month.classList.toggle("is-hidden", !isVisible);
+    if (!isVisible) return;
+
+    dot.setAttribute("cx", xPositions[index]);
+    dot.setAttribute("cy", yForValue(value));
+    label.setAttribute("x", xPositions[index]);
+    label.setAttribute("y", Math.max(yForValue(value) - 15, 18));
+    month.setAttribute("x", xPositions[index]);
+    label.textContent = value;
+  });
 }
 
 function renderSyncSummary(bookings) {
   const stats = getSyncStats(bookings);
-  const container = document.getElementById("syncSummary");
-  if (!container) return;
-
-  container.innerHTML = `
-    <div style="margin-top:14px;background:linear-gradient(135deg,rgba(22,27,34,.94),rgba(12,15,20,.94));border:1px solid rgba(215,177,122,.26);border-radius:${THEME.radius.card}px;padding:14px;box-shadow:0 14px 38px rgba(0,0,0,.22);">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-        <div>
-          <div style="color:#d7b17a;font-size:${THEME.font.helper}px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;">Lodgify Sync</div>
-          <div style="margin-top:4px;color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;">Ultima sync: ${formatDateTimeIT(stats.lastSync)}</div>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <span style="padding:7px 10px;border-radius:999px;background:#003b95;color:#fff;font-size:${THEME.font.helper}px;font-weight:850;">Booking ${stats.booking}</span>
-          <span style="padding:7px 10px;border-radius:999px;background:#ff385c;color:#fff;font-size:${THEME.font.helper}px;font-weight:850;">Airbnb ${stats.airbnb}</span>
-          <span style="padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.08);color:${THEME.colors.textPrimary};font-size:${THEME.font.helper}px;font-weight:850;">OTA ${stats.total}</span>
-        </div>
-      </div>
-    </div>
-  `;
+  const summary = document.getElementById("syncSummary");
+  summary.hidden = false;
+  setText("lastSync", `Ultima sync: ${formatDateTimeIT(stats.lastSync)}`);
+  setText("bookingSyncCount", `Booking ${stats.booking}`);
+  setText("airbnbSyncCount", `Airbnb ${stats.airbnb}`);
+  setText("otaSyncCount", `OTA ${stats.total}`);
 }
 
 function renderDashboard(bookings) {
-  const black = bookings.filter(b => b.account_type === "Black");
-  const white = bookings.filter(b => b.account_type === "White");
-
-  const calc = list => ({
-    saldato: list.reduce((sum, b) => {
-      if (b.status === "Saldato") return sum + Number(b.amount || 0);
-      return sum + Number(b.deposit || 0);
-    }, 0),
-    complessivo: list.reduce((sum, b) => sum + Number(b.amount || 0), 0)
+  const calculate = list => ({
+    collected: list.reduce((sum, booking) => sum + (booking.status === "Saldato" ? Number(booking.amount || 0) : Number(booking.deposit || 0)), 0),
+    overall: list.reduce((sum, booking) => sum + Number(booking.amount || 0), 0)
   });
 
-  const b = calc(black);
-  const w = calc(white);
+  const black = calculate(bookings.filter(booking => booking.account_type === "Black"));
+  const white = calculate(bookings.filter(booking => booking.account_type === "White"));
+  const blackResidual = Math.max(TARGET_BLACK - black.overall, 0);
+  const whiteResidual = Math.max(TARGET_WHITE - white.overall, 0);
+  const blackProgress = Math.min((black.overall / TARGET_BLACK) * 100, 100);
+  const whiteProgress = Math.min((white.overall / TARGET_WHITE) * 100, 100);
+  const totalOverall = black.overall + white.overall;
+  const totalCollected = black.collected + white.collected;
+  const totalResidual = Math.max(TARGET_TOTAL - totalOverall, 0);
+  const totalProgress = Math.min((totalOverall / TARGET_TOTAL) * 100, 100);
+  const blackShare = totalOverall > 0 ? (black.overall / totalOverall) * 100 : 0;
+  const whiteShare = totalOverall > 0 ? (white.overall / totalOverall) * 100 : 0;
+  const percent = value => `${value.toFixed(1).replace(".", ",")}%`;
 
-  const blackResidual = Math.max(TARGET_BLACK - b.complessivo, 0);
-  const whiteResidual = Math.max(TARGET_WHITE - w.complessivo, 0);
-  const blackProgress = Math.min((b.complessivo / TARGET_BLACK) * 100, 100);
-  const whiteProgress = Math.min((w.complessivo / TARGET_WHITE) * 100, 100);
+  setText("blackResidual", euro(blackResidual));
+  setText("blackCollected", euro(black.collected));
+  setText("blackOverall", euro(black.overall));
+  setText("blackReached", percent(blackProgress));
+  setText("blackProgressMeta", `${euro(black.overall)} / ${euro(TARGET_BLACK)}`);
+  setProgress("blackProgressBar", blackProgress);
 
-  const totalComplessivo = b.complessivo + w.complessivo;
-  const totalResidual = Math.max(TARGET_TOTAL - totalComplessivo, 0);
-  const totalProgress = Math.min((totalComplessivo / TARGET_TOTAL) * 100, 100);
-  const blackShare = totalComplessivo > 0 ? (b.complessivo / totalComplessivo) * 100 : 0;
-  const whiteShare = totalComplessivo > 0 ? (w.complessivo / totalComplessivo) * 100 : 0;
+  setText("whiteResidual", euro(whiteResidual));
+  setText("whiteCollected", euro(white.collected));
+  setText("whiteOverall", euro(white.overall));
+  setText("whiteReached", percent(whiteProgress));
+  setText("whiteProgressMeta", `${euro(white.overall)} / ${euro(TARGET_WHITE)}`);
+  setProgress("whiteProgressBar", whiteProgress);
 
-  document.getElementById("dashboard").innerHTML = `
-    <div style="grid-column:1 / -1;background:linear-gradient(135deg,#111820,#0b0f14);padding:${THEME.spacing.card}px;border-radius:${THEME.radius.card}px;border:1px solid ${THEME.colors.cardBorder};box-shadow:0 18px 50px rgba(0,0,0,.35);">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:18px;align-items:start;">
-        <div>
-          <div style="font-size:${THEME.font.helper}px;color:${THEME.colors.blue};font-weight:900;letter-spacing:.04em;">TARGET RESIDUO BLACK</div>
-          <div style="margin-top:8px;font-size:clamp(21px,5.8vw,26px);font-weight:950;line-height:1.12;white-space:nowrap;">${euro(blackResidual)}</div>
-        </div>
-        <div>
-          <div style="color:#c7c7cc;font-size:${THEME.font.helper}px;">Incassato</div>
-          <div style="margin-top:8px;font-size:clamp(20px,3vw,${THEME.font.totalAmount}px);font-weight:800;">${euro(b.saldato)}</div>
-        </div>
-        <div>
-          <div style="color:#c7c7cc;font-size:${THEME.font.helper}px;">Complessivo</div>
-          <div style="margin-top:8px;font-size:clamp(20px,3vw,${THEME.font.totalAmount}px);font-weight:800;">${euro(b.complessivo)}</div>
-        </div>
-        <div>
-          <div style="color:#c7c7cc;font-size:${THEME.font.helper}px;">Raggiunto</div>
-          <div style="margin-top:8px;color:${THEME.colors.green};font-size:clamp(20px,3vw,${THEME.font.totalAmount}px);font-weight:900;">${blackProgress.toFixed(1).replace('.', ',')}%</div>
-        </div>
-        <div>
-          <div style="font-size:${THEME.font.helper}px;color:${THEME.colors.blue};font-weight:800;">${euro(b.complessivo)} / ${euro(TARGET_BLACK)}</div>
-          <div style="margin-top:12px;height:10px;background:${THEME.colors.cardSecondary};border-radius:999px;overflow:hidden;">
-            <div style="height:100%;width:${blackProgress}%;background:linear-gradient(90deg,#0a84ff,#2f8cff);border-radius:999px;"></div>
-          </div>
-        </div>
-      </div>
-    </div>
+  setText("blackSummaryCollected", euro(black.collected));
+  setText("blackSummaryOverall", euro(black.overall));
+  setText("whiteSummaryCollected", euro(white.collected));
+  setText("whiteSummaryOverall", euro(white.overall));
+  setText("totalOverall", euro(totalOverall));
+  setText("blackShare", percent(blackShare));
+  setText("whiteShare", percent(whiteShare));
+  setProgress("blackShareBar", blackShare);
+  setProgress("whiteShareBar", whiteShare);
+  setText("totalCollected", euro(totalCollected));
+  setText("totalTarget", euro(TARGET_TOTAL));
+  setProgress("totalProgressBar", totalProgress);
+  setText("totalProgressCurrent", euro(totalOverall));
+  setText("totalProgressTarget", euro(TARGET_TOTAL));
+  setText("totalProgressPercent", percent(totalProgress));
+  setText("totalResidual", euro(totalResidual));
+}
 
-    <div style="grid-column:1 / -1;background:linear-gradient(135deg,#15191b,#0b0f12);padding:${THEME.spacing.card}px;border-radius:${THEME.radius.card}px;border:1px solid ${THEME.colors.cardBorder};box-shadow:0 18px 50px rgba(0,0,0,.35);">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:18px;align-items:start;">
-        <div>
-          <div style="font-size:${THEME.font.helper}px;color:${THEME.colors.whiteLabel};font-weight:900;letter-spacing:.04em;">TARGET RESIDUO WHITE</div>
-          <div style="margin-top:8px;font-size:clamp(21px,5.8vw,26px);font-weight:950;line-height:1.12;white-space:nowrap;">${euro(whiteResidual)}</div>
-        </div>
-        <div>
-          <div style="color:#c7c7cc;font-size:${THEME.font.helper}px;">Incassato</div>
-          <div style="margin-top:8px;font-size:clamp(20px,3vw,${THEME.font.totalAmount}px);font-weight:800;">${euro(w.saldato)}</div>
-        </div>
-        <div>
-          <div style="color:#c7c7cc;font-size:${THEME.font.helper}px;">Complessivo</div>
-          <div style="margin-top:8px;font-size:clamp(20px,3vw,${THEME.font.totalAmount}px);font-weight:800;">${euro(w.complessivo)}</div>
-        </div>
-        <div>
-          <div style="color:#c7c7cc;font-size:${THEME.font.helper}px;">Raggiunto</div>
-          <div style="margin-top:8px;color:${THEME.colors.green};font-size:clamp(20px,3vw,${THEME.font.totalAmount}px);font-weight:900;">${whiteProgress.toFixed(1).replace('.', ',')}%</div>
-        </div>
-        <div>
-          <div style="font-size:${THEME.font.helper}px;color:${THEME.colors.whiteLabel};font-weight:800;">${euro(w.complessivo)} / ${euro(TARGET_WHITE)}</div>
-          <div style="margin-top:12px;height:10px;background:${THEME.colors.cardSecondary};border-radius:999px;overflow:hidden;">
-            <div style="height:100%;width:${whiteProgress}%;background:linear-gradient(90deg,#ffffff,#d9d9d9);border-radius:999px;"></div>
-          </div>
-        </div>
-      </div>
-    </div>
+function createBookingCard(booking) {
+  const card = cloneTemplate("bookingCardTemplate");
+  const source = getSourcePresentation(booking.source);
+  const isPaid = booking.status === "Saldato";
+  const nights = getNights(booking.arrival_date, booking.departure_date) || getStoredNights(booking);
 
-    <div style="background:linear-gradient(145deg,#101b2b,#0b1018);padding:22px;border-radius:${THEME.radius.card}px;border:1px solid #0a84ff;box-shadow:0 18px 50px rgba(10,132,255,.14);">
-      <div style="font-size:${THEME.font.summaryTitle}px;color:${THEME.colors.blue};font-weight:950;letter-spacing:.04em;">BLACK</div>
-      <div style="margin-top:22px;color:#c7c7cc;font-size:${THEME.font.formText}px;">Incassato</div>
-      <div style="margin-top:8px;font-size:clamp(22px,5.8vw,26px);font-weight:950;line-height:1.08;white-space:nowrap;">${euro(b.saldato)}</div>
-      <div style="height:1px;background:#344150;margin:24px 0;"></div>
-      <div style="color:#c7c7cc;font-size:${THEME.font.formText}px;">Complessivo</div>
-      <div style="margin-top:8px;font-size:clamp(20px,5.2vw,24px);font-weight:850;line-height:1.1;white-space:nowrap;">${euro(b.complessivo)}</div>
-    </div>
+  if (isPaid) card.classList.add("is-paid");
+  card.querySelector(".se-source-icon").classList.add(source.className);
+  card.querySelector(".se-source-icon").textContent = source.icon;
+  card.querySelector(".se-booking-name").textContent = booking.name || "-";
+  card.querySelector(".se-booking-source-text").textContent = source.label;
+  card.querySelector(".se-booking-details").textContent = ` · App. ${booking.apartment || "-"} · ${booking.account_type || "-"}${booking.guest_count ? ` · ${booking.guest_count} ospiti` : ""}`;
+  card.querySelector(".se-booking-amount").textContent = euro(booking.amount);
+  card.querySelector(".is-arrival").textContent = formatDateShortIT(booking.arrival_date);
+  card.querySelector(".is-departure").textContent = formatDateShortIT(booking.departure_date);
+  card.querySelector(".se-nights-box").textContent = nights ? `${nights} notti` : "Notti -";
+  card.querySelector(".se-booking-deposit").textContent = `Acconto: ${euro(booking.deposit)}`;
 
-    <div style="background:linear-gradient(145deg,#151b1e,#101214);padding:22px;border-radius:${THEME.radius.card}px;border:1px solid ${THEME.colors.cardBorder};box-shadow:0 18px 50px rgba(0,0,0,.35);">
-      <div style="font-size:${THEME.font.summaryTitle}px;color:${THEME.colors.whiteLabel};font-weight:950;letter-spacing:.04em;">WHITE</div>
-      <div style="margin-top:22px;color:#c7c7cc;font-size:${THEME.font.formText}px;">Incassato</div>
-      <div style="margin-top:8px;font-size:clamp(22px,5.8vw,26px);font-weight:950;line-height:1.08;white-space:nowrap;">${euro(w.saldato)}</div>
-      <div style="height:1px;background:#344150;margin:24px 0;"></div>
-      <div style="color:#c7c7cc;font-size:${THEME.font.formText}px;">Complessivo</div>
-      <div style="margin-top:8px;font-size:clamp(20px,5.2vw,24px);font-weight:850;line-height:1.1;white-space:nowrap;">${euro(w.complessivo)}</div>
-    </div>
+  const status = card.querySelector(".se-status-chip");
+  status.textContent = isPaid ? "Saldato" : "Da saldare";
+  status.classList.add(isPaid ? "is-paid" : "is-unpaid");
 
-    <div class="se-glass-card se-total-card">
-      <div class="se-total-grid">
-        <div class="se-glass-panel">
-          <div class="se-total-header">
-            <div class="se-total-title">TOTALE</div>
-            <div class="se-glass-pill">Black + White</div>
-          </div>
-
-          <div class="se-total-label">Actual complessivo</div>
-          <div class="se-total-main-value">${euro(totalComplessivo)}</div>
-
-          <div class="se-share-grid">
-            <div class="se-share-box is-green">
-              <div class="se-share-value">${blackShare.toFixed(1).replace('.', ',')}%</div>
-              <div class="se-share-label">Black sul totale</div>
-            </div>
-            <div class="se-share-box is-red">
-              <div class="se-share-value">${whiteShare.toFixed(1).replace('.', ',')}%</div>
-              <div class="se-share-label">White sul totale</div>
-            </div>
-          </div>
-
-          <div class="se-glass-progress">
-            <div class="se-progress-segment is-green" style="width:${blackShare}%;"></div>
-            <div class="se-progress-segment is-red" style="width:${whiteShare}%;"></div>
-          </div>
-        </div>
-
-        <div class="se-total-side">
-          <div class="se-glass-panel">
-            <div class="se-total-label">Totale incassato</div>
-            <div class="se-total-value is-green">${euro(b.saldato + w.saldato)}</div>
-          </div>
-
-          <div class="se-glass-panel">
-            <div class="se-total-label">Cifra da raggiungere</div>
-            <div class="se-total-value is-blue">${euro(TARGET_TOTAL)}</div>
-
-            <div class="se-glass-progress">
-              <div class="se-progress-fill" style="width:${totalProgress}%;"></div>
-            </div>
-
-            <div class="se-total-meta">
-              <span><b style="color:${THEME.colors.blue};">${euro(totalComplessivo)}</b> / ${euro(TARGET_TOTAL)}</span>
-              <span class="se-total-progress-percent">${totalProgress.toFixed(1).replace('.', ',')}%</span>
-            </div>
-            <div class="se-total-residual">Residuo: <b style="color:${THEME.colors.textPrimary};">${euro(totalResidual)}</b></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
+  card.addEventListener("click", () => openBookingForm(booking));
+  card.querySelector(".se-delete-inline").addEventListener("click", event => {
+    event.stopPropagation();
+    deleteBooking(booking.id);
+  });
+  return card;
 }
 
 function renderBookings(bookings) {
-  const sortedBookings = [...bookings].sort((a, b) => {
-    const dateA = a.arrival_date || "9999-12-31";
-    const dateB = b.arrival_date || "9999-12-31";
-    if (dateA !== dateB) return dateA.localeCompare(dateB);
-    return String(a.name || "").localeCompare(String(b.name || ""));
+  const sorted = [...bookings].sort((a, b) => {
+    const dateComparison = String(a.arrival_date || "9999-12-31").localeCompare(String(b.arrival_date || "9999-12-31"));
+    return dateComparison || String(a.name || "").localeCompare(String(b.name || ""));
   });
-  const filteredBookings = bookingSearchQuery
-    ? sortedBookings.filter(b => {
-        const haystack = [
-          b.name,
-          b.source,
-          b.account_type,
-          b.status,
-          b.apartment ? `app ${b.apartment}` : "",
-          b.apartment ? `appartamento ${b.apartment}` : "",
-          b.arrival_date,
-          b.departure_date,
-          b.notes
-        ].filter(Boolean).join(" ").toLowerCase();
-
-        return haystack.includes(bookingSearchQuery);
-      })
-    : sortedBookings;
-
+  const filtered = bookingSearchQuery
+    ? sorted.filter(booking => [booking.name, booking.source, booking.account_type, booking.status, booking.apartment ? `app ${booking.apartment}` : "", booking.arrival_date, booking.departure_date, booking.notes].filter(Boolean).join(" ").toLowerCase().includes(bookingSearchQuery))
+    : sorted;
   const container = document.getElementById("bookingList");
-  if (!container) return;
 
-  if (!filteredBookings.length) {
-    container.innerHTML = `
-      <div style="margin-top:12px;padding:18px;border-radius:${THEME.radius.card}px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);color:${THEME.colors.textSecondary};font-size:${THEME.font.formText}px;text-align:center;">
-        Nessuna prenotazione trovata.
-      </div>
-    `;
+  if (!filtered.length) {
+    container.replaceChildren(cloneTemplate("emptyStateTemplate"));
     return;
   }
 
-  const renderBookingCard = b => {
-    const sourceBadge = getSourceBadge(b.source);
-    const statusBadge = getStatusBadge(b.status);
-    const isPaid = b.status === "Saldato";
-    const nights = getNights(b.arrival_date, b.departure_date);
-    const sourceIconStyle = `background:${sourceBadge.background};border-color:${sourceBadge.border};color:${sourceBadge.color};`;
-    const statusStyle = `background:${statusBadge.background};border:1px solid ${statusBadge.border};color:${statusBadge.color};`;
+  const area = cloneTemplate("bookingAreaTemplate");
+  const paid = filtered.filter(booking => booking.status === "Saldato");
+  const unpaid = filtered.filter(booking => booking.status !== "Saldato");
+  area.querySelector(".se-booking-list-count").textContent = `${filtered.length} prenotazioni`;
 
-    return `
-      <article onclick='editBooking(${JSON.stringify(b)})' class="se-booking-pass ${isPaid ? "is-paid" : ""}">
-        <div class="se-booking-pass-main">
-          <div class="se-source-icon" style="${sourceIconStyle}">${sourceBadge.icon}</div>
+  if (paid.length) {
+    const section = area.querySelector(".se-paid-section");
+    section.hidden = false;
+    section.querySelector(".se-booking-section-count").textContent = `${paid.length} prenotazioni`;
+    section.querySelector(".se-swipe-hint").hidden = paid.length < 2;
+    section.querySelector(".se-paid-carousel").append(...paid.map(createBookingCard));
+  }
 
-          <div style="min-width:0;">
-            <div class="se-booking-name-row">
-              <div class="se-booking-name">${b.name}</div>
-              <span class="se-status-chip" style="${statusStyle}">${statusBadge.label}</span>
-            </div>
-            <div class="se-booking-meta">
-              <span class="se-booking-source-text">${sourceBadge.label}</span>
-              <span> · App. ${b.apartment || "-"}</span>
-              <span> · ${b.account_type || "-"}</span>
-              ${b.guest_count ? `<span> · ${b.guest_count} ospiti</span>` : ""}
-            </div>
-          </div>
+  if (unpaid.length) {
+    const section = area.querySelector(".se-unpaid-section");
+    section.hidden = false;
+    section.querySelector(".se-booking-section-count").textContent = `${unpaid.length} prenotazioni`;
+    section.querySelector(".se-unpaid-list").append(...unpaid.map(createBookingCard));
+  }
 
-          <div class="se-booking-price">
-            <div class="se-booking-amount">${euro(b.amount)}</div>
-            <div class="se-booking-chevron">›</div>
-          </div>
-        </div>
+  container.replaceChildren(area);
+  initializePaidDeck(area.querySelector(".se-paid-carousel"));
+}
 
-        <div class="se-booking-dates">
-          <div class="se-date-box">
-            <div class="se-date-value">${formatDateShortIT(b.arrival_date)}</div>
-            <div class="se-date-label">Check-in</div>
-          </div>
-          <div class="se-date-arrow">→</div>
-          <div class="se-date-box">
-            <div class="se-date-value">${formatDateShortIT(b.departure_date)}</div>
-            <div class="se-date-label">Check-out</div>
-          </div>
-          <div class="se-nights-box">${nights ? `${nights} notti` : "Notti -"}</div>
-        </div>
+function initializePaidDeck(carousel) {
+  if (!carousel || !carousel.children.length) return;
+  const cards = [...carousel.querySelectorAll(".se-booking-pass")];
+  let animationFrame = null;
 
-        <div class="se-booking-footer">
-          <div class="se-booking-deposit">Acconto: ${euro(b.deposit)}</div>
-          <button onclick="event.stopPropagation(); deleteBooking('${b.id}')" class="se-delete-inline">Elimina</button>
-        </div>
-      </article>
-    `;
+  const update = () => {
+    animationFrame = null;
+    const focusPoint = carousel.scrollLeft + carousel.clientWidth / 2;
+    let activeIndex = 0;
+    let smallestDistance = Infinity;
+
+    cards.forEach((card, index) => {
+      const distance = Math.abs(card.offsetLeft + card.offsetWidth / 2 - focusPoint);
+      if (distance < smallestDistance) {
+        smallestDistance = distance;
+        activeIndex = index;
+      }
+    });
+
+    cards.forEach((card, index) => {
+      const signedDistance = index - activeIndex;
+      card.style.setProperty("--deck-distance", Math.min(Math.abs(signedDistance), 4));
+      card.style.setProperty("--deck-direction", Math.sign(signedDistance));
+      card.style.zIndex = String(20 - Math.min(Math.abs(signedDistance), 10));
+      card.classList.toggle("is-deck-active", index === activeIndex);
+    });
   };
 
-  const paidBookings = filteredBookings.filter(booking => booking.status === "Saldato");
-  const unpaidBookings = filteredBookings.filter(booking => booking.status !== "Saldato");
-
-  container.innerHTML = `
-    <div class="se-booking-area">
-      <div class="se-booking-list-header">
-        <div>
-          <div class="se-booking-list-title">Elenco prenotazioni</div>
-          <div class="se-booking-list-count">${filteredBookings.length} prenotazioni</div>
-        </div>
-        <div class="se-booking-sort-chip">Ordina per · Check-in</div>
-      </div>
-
-      ${paidBookings.length ? `
-        <section class="se-paid-section">
-          <div class="se-booking-section-heading">
-            <div>
-              <div class="se-booking-section-title">Saldate</div>
-              <div class="se-booking-section-count">${paidBookings.length} prenotazioni</div>
-            </div>
-            ${paidBookings.length > 1 ? `<div class="se-swipe-hint">Scorri →</div>` : ""}
-          </div>
-          <div class="se-paid-carousel">${paidBookings.map(renderBookingCard).join("")}</div>
-        </section>
-      ` : ""}
-
-      ${unpaidBookings.length ? `
-        <section class="se-unpaid-section">
-          <div class="se-booking-section-heading">
-            <div>
-              <div class="se-booking-section-title">Da saldare</div>
-              <div class="se-booking-section-count">${unpaidBookings.length} prenotazioni</div>
-            </div>
-          </div>
-          <div class="se-unpaid-list">${unpaidBookings.map(renderBookingCard).join("")}</div>
-        </section>
-      ` : ""}
-    </div>
-  `;
-
-  const paidCarousel = container.querySelector(".se-paid-carousel");
-  if (paidCarousel) {
-    const paidCards = [...paidCarousel.querySelectorAll(".se-booking-pass")];
-    let animationFrame = null;
-
-    const updatePaidDeck = () => {
-      animationFrame = null;
-      const focusPoint = paidCarousel.scrollLeft + paidCarousel.clientWidth / 2;
-      let activeIndex = 0;
-      let smallestDistance = Infinity;
-
-      paidCards.forEach((card, index) => {
-        const cardCenter = card.offsetLeft + card.offsetWidth / 2;
-        const distance = Math.abs(cardCenter - focusPoint);
-        if (distance < smallestDistance) {
-          smallestDistance = distance;
-          activeIndex = index;
-        }
-      });
-
-      paidCards.forEach((card, index) => {
-        const signedDistance = index - activeIndex;
-        card.style.setProperty("--deck-distance", Math.min(Math.abs(signedDistance), 4));
-        card.style.setProperty("--deck-direction", Math.sign(signedDistance));
-        card.style.zIndex = String(20 - Math.min(Math.abs(signedDistance), 10));
-        card.classList.toggle("is-deck-active", index === activeIndex);
-      });
-    };
-
-    const requestDeckUpdate = () => {
-      if (animationFrame === null) animationFrame = requestAnimationFrame(updatePaidDeck);
-    };
-
-    paidCarousel.addEventListener("scroll", requestDeckUpdate, { passive: true });
-    paidCarousel.addEventListener("wheel", event => {
-      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-      event.preventDefault();
-      window.scrollBy({ top: event.deltaY, left: 0, behavior: "auto" });
-    }, { passive: false });
-    updatePaidDeck();
-  }
+  carousel.addEventListener("scroll", () => {
+    if (animationFrame === null) animationFrame = requestAnimationFrame(update);
+  }, { passive: true });
+  carousel.addEventListener("wheel", event => {
+    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+    event.preventDefault();
+    window.scrollBy({ top: event.deltaY, left: 0, behavior: "auto" });
+  }, { passive: false });
+  update();
 }
 
 async function callLodgifyFunction(payload, button, loadingText) {
   if (!button) return null;
-
   const originalText = button.textContent;
   button.disabled = true;
   button.textContent = loadingText;
-  button.style.opacity = ".72";
+  button.classList.add("is-loading");
 
   try {
     const { data: sessionData } = await supabase.auth.getSession();
     const accessToken = sessionData?.session?.access_token;
-
     const response = await fetch(`${SUPABASE_URL}/functions/v1/bright-api`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${accessToken || SUPABASE_KEY}`
-      },
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${accessToken || SUPABASE_KEY}` },
       body: JSON.stringify(payload || {})
     });
-
     const result = await response.json();
-
     if (!response.ok || result.success === false) {
       alert(`Errore Lodgify: ${result.error || result.message || result.step || "errore sconosciuto"}`);
-      console.log(result);
       return null;
     }
-
     return result;
   } catch (error) {
     alert(`Errore Lodgify: ${error.message}`);
@@ -904,124 +536,77 @@ async function callLodgifyFunction(payload, button, loadingText) {
   } finally {
     button.disabled = false;
     button.textContent = originalText;
-    button.style.opacity = "1";
+    button.classList.remove("is-loading");
   }
 }
 
 async function syncLodgify() {
-  const button = document.getElementById("syncLodgify");
-  const result = await callLodgifyFunction({}, button, "Sincronizzazione...");
+  const result = await callLodgifyFunction({}, document.getElementById("syncLodgify"), "Sincronizzazione...");
   if (!result) return;
-
   const count = Number(result.imported_or_updated || result.imported || result.updated || 0);
-  const skipped = Number(result.skipped || 0);
-  const removed = Number(result.removed || 0);
-  alert(`Sync completata: ${count} importate/aggiornate · ${skipped} ignorate · ${removed} rimosse.`);
+  alert(`Sync completata: ${count} importate/aggiornate · ${Number(result.skipped || 0)} ignorate · ${Number(result.removed || 0)} rimosse.`);
   await loadBookings();
 }
 
 async function importLodgifyById() {
   const input = document.getElementById("lodgifyBookingId");
-  const button = document.getElementById("importLodgifyId");
-  const bookingId = String(input?.value || "").trim();
-
+  const bookingId = String(input.value || "").trim();
   if (!bookingId) {
     alert("Inserisci un ID prenotazione Lodgify");
     return;
   }
 
-  const result = await callLodgifyFunction({ id: bookingId }, button, "Importo...");
+  const result = await callLodgifyFunction({ id: bookingId }, document.getElementById("importLodgifyId"), "Importo...");
   if (!result) return;
-
   if (result.action === "imported_or_updated") {
     alert(`Prenotazione importata: ${result.booking?.name || bookingId} · ${euro(result.booking?.amount || 0)}`);
     input.value = "";
-    await loadBookings();
-    return;
-  }
-
-  if (result.action === "skipped_or_removed") {
+  } else if (result.action === "skipped_or_removed") {
     alert(`Prenotazione non importata: stato ${result.reason?.status || "non valido"}, sorgente ${result.reason?.source || "non OTA"}.`);
-    await loadBookings();
-    return;
+  } else {
+    alert("Risposta Lodgify non valida per import.");
   }
-
-  alert("Risposta Lodgify non valida per import. Controlla che la Edge Function sia quella definitiva, non una diagnostica.");
-  console.log(result);
+  await loadBookings();
 }
 
 async function saveBooking(event) {
   event.preventDefault();
-
-  const form = event.target;
+  const form = event.currentTarget;
   const booking = Object.fromEntries(new FormData(form).entries());
-
   booking.amount = Number(booking.amount);
   booking.deposit = Number(booking.deposit || 0);
   booking.apartment = booking.apartment ? Number(booking.apartment) : null;
   booking.arrival_date = booking.arrival_date || null;
   booking.departure_date = booking.departure_date || null;
 
-  let error;
-
-  if (form.dataset.editId) {
-    const response = await supabase
-      .from("bookings")
-      .update(booking)
-      .eq("id", form.dataset.editId);
-
-    error = response.error;
-  } else {
-    const response = await supabase
-      .from("bookings")
-      .insert([booking]);
-
-    error = response.error;
-  }
-
-  if (error) {
-    alert("Errore salvataggio: " + error.message);
+  const response = form.dataset.editId
+    ? await supabase.from("bookings").update(booking).eq("id", form.dataset.editId)
+    : await supabase.from("bookings").insert([booking]);
+  if (response.error) {
+    alert(`Errore salvataggio: ${response.error.message}`);
     return;
   }
 
-  form.reset();
-  delete form.dataset.editId;
-  form.style.display = "none";
+  closeBookingForm();
   await loadBookings();
 }
 
-window.deleteBooking = async function(id) {
-  const confirmed = confirm("Vuoi eliminare questa prenotazione?");
-  if (!confirmed) return;
-
-  const { error } = await supabase
-    .from("bookings")
-    .delete()
-    .eq("id", id);
-
+async function deleteBooking(id) {
+  if (!confirm("Vuoi eliminare questa prenotazione?")) return;
+  const { error } = await supabase.from("bookings").delete().eq("id", id);
   if (error) {
-    alert("Errore eliminazione: " + error.message);
+    alert(`Errore eliminazione: ${error.message}`);
     return;
   }
-
   await loadBookings();
-};
+}
 
-window.editBooking = function(b) {
-  const form = document.getElementById("bookingForm");
-
-  form.dataset.editId = b.id;
-
-  form.name.value = b.name || "";
-  form.amount.value = b.amount || "";
-  form.account_type.value = b.account_type || "Black";
-  form.status.value = b.status || "Da saldare";
-  form.deposit.value = b.deposit || 0;
-  form.apartment.value = b.apartment || "";
-  form.arrival_date.value = b.arrival_date || "";
-  form.departure_date.value = b.departure_date || "";
-  form.source.value = b.source || "";
-  form.notes.value = b.notes || "";
-
-  form.style.display = "flex";
-};
+document.addEventListener("DOMContentLoaded", async () => {
+  const session = await checkAuth();
+  if (!session) {
+    renderLogin();
+    return;
+  }
+  renderApp();
+  await loadBookings();
+});
