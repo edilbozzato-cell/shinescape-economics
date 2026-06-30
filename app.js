@@ -220,6 +220,8 @@ function closeBookingForm() {
 
 function renderApp() {
   mountView("appTemplate");
+  const dashboard = document.getElementById("dashboard");
+  dashboard.insertBefore(document.querySelector(".nights-chart-card"), dashboard.querySelector(".summary-card"));
   document.getElementById("openForm").addEventListener("click", () => openBookingForm());
   document.getElementById("syncLodgify").addEventListener("click", syncLodgify);
   document.getElementById("importLodgifyId").addEventListener("click", importLodgifyById);
