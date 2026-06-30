@@ -7,6 +7,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const TARGET_BLACK = 40000;
 const TARGET_WHITE = 28000;
 const TARGET_TOTAL = 70000;
+let bookingSearchQuery = "";
 
 const THEME = {
   colors: {
@@ -424,8 +425,14 @@ function renderApp() {
         </div>
       </form>
 
-      <h3 style="margin-top:28px;font-size:${THEME.font.sectionTitle}px;">Prenotazioni</h3>
-      <section id="bookingList"></section>
+  <div style="margin:28px 0 20px;display:flex;flex-direction:column;gap:12px;">
+    <h3 style="margin:0;font-size:${THEME.font.sectionTitle}px;">Prenotazioni</h3>
+    <div style="position:relative;width:100%;">
+      <input id="bookingSearch" type="search" autocomplete="off" placeholder="Cerca cliente, appartamento, fonte..." style="width:100%;box-sizing:border-box;padding:15px 46px 15px 16px;border-radius:18px;border:1px solid rgba(255,255,255,.10);background:rgba(28,28,30,.72);color:${THEME.colors.textPrimary};font-size:${THEME.font.formText}px;outline:none;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 12px 34px rgba(0,0,0,.22);">
+      <span style="position:absolute;right:16px;top:50%;transform:translateY(-50%);color:${THEME.colors.textSecondary};font-size:18px;pointer-events:none;">⌕</span>
+    </div>
+  </div>
+  <section id="bookingList"></section>
     </main>
   `;
 
@@ -436,6 +443,10 @@ function renderApp() {
     form.style.display = form.style.display === "flex" ? "none" : "flex";
   };
   document.getElementById("syncLodgify").onclick = syncLodgify;
+  document.getElementById("bookingSearch").oninput = event => {
+    bookingSearchQuery = String(event.target.value || "").trim().toLowerCase();
+    loadBookings();
+  };
   document.getElementById("importLodgifyId").onclick = importLodgifyById;
 
   document.getElementById("bookingForm").onsubmit = saveBooking;
@@ -657,7 +668,25 @@ function renderBookings(bookings) {
     if (dateA !== dateB) return dateA.localeCompare(dateB);
     return String(a.name || "").localeCompare(String(b.name || ""));
   });
-  document.getElementById("bookingList").innerHTML = sortedBookings.map(b => {
+  const filteredBookings = bookingSearchQuery
+    ? sortedBookings.filter(b => {
+        const haystack = [
+          b.name,
+          b.source,
+          b.account_type,
+          b.status,
+          b.apartment ? `app ${b.apartment}` : "",
+          b.apartment ? `appartamento ${b.apartment}` : "",
+          b.arrival_date,
+          b.departure_date,
+          b.notes
+        ].filter(Boolean).join(" ").toLowerCase();
+
+        return haystack.includes(bookingSearchQuery);
+      })
+    : sortedBookings;
+
+  document.getElementById("bookingList").innerHTML = filteredBookings.map(b => {
     const sourceBadge = getSourceBadge(b.source);
     const statusBadge = getStatusBadge(b.status);
     const isPaid = b.status === "Saldato";
@@ -679,7 +708,7 @@ function renderBookings(bookings) {
           <div style="min-width:0;">
             <div style="display:flex;align-items:center;gap:8px;min-width:0;">
               <div style="font-size:${THEME.font.bookingName}px;font-weight:900;color:${THEME.colors.textPrimary};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                ${b.name}${isPaid ? " ✅" : ""}
+                ${b.name}
               </div>
             </div>
             <div style="margin-top:4px;color:${THEME.colors.textSecondary};font-size:${THEME.font.helper}px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
@@ -717,7 +746,11 @@ function renderBookings(bookings) {
         ${dateLine ? `<div style="margin-top:12px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.045);color:#c7c7cc;font-size:${THEME.font.helper}px;line-height:1.35;">${dateLine}</div>` : ""}
       </div>
     `;
-  }).join("");
+  }).join("") || `
+    <div style="margin-top:12px;padding:18px;border-radius:${THEME.radius.card}px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);color:${THEME.colors.textSecondary};font-size:${THEME.font.formText}px;text-align:center;">
+      Nessuna prenotazione trovata.
+    </div>
+  `;
 }
 
 async function callLodgifyFunction(payload, button, loadingText) {
