@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ShinEscape Manager</title>
-  <link rel="stylesheet" href="./styles.css?v=11">
+  <link rel="stylesheet" href="./styles.css?v=13">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#111111">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -121,6 +121,7 @@
             </defs>
             <g class="nights-chart-grid"><line x1="64" y1="34" x2="764" y2="34"/><line x1="64" y1="87" x2="764" y2="87"/><line x1="64" y1="140" x2="764" y2="140"/><line x1="64" y1="193" x2="764" y2="193"/><line x1="64" y1="246" x2="764" y2="246"/></g>
             <g class="nights-chart-axis"><text class="nights-chart-y-label" x="51" y="39"></text><text class="nights-chart-y-label" x="51" y="92"></text><text class="nights-chart-y-label" x="51" y="145"></text><text class="nights-chart-y-label" x="51" y="198"></text><text class="nights-chart-y-label" x="51" y="251"></text></g>
+            <g class="nights-chart-deltas"><text id="nightDelta0" y="19"></text><text id="nightDelta1" y="19"></text><text id="nightDelta2" y="19"></text><text id="nightDelta3" y="19"></text><text id="nightDelta4" y="19"></text></g>
             <path id="actualNightsArea" class="nights-chart-area"></path>
             <polyline id="targetNightsLine" class="nights-chart-line is-target"></polyline>
             <polyline id="actualNightsLine" class="nights-chart-line is-actual"></polyline>
@@ -199,6 +200,6 @@
   <template id="emptyStateTemplate"><div class="empty-state">Nessuna prenotazione trovata.</div></template>
   <template id="errorStateTemplate"><pre class="error-state"></pre></template>
 
-  <script type="module" src="app.js?v=6"></script>
+  <script type="module" src="app.js?v=7"></script>
 </body>
 </html>

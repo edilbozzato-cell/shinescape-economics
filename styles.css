@@ -971,10 +971,43 @@ button {
 
 #dashboard .target-card,
 #dashboard .summary-card {
+  position: relative;
+  overflow: hidden;
   padding: 16px;
-  border: 1px solid #2b3542;
+  border: 1px solid rgba(255,255,255,.13);
   border-radius: 22px;
-  box-shadow: 0 18px 50px rgba(0,0,0,.35);
+  box-shadow: 0 22px 58px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(255,255,255,.035);
+  backdrop-filter: blur(26px) saturate(170%);
+  -webkit-backdrop-filter: blur(26px) saturate(170%);
+}
+
+#dashboard .target-card::before,
+#dashboard .summary-card::before {
+  position: absolute;
+  z-index: 0;
+  inset: -1px;
+  background: radial-gradient(circle at 14% 0%,rgba(255,255,255,.20),transparent 31%), radial-gradient(circle at 92% 10%,var(--dashboard-glass-glow,rgba(10,132,255,.14)),transparent 34%), linear-gradient(115deg,rgba(255,255,255,.09),transparent 34%,transparent 72%,rgba(255,255,255,.035));
+  content: "";
+  pointer-events: none;
+}
+
+#dashboard .target-card::after,
+#dashboard .summary-card::after {
+  position: absolute;
+  z-index: 0;
+  top: 11px;
+  right: 18px;
+  left: 18px;
+  height: 1px;
+  background: linear-gradient(90deg,transparent,rgba(255,255,255,.34),transparent);
+  content: "";
+  pointer-events: none;
+}
+
+#dashboard .target-card > *,
+#dashboard .summary-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 #dashboard .target-card {
@@ -982,11 +1015,13 @@ button {
 }
 
 #dashboard .target-card-black {
-  background: linear-gradient(135deg,#111820,#0b0f14) !important;
+  --dashboard-glass-glow: rgba(10,132,255,.18);
+  background: linear-gradient(145deg,rgba(35,63,96,.28),rgba(8,14,23,.48)) !important;
 }
 
 #dashboard .target-card-white {
-  background: linear-gradient(135deg,#15191b,#0b0f12) !important;
+  --dashboard-glass-glow: rgba(255,255,255,.12);
+  background: linear-gradient(145deg,rgba(255,255,255,.11),rgba(18,22,25,.45)) !important;
 }
 
 .target-grid {
@@ -1067,13 +1102,15 @@ button {
 }
 
 #dashboard .summary-card-black {
-  background: linear-gradient(145deg,#101b2b,#0b1018) !important;
-  border-color: var(--se-blue);
-  box-shadow: 0 18px 50px rgba(10,132,255,.14);
+  --dashboard-glass-glow: rgba(10,132,255,.22);
+  background: linear-gradient(145deg,rgba(10,132,255,.18),rgba(7,16,27,.48)) !important;
+  border-color: rgba(72,162,255,.38);
+  box-shadow: 0 22px 58px rgba(0,0,0,.36), 0 0 30px rgba(10,132,255,.08), inset 0 1px 0 rgba(255,255,255,.16);
 }
 
 #dashboard .summary-card-white {
-  background: linear-gradient(145deg,#151b1e,#101214) !important;
+  --dashboard-glass-glow: rgba(255,255,255,.14);
+  background: linear-gradient(145deg,rgba(255,255,255,.12),rgba(13,18,21,.48)) !important;
 }
 
 .summary-title {
@@ -1322,6 +1359,21 @@ button {
   font-size: 13px;
   font-weight: 950;
   text-anchor: middle;
+}
+
+.nights-chart-deltas text {
+  fill: rgba(255,255,255,.68);
+  font-size: 13px;
+  font-weight: 950;
+  text-anchor: middle;
+}
+
+.nights-chart-deltas text.is-positive {
+  fill: #67e985;
+}
+
+.nights-chart-deltas text.is-negative {
+  fill: #ff6259;
 }
 
 .nights-chart .is-hidden {

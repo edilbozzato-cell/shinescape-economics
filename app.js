@@ -323,10 +323,12 @@ function renderMonthlyNightsChart(bookings) {
   fullActual.forEach((value, index) => {
     const dot = document.getElementById(`actualNightDot${index}`);
     const label = document.getElementById(`actualNightValue${index}`);
+    const deltaLabel = document.getElementById(`nightDelta${index}`);
     const month = document.getElementById(`nightMonth${index}`);
     const isVisible = index < xPositions.length;
     dot.classList.toggle("is-hidden", !isVisible);
     label.classList.toggle("is-hidden", !isVisible);
+    deltaLabel.classList.toggle("is-hidden", !isVisible);
     month.classList.toggle("is-hidden", !isVisible);
     if (!isVisible) return;
 
@@ -334,8 +336,14 @@ function renderMonthlyNightsChart(bookings) {
     dot.setAttribute("cy", yForValue(value));
     label.setAttribute("x", xPositions[index]);
     label.setAttribute("y", Math.max(yForValue(value) - 15, 18));
+    deltaLabel.setAttribute("x", xPositions[index]);
     month.setAttribute("x", xPositions[index]);
     label.textContent = value;
+    const monthlyDelta = value - fullTarget[index];
+    deltaLabel.textContent = monthlyDelta > 0 ? `+${monthlyDelta}` : String(monthlyDelta);
+    deltaLabel.classList.toggle("is-positive", monthlyDelta > 0);
+    deltaLabel.classList.toggle("is-negative", monthlyDelta < 0);
+    deltaLabel.classList.toggle("is-neutral", monthlyDelta === 0);
   });
 }
 
