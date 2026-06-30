@@ -1752,4 +1752,8 @@ button {
   .nights-chart-summary > div:not(.nights-chart-delta) {
     min-width: 0;
   }
+
+  .nights-chart {
+    min-width: 100%;
+  }
 }

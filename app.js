@@ -297,12 +297,27 @@ function renderMonthlyNightsChart(bookings) {
   const delta = totalActual - totalTarget;
   const maximum = Math.max(120, ...actual);
   const chartMaximum = Math.ceil((maximum * 1.15) / 20) * 20;
-  const xPositions = showOctober ? [86, 246, 406, 566, 726] : [100, 310, 520, 730];
+  const compactChart = window.matchMedia("(max-width: 560px)").matches;
+  const xPositions = compactChart
+    ? (showOctober ? [50, 120, 190, 260, 330] : [55, 145, 235, 325])
+    : (showOctober ? [86, 246, 406, 566, 726] : [100, 310, 520, 730]);
   const chartTop = 34;
   const chartBottom = 246;
   const chartHeight = chartBottom - chartTop;
   const yForValue = value => chartBottom - (value / chartMaximum) * chartHeight;
   const pointsFor = values => values.map((value, index) => `${xPositions[index]},${yForValue(value)}`).join(" ");
+
+  const chart = document.querySelector(".nights-chart");
+  const gridStart = compactChart ? 34 : 64;
+  const gridEnd = compactChart ? 344 : 764;
+  chart.setAttribute("viewBox", compactChart ? "0 0 360 300" : "0 0 800 300");
+  chart.querySelectorAll(".nights-chart-grid line").forEach(line => {
+    line.setAttribute("x1", gridStart);
+    line.setAttribute("x2", gridEnd);
+  });
+  chart.querySelectorAll(".nights-chart-y-label").forEach(label => {
+    label.setAttribute("x", compactChart ? 29 : 51);
+  });
 
   setText("nightsChartYear", seasonYear);
   setText("nightsChartTotal", `${totalActual} notti`);
