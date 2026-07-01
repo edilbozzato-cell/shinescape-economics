@@ -168,12 +168,10 @@
 
 .se-total-value.is-green {
   color: var(--se-green);
-  text-shadow: 0 0 24px rgba(48,209,88,.17);
 }
 
 .se-total-value.is-blue {
   color: var(--se-blue);
-  text-shadow: 0 0 24px rgba(10,132,255,.20);
 }
 
 .se-share-grid {
