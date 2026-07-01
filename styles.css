@@ -451,6 +451,7 @@
 }
 
 .se-booking-pass {
+  position: relative;
   box-sizing: border-box;
   padding: 14px;
   border: 1px solid rgba(255,255,255,.08);
@@ -590,7 +591,10 @@
 }
 
 .se-new-chip {
-  flex-shrink: 0;
+  position: absolute;
+  z-index: 2;
+  top: -7px;
+  right: 0;
   padding: 4px 7px;
   border: 1px solid rgba(255, 255, 255, .35);
   border-radius: 999px;
