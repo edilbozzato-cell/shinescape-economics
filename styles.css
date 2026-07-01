@@ -14,6 +14,12 @@
   --se-glass-panel-shadow: inset 0 1px 0 rgba(255,255,255,.09);
 }
 
+@property --action-border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -1148,7 +1154,92 @@ button {
 .app-actions {
   display: grid;
   grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
-  gap: 10px;
+  gap: 12px;
+}
+
+.app-actions .button {
+  position: relative;
+  isolation: isolate;
+  min-height: 58px;
+  overflow: hidden;
+  border-radius: 19px;
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: -.01em;
+  box-shadow: 0 16px 38px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(255,255,255,.05);
+  backdrop-filter: blur(22px) saturate(175%);
+  -webkit-backdrop-filter: blur(22px) saturate(175%);
+  transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease, filter .22s ease;
+}
+
+.app-actions .button::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: radial-gradient(circle at 18% 0%,rgba(255,255,255,.26),transparent 32%), linear-gradient(115deg,rgba(255,255,255,.12),transparent 38%,transparent 70%,rgba(255,255,255,.06));
+  content: "";
+  pointer-events: none;
+}
+
+.app-actions .button::after {
+  position: absolute;
+  z-index: 2;
+  inset: -1px;
+  padding: 2px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--action-border-angle),transparent 0deg,transparent 265deg,var(--action-glow-soft) 306deg,var(--action-glow) 329deg,#fff 337deg,var(--action-glow) 345deg,transparent 360deg);
+  content: "";
+  pointer-events: none;
+  -webkit-mask: linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  filter: drop-shadow(0 0 5px var(--action-glow));
+  animation: action-border-orbit 3.2s linear infinite;
+}
+
+.app-actions .button-primary {
+  --action-glow: #d5afff;
+  --action-glow-soft: rgba(169,112,255,.16);
+  border: 1px solid rgba(185,135,255,.46);
+  background: radial-gradient(circle at 85% 15%,rgba(194,151,255,.30),transparent 36%), linear-gradient(135deg,rgba(137,75,226,.88),rgba(74,33,142,.82));
+  box-shadow: 0 17px 40px rgba(100,50,180,.27), 0 0 26px rgba(169,112,255,.10), inset 0 1px 0 rgba(255,255,255,.24);
+}
+
+.app-actions .button-gold {
+  --action-glow: #a2f4ff;
+  --action-glow-soft: rgba(58,211,244,.16);
+  border: 1px solid rgba(91,224,255,.42);
+  background: radial-gradient(circle at 85% 15%,rgba(132,239,255,.28),transparent 36%), linear-gradient(135deg,rgba(24,168,204,.86),rgba(13,91,130,.82));
+  color: #effdff;
+  box-shadow: 0 17px 40px rgba(16,132,174,.24), 0 0 26px rgba(58,211,244,.10), inset 0 1px 0 rgba(255,255,255,.24);
+}
+
+.app-actions .button:hover {
+  filter: brightness(1.09) saturate(1.08);
+  transform: translateY(-2px);
+}
+
+.app-actions .button:active {
+  filter: brightness(.98);
+  transform: translateY(0) scale(.985);
+}
+
+.app-actions .button:focus-visible {
+  outline: 3px solid rgba(255,255,255,.22);
+  outline-offset: 3px;
+}
+
+@keyframes action-border-orbit {
+  to {
+    --action-border-angle: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-actions .button::after {
+    animation: none;
+  }
 }
 
 .nights-chart-card {
