@@ -1258,7 +1258,10 @@ button {
 }
 
 .nights-chart-card {
+  --action-glow: #d5afff;
+  --action-glow-soft: rgba(169,112,255,.16);
   position: relative;
+  isolation: isolate;
   grid-column: 1 / -1;
   margin: 0;
   padding: clamp(16px, 3vw, 24px);
@@ -1277,6 +1280,29 @@ button {
   background: linear-gradient(115deg,rgba(255,255,255,.055),transparent 35%);
   content: "";
   pointer-events: none;
+}
+
+.nights-chart-card::after {
+  position: absolute;
+  z-index: 2;
+  inset: -1px;
+  padding: 2px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--action-border-angle),transparent 0deg,transparent 265deg,var(--action-glow-soft) 306deg,var(--action-glow) 329deg,#fff 337deg,var(--action-glow) 345deg,transparent 360deg);
+  content: "";
+  pointer-events: none;
+  -webkit-mask: linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  filter: drop-shadow(0 0 5px var(--action-glow));
+  animation: action-border-orbit 3.2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nights-chart-card::after {
+    animation: none;
+  }
 }
 
 .nights-chart-header,
