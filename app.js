@@ -436,6 +436,18 @@ function createBookingCard(booking) {
   card.querySelector(".se-source-icon").classList.add(source.className);
   card.querySelector(".se-source-icon").textContent = source.icon;
   card.querySelector(".se-booking-name").textContent = booking.name || "-";
+  const createdAt = new Date(booking.created_at).getTime();
+  const newBadgeDuration = 24 * 60 * 60 * 1000;
+  const bookingAge = Date.now() - createdAt;
+  const isNewLodgifyBooking = booking.synced_from === "Lodgify"
+    && Number.isFinite(createdAt)
+    && bookingAge >= 0
+    && bookingAge < newBadgeDuration;
+  const newChip = card.querySelector(".se-new-chip");
+  newChip.hidden = !isNewLodgifyBooking;
+  if (isNewLodgifyBooking) {
+    window.setTimeout(() => { newChip.hidden = true; }, newBadgeDuration - bookingAge);
+  }
   card.querySelector(".se-booking-source-text").textContent = source.label;
   card.querySelector(".se-booking-details").textContent = ` · App. ${booking.apartment || "-"} · ${booking.account_type || "-"}${booking.guest_count ? ` · ${booking.guest_count} ospiti` : ""}`;
   card.querySelector(".se-booking-amount").textContent = euro(booking.amount);

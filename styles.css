@@ -589,6 +589,19 @@
   text-transform: uppercase;
 }
 
+.se-new-chip {
+  flex-shrink: 0;
+  padding: 4px 7px;
+  border: 1px solid rgba(255, 255, 255, .35);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffb020, #ff6b35);
+  box-shadow: 0 3px 10px rgba(255, 107, 53, .3);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: .08em;
+}
+
 .se-booking-meta {
   margin-top: 4px;
   overflow: hidden;
