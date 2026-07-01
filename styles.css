@@ -1351,7 +1351,7 @@ button {
 
 .nights-chart-summary {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: stretch;
   gap: 8px;
   width: 100%;
@@ -1389,27 +1389,34 @@ button {
 
 .nights-chart-delta {
   display: flex;
+  grid-column: 1 / -1;
   align-items: center;
   justify-content: center;
-  padding: 9px 12px;
+  min-height: 48px;
+  padding: 11px 16px;
   background: rgba(169,112,255,.10);
   color: #d9c0ff;
-  border: 1px solid rgba(169,112,255,.16);
+  border: 1px solid rgba(169,112,255,.32);
   border-radius: 15px;
+  box-shadow: 0 8px 24px rgba(96,55,170,.18), inset 0 1px 0 rgba(255,255,255,.10);
   text-align: center;
-  font-size: 12px;
-  font-weight: 850;
+  font-size: clamp(17px, 3vw, 21px);
+  font-weight: 950;
+  letter-spacing: -.015em;
   line-height: 1.3;
   white-space: normal;
 }
 
 .nights-chart-delta.is-above {
   background: rgba(48,209,88,.11);
+  border-color: rgba(48,209,88,.36);
   color: #83e99b;
 }
 
 .nights-chart-delta.is-below {
   background: rgba(255,159,10,.11);
+  border-color: rgba(255,159,10,.40);
+  box-shadow: 0 8px 26px rgba(255,159,10,.12), inset 0 1px 0 rgba(255,255,255,.10);
   color: #ffc35d;
 }
 
