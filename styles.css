@@ -1002,6 +1002,10 @@ button {
   -webkit-backdrop-filter: blur(26px) saturate(170%);
 }
 
+#dashboard .summary-card {
+  padding: 13px 15px;
+}
+
 #dashboard .target-card::before,
 #dashboard .summary-card::before {
   position: absolute;
@@ -1135,7 +1139,7 @@ button {
 }
 
 .summary-title {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 950;
   letter-spacing: .04em;
 }
@@ -1145,23 +1149,25 @@ button {
 }
 
 .summary-label {
-  margin-top: 22px;
-  font-size: 16px;
+  margin-top: 12px;
+  font-size: 14px;
 }
 
 .summary-main-value {
-  font-size: clamp(22px,5.8vw,26px);
+  margin-top: 4px;
+  font-size: clamp(20px,5.2vw,24px);
   font-weight: 950;
 }
 
 .summary-value {
-  font-size: clamp(20px,5.2vw,24px);
+  margin-top: 4px;
+  font-size: clamp(18px,4.8vw,22px);
   font-weight: 850;
 }
 
 .summary-card hr {
   height: 1px;
-  margin: 24px 0;
+  margin: 14px 0 0;
   border: 0;
   background: #344150;
 }
