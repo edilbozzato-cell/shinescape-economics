@@ -1236,6 +1236,20 @@ button {
   box-shadow: 0 17px 40px rgba(16,132,174,.24), 0 0 26px rgba(58,211,244,.10), inset 0 1px 0 rgba(255,255,255,.24);
 }
 
+.janita-action {
+  grid-column: 1 / -1;
+  margin: -2px 0 2px;
+}
+
+.app-actions .button-janita {
+  --action-glow: #ffb4dc;
+  --action-glow-soft: rgba(255,91,174,.18);
+  border: 1px solid rgba(255,133,196,.48);
+  background: radial-gradient(circle at 85% 15%,rgba(255,182,220,.32),transparent 36%), linear-gradient(135deg,rgba(221,67,147,.90),rgba(112,32,86,.86));
+  color: #fff4fa;
+  box-shadow: 0 17px 40px rgba(180,38,112,.27), 0 0 28px rgba(255,91,174,.13), inset 0 1px 0 rgba(255,255,255,.26);
+}
+
 .app-actions .button:hover {
   filter: brightness(1.09) saturate(1.08);
   transform: translateY(-2px);
@@ -1729,6 +1743,122 @@ button {
 
 .booking-form-body {
   padding: 20px 22px 18px;
+}
+
+.tax-calculator-dialog {
+  max-width: 620px;
+}
+
+.tax-calculator-icon {
+  border-color: rgba(255,193,72,.55);
+  background: rgba(255,193,72,.09);
+  color: #ffd071;
+}
+
+.tax-calculator-body {
+  display: grid;
+  gap: 16px;
+  padding: 20px 22px;
+}
+
+.tax-revenue-field {
+  display: grid;
+  gap: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.tax-revenue-field small {
+  color: var(--se-text-secondary);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.tax-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 15px;
+  border: 1px solid rgba(255,193,72,.34);
+  border-radius: 16px;
+  background: rgba(255,193,72,.06);
+  color: #ffd071;
+  font-size: 22px;
+}
+
+.tax-input-wrap input {
+  width: 100%;
+  padding: 15px 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.tax-results {
+  display: grid;
+  gap: 8px;
+}
+
+.tax-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 14px;
+  background: rgba(255,255,255,.035);
+}
+
+.tax-result > span {
+  color: var(--se-text-secondary);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.tax-result small {
+  margin-left: 5px;
+  color: rgba(255,208,113,.72);
+}
+
+.tax-result strong {
+  color: #fff;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.tax-result-total {
+  margin-top: 5px;
+  padding: 16px 14px;
+  border-color: rgba(255,193,72,.38);
+  background: linear-gradient(135deg,rgba(194,126,26,.22),rgba(255,193,72,.08));
+  box-shadow: 0 10px 30px rgba(154,91,15,.14);
+}
+
+.tax-result-total > span,
+.tax-result-total strong {
+  color: #ffd071;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.tax-result-profit {
+  padding: 16px 14px;
+  border-color: rgba(48,209,88,.40);
+  background: linear-gradient(135deg,rgba(48,209,88,.20),rgba(48,209,88,.07));
+  box-shadow: 0 10px 30px rgba(48,209,88,.12);
+}
+
+.tax-result-profit > span,
+.tax-result-profit strong {
+  color: #83e99b;
+  font-size: 18px;
+  font-weight: 950;
 }
 
 .booking-form-grid {

@@ -50,6 +50,10 @@
       </header>
 
       <section id="dashboard" class="dashboard-grid">
+        <section class="app-actions janita-action" aria-label="Strumenti Janita">
+          <button id="openTaxCalculator" class="button button-janita" type="button">Janita ShinPic ICT</button>
+        </section>
+
         <article class="target-card target-card-black">
           <div class="target-grid">
             <div><div class="target-kicker">TARGET RESIDUO BLACK</div><div id="blackResidual" class="target-main-value"></div></div>
@@ -171,6 +175,28 @@
           <div class="booking-form-actions"><button id="cancelForm" class="button button-secondary" type="button">× Cancel</button><button class="button button-save" type="submit">▣ Save Black Reservation</button></div>
         </div>
       </form>
+
+      <section id="taxCalculator" class="booking-form-overlay tax-calculator-overlay" role="dialog" aria-modal="true" aria-labelledby="taxCalculatorTitle" hidden>
+        <div class="booking-form-dialog tax-calculator-dialog">
+          <div class="booking-form-header">
+            <div class="booking-form-heading"><div class="booking-form-icon tax-calculator-icon">%</div><div><div id="taxCalculatorTitle" class="booking-form-title">Calcolo TAX</div><div class="booking-form-subtitle">Calcolo fiscale rapido per Janita</div></div></div>
+            <button id="closeTaxCalculatorTop" class="close-button" type="button" aria-label="Chiudi">×</button>
+          </div>
+          <div class="tax-calculator-body">
+            <label class="tax-revenue-field"><span>Fatturato</span><div class="tax-input-wrap"><span>€</span><input id="taxRevenue" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00" autocomplete="off"></div><small>Inserisci il bonifico percepito</small></label>
+            <div class="tax-results">
+              <div class="tax-result"><span>Indice Redditività <small>67%</small></span><strong id="taxProfitability">0,00 €</strong></div>
+              <div class="tax-result"><span>Tax <small>5%</small></span><strong id="taxAmount">0,00 €</strong></div>
+              <div class="tax-result"><span>INPS <small>26,27%</small></span><strong id="taxInps">0,00 €</strong></div>
+              <div class="tax-result"><span>Acconto Tax <small>100% Tax</small></span><strong id="taxAdvance">0,00 €</strong></div>
+              <div class="tax-result"><span>Acconto INPS <small>80% INPS</small></span><strong id="taxInpsAdvance">0,00 €</strong></div>
+              <div class="tax-result tax-result-total"><span>Accumulo Janita Tax</span><strong id="taxJanitaTotal">0,00 €</strong></div>
+              <div class="tax-result tax-result-profit"><span>Utile</span><strong id="taxProfit">0,00 €</strong></div>
+            </div>
+          </div>
+          <div class="booking-form-actions"><button id="closeTaxCalculator" class="button button-secondary" type="button">Chiudi</button></div>
+        </div>
+      </section>
 
       <section class="bookings-heading"><h2>Prenotazioni</h2><div class="search-box"><input id="bookingSearch" type="search" autocomplete="off" placeholder="Cerca cliente, appartamento, fonte..."><span>⌕</span></div></section>
       <section id="bookingList"></section>

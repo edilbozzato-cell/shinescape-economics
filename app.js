@@ -218,12 +218,52 @@ function closeBookingForm() {
   form.hidden = true;
 }
 
+function updateTaxCalculator() {
+  const revenue = Math.max(0, Number(document.getElementById("taxRevenue")?.value || 0));
+  const profitability = revenue * 0.67;
+  const tax = profitability * 0.05;
+  const inps = profitability * 0.2627;
+  const taxAdvance = tax;
+  const inpsAdvance = inps * 0.8;
+  const janitaTotal = tax + inps + taxAdvance + inpsAdvance;
+  const profit = revenue - janitaTotal;
+
+  setText("taxProfitability", euro(profitability));
+  setText("taxAmount", euro(tax));
+  setText("taxInps", euro(inps));
+  setText("taxAdvance", euro(taxAdvance));
+  setText("taxInpsAdvance", euro(inpsAdvance));
+  setText("taxJanitaTotal", euro(janitaTotal));
+  setText("taxProfit", euro(profit));
+}
+
+function openTaxCalculator() {
+  const calculator = document.getElementById("taxCalculator");
+  calculator.hidden = false;
+  calculator.classList.add("is-open");
+  updateTaxCalculator();
+  document.getElementById("taxRevenue").focus();
+}
+
+function closeTaxCalculator() {
+  const calculator = document.getElementById("taxCalculator");
+  calculator.classList.remove("is-open");
+  calculator.hidden = true;
+}
+
 function renderApp() {
   mountView("appTemplate");
   const dashboard = document.getElementById("dashboard");
   dashboard.insertBefore(document.querySelector(".nights-chart-card"), dashboard.querySelector(".summary-card"));
   document.getElementById("openForm").addEventListener("click", () => openBookingForm());
   document.getElementById("syncLodgify").addEventListener("click", syncLodgify);
+  document.getElementById("openTaxCalculator").addEventListener("click", openTaxCalculator);
+  document.getElementById("taxRevenue").addEventListener("input", updateTaxCalculator);
+  document.getElementById("closeTaxCalculator").addEventListener("click", closeTaxCalculator);
+  document.getElementById("closeTaxCalculatorTop").addEventListener("click", closeTaxCalculator);
+  document.getElementById("taxCalculator").addEventListener("click", event => {
+    if (event.target.id === "taxCalculator") closeTaxCalculator();
+  });
   document.getElementById("importLodgifyId").addEventListener("click", importLodgifyById);
   document.getElementById("bookingForm").addEventListener("submit", saveBooking);
   document.getElementById("cancelForm").addEventListener("click", closeBookingForm);
