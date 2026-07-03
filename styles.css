@@ -783,13 +783,8 @@ button {
 }
 
 .login-logo {
-  width: 112px;
+  width: 164px;
   height: 112px;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 28px;
-  background: #000;
-  box-shadow: 0 18px 55px rgba(0,0,0,.55);
 }
 
 .login-logo img,
@@ -916,12 +911,8 @@ button {
 
 .app-logo {
   flex-shrink: 0;
-  width: 88px;
+  width: 130px;
   height: 88px;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 22px;
-  background: #000;
 }
 
 .app-brand-copy {
