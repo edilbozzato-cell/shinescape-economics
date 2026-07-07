@@ -7,8 +7,10 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const TARGET_BLACK = 40000;
 const TARGET_WHITE = 28000;
 const TARGET_TOTAL = 70000;
+const TRACKED_APARTMENTS = [2, 3, 4, 7];
 
 let bookingSearchQuery = "";
+let matchedApartmentByStayKey = new Map();
 
 function cloneTemplate(id) {
   const template = document.getElementById(id);
@@ -37,6 +39,109 @@ function euro(value) {
     useGrouping: true
   });
   return `${formatted} €`;
+}
+
+function euroPrefix(value) {
+  const formatted = Number(value || 0).toLocaleString("it-IT", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+    useGrouping: true
+  });
+  return `€ ${formatted}`;
+}
+
+function normalizeMatchText(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+}
+
+function formatDateKey(value) {
+  const date = getCalendarDate(value);
+  if (!date) return "";
+  return `${date.year}-${String(date.month).padStart(2, "0")}-${String(date.day).padStart(2, "0")}`;
+}
+
+function getBookingMatchKey(booking) {
+  const name = normalizeMatchText(booking.name);
+  const arrival = formatDateKey(getBookingArrivalDate(booking));
+  return name && arrival ? `${name}|${arrival}` : null;
+}
+
+function isOtaSource(booking) {
+  const source = String(booking.source || "").toLowerCase();
+  return source.includes("airbnb") || source.includes("booking");
+}
+
+function isSyncedFromLodgify(booking) {
+  return String(booking.synced_from || "").toLowerCase().includes("lodgify");
+}
+
+function isLodgifyDirectBooking(booking) {
+  return isSyncedFromLodgify(booking) && !isOtaSource(booking);
+}
+
+function convertLodgifyApartment(apartment) {
+  const map = {
+    1: 3,
+    2: 2,
+    3: 4,
+    4: 7
+  };
+
+  return map[apartment] || apartment || null;
+}
+
+function getRawApartment(booking) {
+  const directValue = Number(booking.apartment || 0);
+  if (directValue) return directValue;
+
+  const text = [
+    booking.property_name,
+    booking.rental_name,
+    booking.room_name,
+    booking.unit_name,
+    booking.listing_name,
+    booking.apartment_name,
+    booking.lodgify_property_name,
+    booking.notes
+  ].filter(Boolean).join(" ");
+  const match = text.match(/(?:app(?:artamento)?\.?|apartment|room|unit|property)\s*#?\s*(\d+)/i);
+  return match ? Number(match[1]) : null;
+}
+
+function buildApartmentMatchIndex(bookings) {
+  matchedApartmentByStayKey = new Map();
+
+  bookings.forEach(booking => {
+    if (!isLodgifyDirectBooking(booking)) return;
+    const apartment = getRawApartment(booking);
+    if (!apartment) return;
+
+    const key = getBookingMatchKey(booking);
+    if (key && !matchedApartmentByStayKey.has(key)) {
+      matchedApartmentByStayKey.set(key, convertLodgifyApartment(apartment));
+    }
+  });
+}
+
+function getDisplayApartment(booking) {
+  const storedApartment = Number(booking.apartment || 0);
+  const lodgifyApartment = getRawApartment(booking);
+  const matchedApartment = storedApartment ? null : matchedApartmentByStayKey.get(getBookingMatchKey(booking));
+  const isWhiteOta = booking.account_type === "White"
+    && (isSyncedFromLodgify(booking) || isOtaSource(booking));
+
+  if (isWhiteOta) return convertLodgifyApartment(lodgifyApartment);
+
+  if (booking.account_type === "Black" && matchedApartment) {
+    return matchedApartment;
+  }
+
+  return storedApartment || null;
 }
 
 function getCalendarDate(value) {
@@ -99,6 +204,53 @@ function getNights(arrival, departure) {
 function getStoredNights(booking) {
   const value = Number(booking.nights ?? booking.night_count ?? booking.nights_count ?? booking.total_nights);
   return Number.isFinite(value) && value > 0 ? Math.round(value) : null;
+}
+
+function getBookingDepartureDate(booking) {
+  if (booking.departure_date) return booking.departure_date;
+  const match = String(booking.notes || "").match(/→\s*(\d{4}-\d{2}-\d{2})/);
+  return match ? match[1] : null;
+}
+
+function getBookingArrivalDate(booking) {
+  if (booking.arrival_date) return booking.arrival_date;
+  const match = String(booking.notes || "").match(/(\d{4}-\d{2}-\d{2})\s*→/);
+  return match ? match[1] : null;
+}
+
+function getBookingNights(booking) {
+  const arrival = getBookingArrivalDate(booking);
+  const departure = getBookingDepartureDate(booking);
+  if (!arrival || !departure) return 0;
+
+  const start = new Date(`${arrival}T00:00:00`);
+  const end = new Date(`${departure}T00:00:00`);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return 0;
+
+  const nights = Math.round((end - start) / 86400000);
+  return nights > 0 ? nights : 0;
+}
+
+function getApartmentStats(bookings, mode = "white") {
+  const stats = TRACKED_APARTMENTS.map(apartment => ({
+    apartment,
+    amount: 0,
+    nights: 0
+  }));
+
+  bookings.forEach(booking => {
+    if (mode === "white" && booking.account_type !== "White") return;
+    if (mode === "total" && !["White", "Black"].includes(String(booking.account_type || ""))) return;
+
+    const apartment = getDisplayApartment(booking);
+    const row = stats.find(item => item.apartment === apartment);
+    if (!row) return;
+
+    row.amount += Number(booking.amount || 0);
+    row.nights += getBookingNights(booking);
+  });
+
+  return stats;
 }
 
 function restoreStayDatesFromNotes(booking) {
@@ -254,7 +406,7 @@ function closeTaxCalculator() {
 function renderApp() {
   mountView("appTemplate");
   const dashboard = document.getElementById("dashboard");
-  dashboard.insertBefore(document.querySelector(".nights-chart-card"), dashboard.querySelector(".summary-card"));
+  dashboard.insertBefore(document.querySelector(".nights-chart-card"), dashboard.querySelector(".se-total-card"));
   document.getElementById("openForm").addEventListener("click", () => openBookingForm());
   document.getElementById("syncLodgify").addEventListener("click", syncLodgify);
   document.getElementById("openTaxCalculator").addEventListener("click", openTaxCalculator);
@@ -293,9 +445,11 @@ async function loadBookings() {
   }
 
   const bookings = applyAutomaticPaidStatus(data || []);
+  buildApartmentMatchIndex(bookings);
   renderDashboard(bookings);
   renderMonthlyNightsChart(bookings);
   renderSyncSummary(bookings);
+  renderApartmentPerformance(bookings);
   renderBookings(bookings);
 }
 
@@ -448,10 +602,6 @@ function renderDashboard(bookings) {
   setText("whiteProgressMeta", `${euro(white.overall)} / ${euro(TARGET_WHITE)}`);
   setProgress("whiteProgressBar", whiteProgress);
 
-  setText("blackSummaryCollected", euro(black.collected));
-  setText("blackSummaryOverall", euro(black.overall));
-  setText("whiteSummaryCollected", euro(white.collected));
-  setText("whiteSummaryOverall", euro(white.overall));
   setText("totalOverall", euro(totalOverall));
   setText("blackShare", percent(blackShare));
   setText("whiteShare", percent(whiteShare));
@@ -466,11 +616,36 @@ function renderDashboard(bookings) {
   setText("totalResidual", euro(totalResidual));
 }
 
+function renderApartmentPerformance(bookings) {
+  const container = document.getElementById("apartmentPerformance");
+  if (!container) return;
+
+  const renderCard = item => `
+    <article class="se-apartment-card">
+      <div class="se-apartment-label">App. ${item.apartment}</div>
+      <div class="se-apartment-amount">${euroPrefix(item.amount)}</div>
+      <div class="se-apartment-nights">${item.nights} notti</div>
+    </article>
+  `;
+
+  container.innerHTML = `
+    <div class="se-apartment-performance-section">
+      <div class="se-apartment-performance-title">Performance Appartamenti White</div>
+      <div class="se-apartment-grid">${getApartmentStats(bookings, "white").map(renderCard).join("")}</div>
+    </div>
+    <div class="se-apartment-performance-section">
+      <div class="se-apartment-performance-title">Performance Appartamenti Totale</div>
+      <div class="se-apartment-grid">${getApartmentStats(bookings, "total").map(renderCard).join("")}</div>
+    </div>
+  `;
+}
+
 function createBookingCard(booking) {
   const card = cloneTemplate("bookingCardTemplate");
   const source = getSourcePresentation(booking.source);
   const isPaid = booking.status === "Saldato";
   const nights = getNights(booking.arrival_date, booking.departure_date) || getStoredNights(booking);
+  const displayApartment = getDisplayApartment(booking);
 
   if (isPaid) card.classList.add("is-paid");
   card.querySelector(".se-source-icon").classList.add(source.className);
@@ -489,7 +664,7 @@ function createBookingCard(booking) {
     window.setTimeout(() => { newChip.hidden = true; }, newBadgeDuration - bookingAge);
   }
   card.querySelector(".se-booking-source-text").textContent = source.label;
-  card.querySelector(".se-booking-details").textContent = ` · App. ${booking.apartment || "-"} · ${booking.account_type || "-"}${booking.guest_count ? ` · ${booking.guest_count} ospiti` : ""}`;
+  card.querySelector(".se-booking-details").textContent = ` · App. ${displayApartment || "-"} · ${booking.account_type || "-"}${booking.guest_count ? ` · ${booking.guest_count} ospiti` : ""}`;
   card.querySelector(".se-booking-amount").textContent = euro(booking.amount);
   card.querySelector(".is-arrival").textContent = formatDateShortIT(booking.arrival_date);
   card.querySelector(".is-departure").textContent = formatDateShortIT(booking.departure_date);
@@ -514,7 +689,21 @@ function renderBookings(bookings) {
     return dateComparison || String(a.name || "").localeCompare(String(b.name || ""));
   });
   const filtered = bookingSearchQuery
-    ? sorted.filter(booking => [booking.name, booking.source, booking.account_type, booking.status, booking.apartment ? `app ${booking.apartment}` : "", booking.arrival_date, booking.departure_date, booking.notes].filter(Boolean).join(" ").toLowerCase().includes(bookingSearchQuery))
+    ? sorted.filter(booking => {
+      const displayApartment = getDisplayApartment(booking);
+      return [
+        booking.name,
+        booking.source,
+        booking.account_type,
+        booking.status,
+        booking.apartment ? `app ${booking.apartment}` : "",
+        displayApartment ? `app ${displayApartment}` : "",
+        displayApartment ? `appartamento ${displayApartment}` : "",
+        booking.arrival_date,
+        booking.departure_date,
+        booking.notes
+      ].filter(Boolean).join(" ").toLowerCase().includes(bookingSearchQuery);
+    })
     : sorted;
   const container = document.getElementById("bookingList");
 

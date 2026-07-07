@@ -55,6 +55,11 @@
           <button id="openTaxCalculator" class="button button-janita" type="button">Janita ShinPic ICT</button>
         </section>
 
+        <div class="app-actions booking-actions">
+          <button id="openForm" class="button button-primary">+ New Reservation</button>
+          <button id="syncLodgify" class="button button-gold">Sync Lodgi</button>
+        </div>
+
         <article class="target-card target-card-black">
           <div class="target-grid">
             <div><div class="target-kicker">TARGET RESIDUO BLACK</div><div id="blackResidual" class="target-main-value"></div></div>
@@ -73,15 +78,6 @@
             <div><div class="metric-label">Raggiunto</div><div id="whiteReached" class="target-value is-green"></div></div>
             <div><div id="whiteProgressMeta" class="target-progress-meta is-white"></div><div class="target-progress"><div id="whiteProgressBar" class="target-progress-fill is-white"></div></div></div>
           </div>
-        </article>
-
-        <article class="summary-card summary-card-black">
-          <div class="summary-title is-blue">BLACK</div><div class="summary-label">Incassato</div><div id="blackSummaryCollected" class="summary-main-value"></div>
-          <hr><div class="summary-label">Complessivo</div><div id="blackSummaryOverall" class="summary-value"></div>
-        </article>
-        <article class="summary-card summary-card-white">
-          <div class="summary-title">WHITE</div><div class="summary-label">Incassato</div><div id="whiteSummaryCollected" class="summary-main-value"></div>
-          <hr><div class="summary-label">Complessivo</div><div id="whiteSummaryOverall" class="summary-value"></div>
         </article>
 
         <article class="se-glass-card se-total-card">
@@ -137,11 +133,6 @@
         </div>
       </section>
 
-      <div class="app-actions">
-        <button id="openForm" class="button button-primary">+ Nuova prenotazione</button>
-        <button id="syncLodgify" class="button button-gold">↻ Sincronizza Lodgify</button>
-      </div>
-
       <section class="import-panel">
         <div class="import-section">
           <div class="import-copy"><div class="gold-kicker">Importa ID Lodgify</div><div class="helper-copy">Usalo per importare una prenotazione OTA che non compare nella sync automatica.</div></div>
@@ -152,6 +143,8 @@
           <div class="sync-badges"><span id="bookingSyncCount" class="sync-badge is-booking"></span><span id="airbnbSyncCount" class="sync-badge is-airbnb"></span><span id="otaSyncCount" class="sync-badge"></span></div>
         </div>
       </section>
+
+      <section id="apartmentPerformance" class="se-apartment-performance"></section>
 
       <form id="bookingForm" class="booking-form-overlay" hidden>
         <div class="booking-form-dialog">

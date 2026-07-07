@@ -297,6 +297,121 @@
   line-height: 1.22;
 }
 
+.se-apartment-performance {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.se-apartment-performance-section {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.se-apartment-performance-title {
+  margin: 0;
+  color: rgba(255,255,255,.74);
+  font-size: clamp(13px, 3.4vw, 15px);
+  font-weight: 950;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+
+.se-apartment-grid {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+  margin: 0 -20px;
+  padding: 0 20px 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.se-apartment-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.se-apartment-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 0 0 clamp(132px, 38vw, 168px);
+  min-width: 0;
+  min-height: clamp(92px, 24vw, 112px);
+  padding: clamp(10px, 2.8vw, 13px);
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 18px;
+  background: rgba(4,8,14,.25);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 12px 28px rgba(0,0,0,.22);
+  scroll-snap-align: start;
+}
+
+.se-apartment-card::before {
+  position: absolute;
+  inset: -1px;
+  z-index: 0;
+  background: linear-gradient(145deg, rgba(255,255,255,.08), transparent 48%, rgba(10,132,255,.05));
+  content: "";
+  pointer-events: none;
+}
+
+.se-apartment-card::after {
+  position: absolute;
+  top: 7px;
+  right: 10px;
+  left: 10px;
+  z-index: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent);
+  content: "";
+  pointer-events: none;
+}
+
+.se-apartment-label,
+.se-apartment-amount,
+.se-apartment-nights {
+  position: relative;
+  z-index: 1;
+}
+
+.se-apartment-label {
+  color: rgba(255,255,255,.78);
+  font-size: clamp(13px, 3.3vw, 15px);
+  font-weight: 900;
+}
+
+.se-apartment-amount {
+  color: var(--se-text-primary);
+  font-size: clamp(18px, 5vw, 24px);
+  font-weight: 950;
+  line-height: 1.02;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.se-apartment-nights {
+  color: var(--se-text-secondary);
+  font-size: clamp(12px, 3vw, 14px);
+  font-weight: 800;
+}
+
+@media (min-width: 760px) {
+  .se-apartment-card {
+    flex-basis: 168px;
+    min-height: 108px;
+  }
+}
+
 @media (max-width: 420px) {
   .se-total-header {
     align-items: flex-start;
@@ -309,9 +424,9 @@
 
 
 /* Liquid Glass propagation - dashboard cards only, booking cards excluded */
-#dashboard > div:not(.se-total-card),
-.dashboard > div:not(.se-total-card),
-.dashboard-grid > div:not(.se-total-card) {
+#dashboard > div:not(.se-total-card):not(.app-actions),
+.dashboard > div:not(.se-total-card):not(.app-actions),
+.dashboard-grid > div:not(.se-total-card):not(.app-actions) {
   position: relative !important;
   overflow: hidden !important;
   border-radius: var(--se-glass-radius) !important;
@@ -322,9 +437,9 @@
   -webkit-backdrop-filter: blur(26px) saturate(175%) !important;
 }
 
-#dashboard > div:not(.se-total-card)::before,
-.dashboard > div:not(.se-total-card)::before,
-.dashboard-grid > div:not(.se-total-card)::before {
+#dashboard > div:not(.se-total-card):not(.app-actions)::before,
+.dashboard > div:not(.se-total-card):not(.app-actions)::before,
+.dashboard-grid > div:not(.se-total-card):not(.app-actions)::before {
   content: "";
   position: absolute;
   inset: -1px;
@@ -334,9 +449,9 @@
   z-index: 0;
 }
 
-#dashboard > div:not(.se-total-card)::after,
-.dashboard > div:not(.se-total-card)::after,
-.dashboard-grid > div:not(.se-total-card)::after {
+#dashboard > div:not(.se-total-card):not(.app-actions)::after,
+.dashboard > div:not(.se-total-card):not(.app-actions)::after,
+.dashboard-grid > div:not(.se-total-card):not(.app-actions)::after {
   content: "";
   position: absolute;
   left: 18px;
@@ -348,9 +463,9 @@
   z-index: 0;
 }
 
-#dashboard > div:not(.se-total-card) > *,
-.dashboard > div:not(.se-total-card) > *,
-.dashboard-grid > div:not(.se-total-card) > * {
+#dashboard > div:not(.se-total-card):not(.app-actions) > *,
+.dashboard > div:not(.se-total-card):not(.app-actions) > *,
+.dashboard-grid > div:not(.se-total-card):not(.app-actions) > * {
   position: relative;
   z-index: 1;
 }
@@ -981,8 +1096,7 @@ button {
   margin: 20px 0;
 }
 
-#dashboard .target-card,
-#dashboard .summary-card {
+#dashboard .target-card {
   position: relative;
   overflow: hidden;
   padding: 16px;
@@ -993,12 +1107,7 @@ button {
   -webkit-backdrop-filter: blur(26px) saturate(170%);
 }
 
-#dashboard .summary-card {
-  padding: 13px 15px;
-}
-
-#dashboard .target-card::before,
-#dashboard .summary-card::before {
+#dashboard .target-card::before {
   position: absolute;
   z-index: 0;
   inset: -1px;
@@ -1007,8 +1116,7 @@ button {
   pointer-events: none;
 }
 
-#dashboard .target-card::after,
-#dashboard .summary-card::after {
+#dashboard .target-card::after {
   position: absolute;
   z-index: 0;
   top: 11px;
@@ -1020,8 +1128,7 @@ button {
   pointer-events: none;
 }
 
-#dashboard .target-card > *,
-#dashboard .summary-card > * {
+#dashboard .target-card > * {
   position: relative;
   z-index: 1;
 }
@@ -1064,9 +1171,7 @@ button {
 }
 
 .target-main-value,
-.target-value,
-.summary-main-value,
-.summary-value {
+.target-value {
   margin-top: 8px;
   white-space: nowrap;
 }
@@ -1076,8 +1181,7 @@ button {
   font-weight: 950;
 }
 
-.metric-label,
-.summary-label {
+.metric-label {
   color: #c7c7cc;
 }
 
@@ -1115,52 +1219,6 @@ button {
 
 .target-progress-fill.is-white {
   background: linear-gradient(90deg,#fff,#d9d9d9);
-}
-
-#dashboard .summary-card-black {
-  --dashboard-glass-glow: rgba(10,132,255,.22);
-  background: linear-gradient(145deg,rgba(10,132,255,.18),rgba(7,16,27,.48)) !important;
-  border-color: rgba(72,162,255,.38);
-  box-shadow: 0 22px 58px rgba(0,0,0,.36), 0 0 30px rgba(10,132,255,.08), inset 0 1px 0 rgba(255,255,255,.16);
-}
-
-#dashboard .summary-card-white {
-  --dashboard-glass-glow: rgba(255,255,255,.14);
-  background: linear-gradient(145deg,rgba(255,255,255,.12),rgba(13,18,21,.48)) !important;
-}
-
-.summary-title {
-  font-size: 20px;
-  font-weight: 950;
-  letter-spacing: .04em;
-}
-
-.summary-title.is-blue {
-  color: var(--se-blue);
-}
-
-.summary-label {
-  margin-top: 12px;
-  font-size: 14px;
-}
-
-.summary-main-value {
-  margin-top: 4px;
-  font-size: clamp(20px,5.2vw,24px);
-  font-weight: 950;
-}
-
-.summary-value {
-  margin-top: 4px;
-  font-size: clamp(18px,4.8vw,22px);
-  font-weight: 850;
-}
-
-.summary-card hr {
-  height: 1px;
-  margin: 14px 0 0;
-  border: 0;
-  background: #344150;
 }
 
 .app-actions {
@@ -1230,6 +1288,21 @@ button {
 .janita-action {
   grid-column: 1 / -1;
   margin: -2px 0 2px;
+}
+
+.booking-actions {
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: -2px 0 2px;
+}
+
+.booking-actions .button {
+  min-height: 52px;
+  padding: 12px 10px;
+  font-size: clamp(13px, 3.7vw, 16px);
+  line-height: 1.05;
+  white-space: nowrap;
 }
 
 .app-actions .button-janita {
