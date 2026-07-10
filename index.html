@@ -110,9 +110,9 @@
                 <div id="controlBlack" class="se-control-item"><span class="se-control-indicator" aria-hidden="true"></span><span>Target Black</span></div>
                 <div id="controlWhite" class="se-control-item"><span class="se-control-indicator" aria-hidden="true"></span><span>Target White</span></div>
               </div>
-              <div class="se-useful-card">
+              <button id="openUsefulDetails" class="se-useful-card" type="button" aria-label="Apri il dettaglio del calcolo utile" aria-haspopup="dialog" aria-controls="usefulDetails">
                 <div class="se-useful-content"><div class="se-useful-title">Utile</div><div id="totalUseful" class="se-useful-value"></div></div>
-              </div>
+              </button>
             </div>
             <div class="se-total-side">
               <div class="se-glass-panel"><div class="se-total-label">Totale incassato</div><div id="totalCollected" class="se-total-value is-green"></div></div>
@@ -218,6 +218,17 @@
         </div>
       </section>
 
+      <section id="usefulDetails" class="booking-form-overlay margin-details-overlay" role="dialog" aria-modal="true" aria-labelledby="usefulDetailsTitle" hidden>
+        <div class="booking-form-dialog margin-details-dialog">
+          <div class="booking-form-header">
+            <div class="booking-form-heading"><div class="booking-form-icon useful-details-icon">€</div><div><div id="usefulDetailsTitle" class="booking-form-title">Calcolo Utile</div><div class="booking-form-subtitle">Dettaglio completo della cifra finale</div></div></div>
+            <button id="closeUsefulDetailsTop" class="close-button" type="button" aria-label="Chiudi">×</button>
+          </div>
+          <div id="usefulBreakdown" class="margin-details-body"></div>
+          <div class="booking-form-actions"><button id="closeUsefulDetails" class="button button-secondary" type="button">Chiudi</button></div>
+        </div>
+      </section>
+
       <section id="bookingList"></section>
       <section class="import-panel">
         <div class="import-section">
@@ -251,6 +262,6 @@
   <template id="emptyStateTemplate"><div class="empty-state">Nessuna prenotazione trovata.</div></template>
   <template id="errorStateTemplate"><pre class="error-state"></pre></template>
 
-  <script type="module" src="app.js?v=12"></script>
+  <script type="module" src="app.js?v=14"></script>
 </body>
 </html>

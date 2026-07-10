@@ -20,6 +20,7 @@ const TARGET_NIGHTS = 320;
 
 let matchedApartmentByStayKey = new Map();
 let currentWhiteMarginDetails = null;
+let currentUsefulDetails = null;
 
 function cloneTemplate(id) {
   const template = document.getElementById(id);
@@ -349,6 +350,60 @@ function closeWhiteMarginDetails() {
   dialog.hidden = true;
 }
 
+function renderUsefulBreakdown(details) {
+  const container = document.getElementById("usefulBreakdown");
+  if (!container || !details) return;
+  const whiteOwnerRows = details.whiteDetails.owners.map(owner => `
+    <section class="margin-owner-section">
+      <div class="margin-owner-title">${owner.name}</div>
+      ${owner.apartments.map(item => `
+        <div class="margin-detail-row">
+          <span>App. ${item.apartment} · ${Math.round(item.rate * 100)}% <small>su ${euro(item.amount)}</small></span>
+          <strong>− ${euro(item.tax)}</strong>
+        </div>
+      `).join("")}
+    </section>
+  `).join("");
+  container.innerHTML = `
+    <section class="useful-calculation-section">
+      <div class="margin-owner-title is-green">Calcolo Margine Black</div>
+      <div class="margin-detail-row"><span>Totale Black</span><strong>${euro(details.blackMargin)}</strong></div>
+      <div class="margin-formula">${euro(details.blackMargin)} × 100% = ${euro(details.blackMargin)}</div>
+      <div class="margin-detail-row is-margin-total"><span>Margine Black</span><strong>${euro(details.blackMargin)}</strong></div>
+    </section>
+    <section class="useful-calculation-section">
+      <div class="margin-owner-title is-red">Calcolo Margine White</div>
+      <div class="margin-detail-row"><span>Totale White lordo</span><strong>${euro(details.whiteDetails.gross)}</strong></div>
+      <div class="margin-detail-row is-expense"><span>Fee OTA · 18% <small>su tutto il White</small></span><strong>− ${euro(details.whiteDetails.otaFee)}</strong></div>
+      ${whiteOwnerRows}
+      <div class="margin-detail-row is-expense-total"><span>Spese White totali</span><strong>− ${euro(details.whiteDetails.expenses)}</strong></div>
+      <div class="margin-formula">${euro(details.whiteDetails.gross)} − ${euro(details.whiteDetails.expenses)} = ${euro(details.whiteMargin)}</div>
+      <div class="margin-detail-row is-margin-total"><span>Margine White</span><strong>${euro(details.whiteMargin)}</strong></div>
+    </section>
+    <div class="margin-detail-separator"></div>
+    <div class="margin-detail-row is-expense"><span>Spesa Elio</span><strong>− ${euro(details.expenses.elio)}</strong></div>
+    <div class="margin-detail-row is-expense"><span>Spesa Patty</span><strong>− ${euro(details.expenses.patty)}</strong></div>
+    <div class="margin-detail-row is-expense"><span>Spesa Roxy</span><strong>− ${euro(details.expenses.roxy)}</strong></div>
+    <div class="margin-detail-row is-expense-total"><span>Spese totali</span><strong>− ${euro(details.expensesTotal)}</strong></div>
+    <div class="margin-formula">${euro(details.blackMargin)} + ${euro(details.whiteMargin)} − ${euro(details.expensesTotal)}</div>
+    <div class="margin-detail-row is-margin-total"><span>Utile finale</span><strong>${euro(details.total)}</strong></div>
+  `;
+}
+
+function openUsefulDetails() {
+  const dialog = document.getElementById("usefulDetails");
+  renderUsefulBreakdown(currentUsefulDetails);
+  dialog.hidden = false;
+  dialog.classList.add("is-open");
+  document.getElementById("closeUsefulDetailsTop").focus();
+}
+
+function closeUsefulDetails() {
+  const dialog = document.getElementById("usefulDetails");
+  dialog.classList.remove("is-open");
+  dialog.hidden = true;
+}
+
 function restoreStayDatesFromNotes(booking) {
   const existingArrival = booking.arrival_date || booking.check_in || booking.checkin || booking.start_date || null;
   const existingDeparture = booking.departure_date || booking.check_out || booking.checkout || booking.end_date || null;
@@ -524,6 +579,12 @@ function renderApp() {
   document.getElementById("closeWhiteMarginTop").addEventListener("click", closeWhiteMarginDetails);
   document.getElementById("whiteMarginDetails").addEventListener("click", event => {
     if (event.target.id === "whiteMarginDetails") closeWhiteMarginDetails();
+  });
+  document.getElementById("openUsefulDetails").addEventListener("click", openUsefulDetails);
+  document.getElementById("closeUsefulDetails").addEventListener("click", closeUsefulDetails);
+  document.getElementById("closeUsefulDetailsTop").addEventListener("click", closeUsefulDetails);
+  document.getElementById("usefulDetails").addEventListener("click", event => {
+    if (event.target.id === "usefulDetails") closeUsefulDetails();
   });
   document.getElementById("importLodgifyId").addEventListener("click", importLodgifyById);
   document.getElementById("bookingForm").addEventListener("submit", saveBooking);
@@ -727,6 +788,14 @@ function renderDashboard(bookings) {
   setControlState("controlBlack", black.overall >= TARGET_BLACK);
   setControlState("controlWhite", white.overall >= TARGET_WHITE);
   setText("totalUseful", euro(totalUseful));
+  currentUsefulDetails = {
+    blackMargin: black.overall,
+    whiteMargin: whiteMarginDetails.margin,
+    whiteDetails: whiteMarginDetails,
+    expenses: { ...FIXED_EXPENSES },
+    expensesTotal: fixedExpensesTotal,
+    total: totalUseful
+  };
   setText("totalCollected", euro(totalCollected));
   setText("totalTarget", euro(TARGET_TOTAL));
   setProgress("totalProgressBar", totalProgress);

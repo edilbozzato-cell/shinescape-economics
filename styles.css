@@ -390,13 +390,26 @@ button.se-margin-box.is-white:focus-visible { outline: 2px solid #fff; outline-o
 .se-useful-card {
   position: relative;
   isolation: isolate;
+  display: block;
+  width: 100%;
   margin-top: 12px;
   padding: 2px;
   overflow: hidden;
+  appearance: none;
+  border: 0;
   border-radius: 19px;
   background: rgba(48,209,88,.13);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: inherit;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.13);
+  transition: filter .2s ease, transform .2s ease;
 }
+
+.se-useful-card:hover { filter: brightness(1.08); }
+.se-useful-card:active { transform: scale(.988); }
+.se-useful-card:focus-visible { outline: 2px solid var(--se-green); outline-offset: 3px; }
 
 .se-useful-card::before {
   position: absolute;
@@ -447,7 +460,37 @@ button.se-margin-box.is-white:focus-visible { outline: 2px solid #fff; outline-o
 
 .margin-details-dialog { max-width: 620px; }
 .margin-details-icon { color: #fff; background: rgba(255,255,255,.13); }
+.useful-details-icon { color: var(--se-green); background: rgba(48,209,88,.13); }
 .margin-details-body { display: grid; gap: 9px; padding: 18px; }
+
+.margin-detail-separator {
+  height: 1px;
+  margin: 3px 0;
+  background: rgba(255,255,255,.09);
+}
+
+.useful-calculation-section {
+  display: grid;
+  gap: 9px;
+  padding: 13px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 17px;
+  background: rgba(255,255,255,.035);
+}
+
+.margin-owner-title.is-green { color: var(--se-green); }
+.margin-owner-title.is-red { color: var(--se-red); }
+
+.margin-formula {
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.045);
+  color: rgba(255,255,255,.62);
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.35;
+  text-align: center;
+}
 
 .margin-owner-section {
   display: grid;
