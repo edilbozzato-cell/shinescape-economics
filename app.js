@@ -8,9 +8,18 @@ const TARGET_BLACK = 40000;
 const TARGET_WHITE = 28000;
 const TARGET_TOTAL = 70000;
 const TRACKED_APARTMENTS = [2, 3, 4, 7];
+const WHITE_OWNERS = [
+  { name: "Janita", apartments: [2, 3] },
+  { name: "Andrea", apartments: [4, 7] }
+];
+const WHITE_OTA_FEE_RATE = 0.18;
+const WHITE_PRIMARY_TAX_RATE = 0.21;
+const WHITE_SECONDARY_TAX_RATE = 0.26;
+const FIXED_EXPENSES = { elio: 10000, patty: 5000, roxy: 2500 };
+const TARGET_NIGHTS = 320;
 
-let bookingSearchQuery = "";
 let matchedApartmentByStayKey = new Map();
+let currentWhiteMarginDetails = null;
 
 function cloneTemplate(id) {
   const template = document.getElementById(id);
@@ -27,9 +36,23 @@ function setText(id, value) {
   if (element) element.textContent = value;
 }
 
+function setSyncButtonMeta(lastSync, label = "Sync") {
+  const button = document.getElementById("syncLodgify");
+  if (!button) return;
+  const meta = lastSync ? `Sync ${formatSyncButtonDate(lastSync)}` : "Sync -";
+  button.innerHTML = `<span>${label}</span><small id="syncButtonMeta">${meta}</small>`;
+}
+
 function setProgress(id, value) {
   const element = document.getElementById(id);
   if (element) element.style.setProperty("--progress", `${value}%`);
+}
+
+function setControlState(id, reached) {
+  const element = document.getElementById(id);
+  if (!element) return;
+  element.classList.toggle("is-reached", reached);
+  element.setAttribute("aria-label", `${element.textContent.trim()}: ${reached ? "raggiunto" : "non raggiunto"}`);
 }
 
 function euro(value) {
@@ -193,6 +216,23 @@ function formatDateTimeIT(value) {
   });
 }
 
+function formatSyncButtonDate(value) {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+  const parts = new Intl.DateTimeFormat("it-IT", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).formatToParts(date).reduce((acc, part) => {
+    if (part.type !== "literal") acc[part.type] = part.value;
+    return acc;
+  }, {});
+  return `${parts.day}.${parts.month}.${parts.year} ${parts.hour}.${parts.minute}`;
+}
+
 function getNights(arrival, departure) {
   const start = getCalendarDate(arrival);
   const end = getCalendarDate(departure);
@@ -253,6 +293,62 @@ function getApartmentStats(bookings, mode = "white") {
   return stats;
 }
 
+function calculateWhiteMargin(bookings) {
+  const apartments = getApartmentStats(bookings, "white");
+  const gross = apartments.reduce((sum, item) => sum + item.amount, 0);
+  const otaFee = gross * WHITE_OTA_FEE_RATE;
+  const owners = WHITE_OWNERS.map(owner => {
+    const ranked = owner.apartments
+      .map(apartment => apartments.find(item => item.apartment === apartment) || { apartment, amount: 0 })
+      .sort((a, b) => b.amount - a.amount || a.apartment - b.apartment)
+      .map((item, index) => {
+        const rate = index === 0 ? WHITE_PRIMARY_TAX_RATE : WHITE_SECONDARY_TAX_RATE;
+        return { ...item, rate, tax: item.amount * rate };
+      });
+    return { ...owner, apartments: ranked, tax: ranked.reduce((sum, item) => sum + item.tax, 0) };
+  });
+  const tax = owners.reduce((sum, owner) => sum + owner.tax, 0);
+  const expenses = otaFee + tax;
+  return { gross, otaFee, owners, tax, expenses, margin: gross - expenses };
+}
+
+function renderWhiteMarginBreakdown(details) {
+  const container = document.getElementById("whiteMarginBreakdown");
+  if (!container || !details) return;
+  const ownerRows = details.owners.map(owner => `
+    <section class="margin-owner-section">
+      <div class="margin-owner-title">${owner.name}</div>
+      ${owner.apartments.map(item => `
+        <div class="margin-detail-row">
+          <span>App. ${item.apartment} · ${Math.round(item.rate * 100)}% <small>su ${euro(item.amount)}</small></span>
+          <strong>− ${euro(item.tax)}</strong>
+        </div>
+      `).join("")}
+    </section>
+  `).join("");
+  container.innerHTML = `
+    <div class="margin-detail-row"><span>Totale White lordo</span><strong>${euro(details.gross)}</strong></div>
+    <div class="margin-detail-row is-expense"><span>Fee OTA · 18% <small>su tutto il White</small></span><strong>− ${euro(details.otaFee)}</strong></div>
+    ${ownerRows}
+    <div class="margin-detail-row is-expense-total"><span>Spese totali</span><strong>− ${euro(details.expenses)}</strong></div>
+    <div class="margin-detail-row is-margin-total"><span>Margine White</span><strong>${euro(details.margin)}</strong></div>
+  `;
+}
+
+function openWhiteMarginDetails() {
+  const dialog = document.getElementById("whiteMarginDetails");
+  renderWhiteMarginBreakdown(currentWhiteMarginDetails);
+  dialog.hidden = false;
+  dialog.classList.add("is-open");
+  document.getElementById("closeWhiteMarginTop").focus();
+}
+
+function closeWhiteMarginDetails() {
+  const dialog = document.getElementById("whiteMarginDetails");
+  dialog.classList.remove("is-open");
+  dialog.hidden = true;
+}
+
 function restoreStayDatesFromNotes(booking) {
   const existingArrival = booking.arrival_date || booking.check_in || booking.checkin || booking.start_date || null;
   const existingDeparture = booking.departure_date || booking.check_out || booking.checkout || booking.end_date || null;
@@ -309,8 +405,15 @@ function getSyncStats(bookings) {
   const lodgify = bookings.filter(booking => booking.synced_from === "Lodgify");
   const airbnb = lodgify.filter(booking => String(booking.source || "").toLowerCase().includes("airbnb"));
   const booking = lodgify.filter(item => String(item.source || "").toLowerCase().includes("booking"));
+  const direct = bookings.filter(item => item.account_type === "Black");
   const lastSync = lodgify.map(item => item.last_synced_at).filter(Boolean).sort().at(-1);
-  return { total: lodgify.length, airbnb: airbnb.length, booking: booking.length, lastSync };
+  return {
+    total: booking.length + airbnb.length + direct.length,
+    airbnb: airbnb.length,
+    booking: booking.length,
+    direct: direct.length,
+    lastSync
+  };
 }
 
 async function checkAuth() {
@@ -416,14 +519,16 @@ function renderApp() {
   document.getElementById("taxCalculator").addEventListener("click", event => {
     if (event.target.id === "taxCalculator") closeTaxCalculator();
   });
+  document.getElementById("openWhiteMargin").addEventListener("click", openWhiteMarginDetails);
+  document.getElementById("closeWhiteMargin").addEventListener("click", closeWhiteMarginDetails);
+  document.getElementById("closeWhiteMarginTop").addEventListener("click", closeWhiteMarginDetails);
+  document.getElementById("whiteMarginDetails").addEventListener("click", event => {
+    if (event.target.id === "whiteMarginDetails") closeWhiteMarginDetails();
+  });
   document.getElementById("importLodgifyId").addEventListener("click", importLodgifyById);
   document.getElementById("bookingForm").addEventListener("submit", saveBooking);
   document.getElementById("cancelForm").addEventListener("click", closeBookingForm);
   document.getElementById("cancelFormTop").addEventListener("click", closeBookingForm);
-  document.getElementById("bookingSearch").addEventListener("input", event => {
-    bookingSearchQuery = String(event.target.value || "").trim().toLowerCase();
-    loadBookings();
-  });
   document.getElementById("logoutButton").addEventListener("click", async () => {
     await supabase.auth.signOut();
     renderLogin();
@@ -562,10 +667,11 @@ function renderSyncSummary(bookings) {
   const stats = getSyncStats(bookings);
   const summary = document.getElementById("syncSummary");
   summary.hidden = false;
-  setText("lastSync", `Ultima sync: ${formatDateTimeIT(stats.lastSync)}`);
+  setSyncButtonMeta(stats.lastSync);
   setText("bookingSyncCount", `Booking ${stats.booking}`);
   setText("airbnbSyncCount", `Airbnb ${stats.airbnb}`);
-  setText("otaSyncCount", `OTA ${stats.total}`);
+  setText("directSyncCount", `Direct ${stats.direct}`);
+  setText("otaSyncCount", `Tot ${stats.total}`);
 }
 
 function renderDashboard(bookings) {
@@ -586,6 +692,10 @@ function renderDashboard(bookings) {
   const totalProgress = Math.min((totalOverall / TARGET_TOTAL) * 100, 100);
   const blackShare = totalOverall > 0 ? (black.overall / totalOverall) * 100 : 0;
   const whiteShare = totalOverall > 0 ? (white.overall / totalOverall) * 100 : 0;
+  const whiteMarginDetails = calculateWhiteMargin(bookings);
+  const seasonNights = calculateMonthlyNights(bookings, getSeasonYear(bookings)).reduce((sum, value) => sum + value, 0);
+  const fixedExpensesTotal = Object.values(FIXED_EXPENSES).reduce((sum, value) => sum + value, 0);
+  const totalUseful = black.overall + whiteMarginDetails.margin - fixedExpensesTotal;
   const percent = value => `${value.toFixed(1).replace(".", ",")}%`;
 
   setText("blackResidual", euro(blackResidual));
@@ -607,6 +717,16 @@ function renderDashboard(bookings) {
   setText("whiteShare", percent(whiteShare));
   setProgress("blackShareBar", blackShare);
   setProgress("whiteShareBar", whiteShare);
+  setText("blackMargin", euro(black.overall));
+  setText("whiteMargin", euro(whiteMarginDetails.margin));
+  currentWhiteMarginDetails = whiteMarginDetails;
+  setControlState("controlElio", black.overall >= FIXED_EXPENSES.elio);
+  setControlState("controlPatty", black.overall - FIXED_EXPENSES.elio >= FIXED_EXPENSES.patty);
+  setControlState("controlRoxy", black.overall - FIXED_EXPENSES.elio - FIXED_EXPENSES.patty >= FIXED_EXPENSES.roxy);
+  setControlState("controlNights", seasonNights >= TARGET_NIGHTS);
+  setControlState("controlBlack", black.overall >= TARGET_BLACK);
+  setControlState("controlWhite", white.overall >= TARGET_WHITE);
+  setText("totalUseful", euro(totalUseful));
   setText("totalCollected", euro(totalCollected));
   setText("totalTarget", euro(TARGET_TOTAL));
   setProgress("totalProgressBar", totalProgress);
@@ -632,10 +752,6 @@ function renderApartmentPerformance(bookings) {
     <div class="se-apartment-performance-section">
       <div class="se-apartment-performance-title">Performance Appartamenti White</div>
       <div class="se-apartment-grid">${getApartmentStats(bookings, "white").map(renderCard).join("")}</div>
-    </div>
-    <div class="se-apartment-performance-section">
-      <div class="se-apartment-performance-title">Performance Appartamenti Totale</div>
-      <div class="se-apartment-grid">${getApartmentStats(bookings, "total").map(renderCard).join("")}</div>
     </div>
   `;
 }
@@ -688,23 +804,7 @@ function renderBookings(bookings) {
     const dateComparison = String(a.arrival_date || "9999-12-31").localeCompare(String(b.arrival_date || "9999-12-31"));
     return dateComparison || String(a.name || "").localeCompare(String(b.name || ""));
   });
-  const filtered = bookingSearchQuery
-    ? sorted.filter(booking => {
-      const displayApartment = getDisplayApartment(booking);
-      return [
-        booking.name,
-        booking.source,
-        booking.account_type,
-        booking.status,
-        booking.apartment ? `app ${booking.apartment}` : "",
-        displayApartment ? `app ${displayApartment}` : "",
-        displayApartment ? `appartamento ${displayApartment}` : "",
-        booking.arrival_date,
-        booking.departure_date,
-        booking.notes
-      ].filter(Boolean).join(" ").toLowerCase().includes(bookingSearchQuery);
-    })
-    : sorted;
+  const filtered = sorted;
   const container = document.getElementById("bookingList");
 
   if (!filtered.length) {
@@ -715,13 +815,10 @@ function renderBookings(bookings) {
   const area = cloneTemplate("bookingAreaTemplate");
   const paid = filtered.filter(booking => booking.status === "Saldato");
   const unpaid = filtered.filter(booking => booking.status !== "Saldato");
-  area.querySelector(".se-booking-list-count").textContent = `${filtered.length} prenotazioni`;
 
   if (paid.length) {
     const section = area.querySelector(".se-paid-section");
     section.hidden = false;
-    section.querySelector(".se-booking-section-count").textContent = `${paid.length} prenotazioni`;
-    section.querySelector(".se-swipe-hint").hidden = paid.length < 2;
     section.querySelector(".se-paid-carousel").append(...paid.map(createBookingCard));
   }
 
@@ -778,8 +875,13 @@ function initializePaidDeck(carousel) {
 async function callLodgifyFunction(payload, button, loadingText) {
   if (!button) return null;
   const originalText = button.textContent;
+  const originalHtml = button.innerHTML;
   button.disabled = true;
-  button.textContent = loadingText;
+  if (button.id === "syncLodgify") {
+    button.innerHTML = `<span>${loadingText}</span><small id="syncButtonMeta">Attendi...</small>`;
+  } else {
+    button.textContent = loadingText;
+  }
   button.classList.add("is-loading");
 
   try {
@@ -792,7 +894,8 @@ async function callLodgifyFunction(payload, button, loadingText) {
     });
     const result = await response.json();
     if (!response.ok || result.success === false) {
-      alert(`Errore Lodgify: ${result.error || result.message || result.step || "errore sconosciuto"}`);
+      const message = String(result.error || result.message || result.step || "errore sconosciuto").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").slice(0, 240);
+      alert(`Errore Lodgify: ${message}`);
       return null;
     }
     return result;
@@ -801,7 +904,7 @@ async function callLodgifyFunction(payload, button, loadingText) {
     return null;
   } finally {
     button.disabled = false;
-    button.textContent = originalText;
+    button.innerHTML = originalHtml || originalText;
     button.classList.remove("is-loading");
   }
 }
@@ -810,7 +913,35 @@ async function syncLodgify() {
   const result = await callLodgifyFunction({}, document.getElementById("syncLodgify"), "Sincronizzazione...");
   if (!result) return;
   const count = Number(result.imported_or_updated || result.imported || result.updated || 0);
-  alert(`Sync completata: ${count} importate/aggiornate · ${Number(result.skipped || 0)} ignorate · ${Number(result.removed || 0)} rimosse.`);
+  const directUpdated = Number(result.direct_match?.updated?.length || 0);
+  const directCandidates = Number(result.direct_match?.candidates || 0);
+  const directErrors = Number(result.direct_match?.update_errors?.length || 0);
+  const directReady = Number(result.direct_readiness?.ready || 0);
+  const directTotal = Number(result.direct_readiness?.total || 0);
+  const directMissingAmount = Number(result.direct_readiness?.missing_amount || 0);
+  const dashboardDirectTotal = Number.isFinite(Number(result.dashboard_direct?.total)) ? Number(result.dashboard_direct.total) : null;
+  const dashboardLine = dashboardDirectTotal === null
+    ? "Dashboard: conteggio dirette non disponibile"
+    : `Dashboard: ${dashboardDirectTotal} dirette`;
+  const mismatch = dashboardDirectTotal === null || !directTotal
+    ? ""
+    : `\nDiscrepanza: ${dashboardDirectTotal - directTotal > 0 ? "+" : ""}${dashboardDirectTotal - directTotal} in dashboard`;
+  const warnings = [
+    directMissingAmount ? `${directMissingAmount} diretta Lodgify senza importo` : "",
+    directErrors ? `${directErrors} errori update` : "",
+    result.direct_match?.select_error ? "errore lettura Black" : "",
+    result.dashboard_direct?.error ? "errore conteggio dashboard" : ""
+  ].filter(Boolean);
+
+  alert([
+    "Sync completata.",
+    `OTA: ${count} aggiornate · ${Number(result.skipped || 0)} ignorate · ${Number(result.removed || 0)} rimosse`,
+    `Lodgify riconosciute: ${directTotal || directCandidates} dirette · ${directReady} importabili`,
+    dashboardLine,
+    `Match appartamenti: ${directUpdated}/${directCandidates}`,
+    mismatch.trim(),
+    warnings.length ? `Attenzione: ${warnings.join(" · ")}` : ""
+  ].filter(Boolean).join("\n"));
   await loadBookings();
 }
 
@@ -826,6 +957,11 @@ async function importLodgifyById() {
   if (!result) return;
   if (result.action === "imported_or_updated") {
     alert(`Prenotazione importata: ${result.booking?.name || bookingId} · ${euro(result.booking?.amount || 0)}`);
+    input.value = "";
+  } else if (result.action === "direct_apartment_matched") {
+    const updated = Number(result.direct_match?.updated?.length || 0);
+    const candidates = Number(result.direct_match?.candidates || 0);
+    alert(`Match diretto Lodgify: ${updated}/${candidates} Black aggiornate.`);
     input.value = "";
   } else if (result.action === "skipped_or_removed") {
     alert(`Prenotazione non importata: stato ${result.reason?.status || "non valido"}, sorgente ${result.reason?.source || "non OTA"}.`);

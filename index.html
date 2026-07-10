@@ -56,8 +56,8 @@
         </section>
 
         <div class="app-actions booking-actions">
-          <button id="openForm" class="button button-primary">+ New Reservation</button>
-          <button id="syncLodgify" class="button button-gold">Sync Lodgi</button>
+          <button id="openForm" class="button button-primary">+ Reservation</button>
+          <button id="syncLodgify" class="button button-gold sync-button"><span>Sync</span><small id="syncButtonMeta">Sync -</small></button>
         </div>
 
         <article class="target-card target-card-black">
@@ -90,6 +90,29 @@
                 <div class="se-share-box is-red"><div id="whiteShare" class="se-share-value"></div><div class="se-share-label">White sul totale</div></div>
               </div>
               <div class="se-glass-progress"><div id="blackShareBar" class="se-progress-segment is-green"></div><div id="whiteShareBar" class="se-progress-segment is-red"></div></div>
+              <div class="se-margin-heading">Margini</div>
+              <div class="se-margin-grid">
+                <div class="se-margin-box is-black">
+                  <div class="se-margin-label">Margine Black</div>
+                  <div id="blackMargin" class="se-margin-value"></div>
+                </div>
+                <button id="openWhiteMargin" class="se-margin-box is-white" type="button" aria-label="Apri il dettaglio del margine White" aria-haspopup="dialog" aria-controls="whiteMarginDetails">
+                  <div class="se-margin-label">Margine White</div>
+                  <div id="whiteMargin" class="se-margin-value"></div>
+                  <span class="se-margin-info" aria-hidden="true">i</span>
+                </button>
+              </div>
+              <div class="se-control-list" aria-label="Controllo obiettivi">
+                <div id="controlElio" class="se-control-item"><span class="se-control-indicator" aria-hidden="true"></span><span>Elio</span></div>
+                <div id="controlPatty" class="se-control-item"><span class="se-control-indicator" aria-hidden="true"></span><span>Patty</span></div>
+                <div id="controlRoxy" class="se-control-item"><span class="se-control-indicator" aria-hidden="true"></span><span>Roxy</span></div>
+                <div id="controlNights" class="se-control-item"><span class="se-control-indicator" aria-hidden="true"></span><span>Target Notti</span></div>
+                <div id="controlBlack" class="se-control-item"><span class="se-control-indicator" aria-hidden="true"></span><span>Target Black</span></div>
+                <div id="controlWhite" class="se-control-item"><span class="se-control-indicator" aria-hidden="true"></span><span>Target White</span></div>
+              </div>
+              <div class="se-useful-card">
+                <div class="se-useful-content"><div class="se-useful-title">Utile</div><div id="totalUseful" class="se-useful-value"></div></div>
+              </div>
             </div>
             <div class="se-total-side">
               <div class="se-glass-panel"><div class="se-total-label">Totale incassato</div><div id="totalCollected" class="se-total-value is-green"></div></div>
@@ -98,6 +121,9 @@
                 <div class="se-glass-progress"><div id="totalProgressBar" class="se-progress-fill"></div></div>
                 <div class="se-total-meta"><span><b id="totalProgressCurrent"></b> / <span id="totalProgressTarget"></span></span><span id="totalProgressPercent" class="se-total-progress-percent"></span></div>
                 <div class="se-total-residual">Residuo: <b id="totalResidual"></b></div>
+                <div id="syncSummary" class="sync-summary" hidden>
+                  <span id="bookingSyncCount" class="sync-badge is-booking"></span><span id="airbnbSyncCount" class="sync-badge is-airbnb"></span><span id="directSyncCount" class="sync-badge is-direct"></span><span id="otaSyncCount" class="sync-badge is-total"></span>
+                </div>
               </div>
             </div>
           </div>
@@ -130,17 +156,6 @@
             <g class="nights-chart-values"><text id="actualNightValue0"></text><text id="actualNightValue1"></text><text id="actualNightValue2"></text><text id="actualNightValue3"></text><text id="actualNightValue4"></text></g>
             <g class="nights-chart-months"><text id="nightMonth0" y="282">GIUGNO</text><text id="nightMonth1" y="282">LUGLIO</text><text id="nightMonth2" y="282">AGOSTO</text><text id="nightMonth3" y="282">SETTEMBRE</text><text id="nightMonth4" y="282">OTTOBRE</text></g>
           </svg>
-        </div>
-      </section>
-
-      <section class="import-panel">
-        <div class="import-section">
-          <div class="import-copy"><div class="gold-kicker">Importa ID Lodgify</div><div class="helper-copy">Usalo per importare una prenotazione OTA che non compare nella sync automatica.</div></div>
-          <div class="import-controls"><input id="lodgifyBookingId" class="control" inputmode="numeric" placeholder="ID prenotazione Lodgify"><button id="importLodgifyId" class="button button-gold-compact" type="button">Importa</button></div>
-        </div>
-        <div id="syncSummary" class="sync-summary" hidden>
-          <div><div class="gold-kicker">Lodgify Sync</div><div id="lastSync" class="helper-copy"></div></div>
-          <div class="sync-badges"><span id="bookingSyncCount" class="sync-badge is-booking"></span><span id="airbnbSyncCount" class="sync-badge is-airbnb"></span><span id="otaSyncCount" class="sync-badge"></span></div>
         </div>
       </section>
 
@@ -192,16 +207,31 @@
         </div>
       </section>
 
-      <section class="bookings-heading"><h2>Prenotazioni</h2><div class="search-box"><input id="bookingSearch" type="search" autocomplete="off" placeholder="Cerca cliente, appartamento, fonte..."><span>⌕</span></div></section>
+      <section id="whiteMarginDetails" class="booking-form-overlay margin-details-overlay" role="dialog" aria-modal="true" aria-labelledby="whiteMarginTitle" hidden>
+        <div class="booking-form-dialog margin-details-dialog">
+          <div class="booking-form-header">
+            <div class="booking-form-heading"><div class="booking-form-icon margin-details-icon">%</div><div><div id="whiteMarginTitle" class="booking-form-title">Margine White</div><div class="booking-form-subtitle">Dettaglio fee OTA e cedolare secca</div></div></div>
+            <button id="closeWhiteMarginTop" class="close-button" type="button" aria-label="Chiudi">×</button>
+          </div>
+          <div id="whiteMarginBreakdown" class="margin-details-body"></div>
+          <div class="booking-form-actions"><button id="closeWhiteMargin" class="button button-secondary" type="button">Chiudi</button></div>
+        </div>
+      </section>
+
       <section id="bookingList"></section>
+      <section class="import-panel">
+        <div class="import-section">
+          <div class="import-copy"><div class="gold-kicker">Importa ID Lodgify</div><div class="helper-copy">Usalo per importare una prenotazione OTA che non compare nella sync automatica.</div></div>
+          <div class="import-controls"><input id="lodgifyBookingId" class="control" inputmode="numeric" placeholder="ID prenotazione Lodgify"><button id="importLodgifyId" class="button button-gold-compact" type="button">Importa</button></div>
+        </div>
+      </section>
     </main>
   </template>
 
   <template id="bookingAreaTemplate">
     <div class="se-booking-area">
-      <div class="se-booking-list-header"><div><div class="se-booking-list-title">Elenco prenotazioni</div><div class="se-booking-list-count"></div></div><div class="se-booking-sort-chip">Ordina per · Check-in</div></div>
-      <section class="se-paid-section" hidden><div class="se-booking-section-heading"><div><div class="se-booking-section-title">Saldate</div><div class="se-booking-section-count"></div></div><div class="se-swipe-hint">Scorri →</div></div><div class="se-paid-carousel"></div></section>
-      <section class="se-unpaid-section" hidden><div class="se-booking-section-heading"><div><div class="se-booking-section-title">Da saldare</div><div class="se-booking-section-count"></div></div></div><div class="se-unpaid-list"></div></section>
+      <section class="se-paid-section" hidden><div class="se-paid-carousel"></div></section>
+      <section class="se-unpaid-section" hidden><div class="se-booking-section-heading"><div><div class="se-booking-section-title">Arrivi</div><div class="se-booking-section-count"></div></div></div><div class="se-unpaid-list"></div></section>
     </div>
   </template>
 
@@ -210,17 +240,17 @@
       <span class="se-new-chip" hidden>NEW</span>
       <div class="se-booking-pass-main">
         <div class="se-source-icon"></div>
-        <div class="se-booking-primary"><div class="se-booking-name-row"><div class="se-booking-name"></div><span class="se-status-chip"></span></div><div class="se-booking-meta"><span class="se-booking-source-text"></span><span class="se-booking-details"></span></div></div>
+        <div class="se-booking-primary"><div class="se-booking-name-row"><div class="se-booking-name"></div></div><div class="se-booking-meta"><span class="se-booking-source-text"></span><span class="se-booking-details"></span></div></div>
         <div class="se-booking-price"><div class="se-booking-amount"></div><div class="se-booking-chevron">›</div></div>
       </div>
       <div class="se-booking-dates"><div class="se-date-box"><div class="se-date-value is-arrival"></div><div class="se-date-label">Check-in</div></div><div class="se-date-arrow">→</div><div class="se-date-box"><div class="se-date-value is-departure"></div><div class="se-date-label">Check-out</div></div><div class="se-nights-box"></div></div>
-      <div class="se-booking-footer"><div class="se-booking-deposit"></div><button class="se-delete-inline" type="button">Elimina</button></div>
+      <div class="se-booking-footer"><div class="se-booking-deposit"></div><div class="se-booking-footer-actions"><span class="se-status-chip"></span><button class="se-delete-inline" type="button">Elimina</button></div></div>
     </article>
   </template>
 
   <template id="emptyStateTemplate"><div class="empty-state">Nessuna prenotazione trovata.</div></template>
   <template id="errorStateTemplate"><pre class="error-state"></pre></template>
 
-  <script type="module" src="app.js?v=9"></script>
+  <script type="module" src="app.js?v=12"></script>
 </body>
 </html>
